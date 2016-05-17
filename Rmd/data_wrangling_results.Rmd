@@ -1,0 +1,256 @@
+---
+title: "Moneyline Data Wrangling"
+author: "Ben Baumer"
+date: "September 24, 2015"
+output: html_document
+---
+
+```{r, message=FALSE}
+require(mosaic)
+```
+
+Load the Results Data
+
+### MLB
+
+```{r}
+mlb_results <- read.csv("Data/MLB_results.csv")
+require(lubridate)
+require(stringr)
+mlb_res <- mlb_results %>%
+  filter(Rk != "Rk") %>%
+  # remove all the "road games"
+  filter(X. != "@") %>%
+  # capture doubleheaders
+  mutate(dh = str_extract(str_extract(Date, "\\(.\\)"), "[0-9]+")) %>%
+  mutate(dateString = paste(gsub("\\(.\\)", "", Date), year, sep = ",")) %>%
+  mutate(gameDate = parse_date_time(dateString, orders = c("%b %d,%y"))) %>%
+  mutate(home_team_id = Tm) %>%
+  mutate(home_win = ifelse(as.numeric(R) > as.numeric(RA), TRUE, FALSE)) %>%
+  mutate(sport = "mlb") %>%
+  mutate(season = year) %>%
+  select(sport, season, gameDate, dh, home_team_id, home_win)
+```
+
+Sanity check: should be $162 * 30 / 2 = 2430$ games per year
+
+```{r}
+mlb_res %>%
+  group_by(season) %>%
+  summarise(N = n(), numTeams = length(unique(home_team_id)), home_p = sum(home_win) / n()) %>%
+  print.data.frame()
+```
+
+
+### NBA
+
+```{r}
+nba_results <- read.csv("Data/NBA_results.csv")
+nba_res <- nba_results %>%
+  mutate(dh = NA) %>%
+  mutate(gameDate = parse_date_time(Date, orders = c("%b %d %Y"))) %>%
+  mutate(home_team = Home.Neutral) %>%
+  mutate(home_win = ifelse(as.numeric(PTS.1) > as.numeric(PTS), TRUE, FALSE)) %>%
+  mutate(sport = "nba") %>%
+  mutate(season = ifelse(month(gameDate) < 8, year(gameDate), year(gameDate) + 1)) %>%
+  select(sport, season, gameDate, dh, home_team, home_win)
+# did we get all the dates?
+nba_res %>%
+  filter(is.na(gameDate))
+```
+
+### NFL
+
+```{r}
+nfl_results <- read.csv("Data/NFL_results.csv")
+nfl_res <- nfl_results %>%
+  na.omit() %>%
+  mutate(dh = NA) %>%
+  mutate(gameDay = parse_date_time(Date, orders = c("%b %d"))) %>%
+  mutate(gameYear = ifelse(month(gameDay) < 6, season + 1, season)) %>%
+  mutate(gameDate = parse_date_time(paste(Date, gameYear), orders = c("%b %d %y"))) %>%
+  mutate(home_team = ifelse(Var.7 == "@", as.character(Loser.tie), as.character(Winner.tie))) %>%
+  mutate(home_win = ifelse(Winner.tie == home_team, TRUE, FALSE)) %>%
+  mutate(sport = "nfl") %>%
+  select(sport, season, gameDate, dh, home_team, home_win)
+# did we get all the dates?
+nfl_res %>%
+  filter(is.na(gameDate))
+```
+
+### NHL
+
+```{r}
+nhl_results <- read.csv("Data/NHL_results.csv")
+nhl_res <- nhl_results %>%
+  mutate(dh = NA) %>%
+  mutate(gameDate = ymd(Date)) %>%
+  mutate(home_team = Home) %>%
+  # what to do about ties?
+  mutate(home_win = ifelse(G.1 >= G, TRUE, FALSE)) %>%
+  mutate(sport = "nhl") %>%
+  mutate(season = ifelse(month(gameDate) < 8, year(gameDate), year(gameDate) + 1)) %>%
+  select(sport, season, gameDate, dh, home_team, home_win)
+# did we get all the dates?
+nhl_res %>%
+  filter(is.na(gameDate))
+```
+
+## Creating the Lookup
+
+### MLB
+
+Errors in Lahman package
+
+```{r}
+require(dplyr)
+require(Lahman)
+Teams %>%
+  filter(teamID %in% c("CHA", "CHN") & yearID > 2010) %>%
+  select(yearID, teamID, name)
+```
+
+```{r}
+teamname_lkup <- Teams %>%
+  filter(yearID >= min(year(mlb_res$gameDate))) %>%
+  select(teamID, name) %>%
+  unique()
+# remove erroneous team pairs
+teamname_lkup <- teamname_lkup[1:34,]
+teamname_lkup <- bind_rows(teamname_lkup, data.frame(teamID = "TBD", name = "Tampa Bay Rays"))
+teamname_lkup <- teamname_lkup %>%
+  mutate(teamID = ifelse(teamID == "CHA", "CHW", as.character(teamID))) %>%
+  mutate(teamID = ifelse(teamID == "NYA", "NYY", teamID)) %>%
+  mutate(teamID = ifelse(teamID == "SLN", "STL", teamID)) %>%
+  mutate(teamID = ifelse(teamID == "KCA", "KCR", teamID)) %>%
+  mutate(teamID = ifelse(teamID == "CHN", "CHC", teamID)) %>%
+  mutate(teamID = ifelse(teamID == "NYN", "NYM", teamID)) %>%
+  mutate(teamID = ifelse(teamID == "FLO", "FLA", teamID)) %>%
+  mutate(teamID = ifelse(teamID == "SFN", "SFG", teamID)) %>%
+  mutate(teamID = ifelse(teamID == "LAN", "LAD", teamID)) %>%
+  mutate(teamID = ifelse(teamID == "SDN", "SDP", teamID)) %>%
+  mutate(teamID = ifelse(teamID == "TBA", "TBR", teamID)) %>%
+  mutate(teamID = ifelse(teamID == "WAS", "WSN", teamID)) %>%
+  mutate(name = ifelse(teamID == "FLA", "Miami Marlins", name)) %>%
+  mutate(name = ifelse(teamID == "STL", "St Louis Cardinals", name)) %>%
+  mutate(name = ifelse(teamID == "LAA", "Los Angeles Angels", name)) %>%
+  mutate(name = ifelse(teamID == "TBR", "Tampa Bay Rays", name)) %>%
+  rename(home_team = name) %>%
+  unique()
+
+mlb_res <- left_join(x = mlb_res, y = teamname_lkup, by = c("home_team_id" = "teamID"))
+```
+
+### NBA
+
+In the money line data they were always the Brooklyn Nets and the Charlotte Hornets and the New Orleans Pelicans.
+
+```{r}
+nba_res %>%
+  filter(grepl("Nets", home_team)) %>%
+  select(home_team) %>%
+  unique()
+nba_res <- nba_res %>%
+  mutate(home_team = ifelse(grepl("Nets", home_team), "Brooklyn Nets", as.character(home_team))) %>%
+  mutate(home_team = ifelse(grepl("Bobcats", home_team), "Charlotte Hornets", as.character(home_team))) %>%
+  mutate(home_team = ifelse(grepl("New Orleans.+Hornets", home_team), "New Orleans Pelicans", as.character(home_team)))
+  
+```
+
+### NFL
+
+### NHL
+
+
+### Combine them all
+
+```{r}
+results <- bind_rows(select(mlb_res, -home_team_id), nba_res, nfl_res, nhl_res)
+```
+
+
+## Load the Moneyline Data
+
+```{r}
+load("Data/mline.rda")
+```
+
+Join them together
+
+```{r}
+bigfour <- right_join(x = mline, y = results, by = c("sport", "season", "gameDate", "home_team"))
+```
+
+How many games do we have?
+
+```{r}
+bigfour %>%
+  group_by(sport, season) %>%
+  summarise(N_results = n(), numTeams = length(unique(setdiff(union(visitor_team, home_team), NA))), 
+            G = sum(!is.na(home_win)), W = sum(home_win, na.rm = TRUE), L = sum(!home_win, na.rm = TRUE),
+            home_wp = sum(home_win, na.rm = TRUE) / sum(!is.na(home_win)),
+            N_mline = sum(!is.na(prob_home)), 
+            mean_home_p = mean(prob_home, na.rm = TRUE)) %>%
+  mutate(coverage = N_mline / N_results) %>%
+  print.data.frame()
+```
+  
+```{r}
+bigfour %>%
+  filter(year(gameDate) == 2012 & sport == "nba") %>%
+  group_by(home_team) %>%
+  summarise(N = n()) %>%
+  arrange((desc(N))) %>%
+  print.data.frame()
+nba_res %>% 
+  filter(sport == "nba") %>%
+  filter(grepl("Bobcats|Hornets|New Orleans", home_team)) %>%
+  group_by(year(gameDate), home_team) %>%
+  summarise(N = n()) %>%
+  print.data.frame()
+mline %>% 
+  filter(sport == "nba") %>%
+  filter(grepl("Bobcats|Hornets|New Orleans", home_team)) %>%
+  group_by(year(gameDate), home_team) %>%
+  summarise(N = n()) %>%
+  print.data.frame()
+bigfour %>%
+  filter(sport == "nhl" & season == 2006) %>% View()
+mline %>%
+  filter(sport == "nhl" & gameDate == "2005-10-05")
+```
+
+We have nearly all of them from 2005-2014. 
+
+```{r}
+bigfour %>%
+  filter(season %in% 2005:2014) %>%
+  group_by(sport, season) %>%
+  summarise(N_results = n(), 
+            numTeams = length(unique(setdiff(union(visitor_team, home_team), NA))), 
+            home_wp = sum(home_win, na.rm = TRUE) / sum(!is.na(home_win)),
+            N_mline = sum(!is.na(prob_home)), 
+            mean_home_p = mean(prob_home, na.rm = TRUE)) %>%
+  mutate(coverage = N_mline / N_results) %>%
+  print.data.frame()
+```
+
+```{r}
+bigfour <- bigfour %>%
+  filter(season %in% 2005:2014) %>%
+  # four hockey games that were postponed
+  filter(!is.na(home_win))
+summary(bigfour)
+```
+
+We're missing only a tiny fraction of the games:
+
+```{r}
+bigfour %>%
+  summarize(coverage = sum(!is.na(p_home)) / n())
+```
+
+
+```{r, eval=FALSE}
+save(bigfour, file = "Data/bigfour.rda", compress = "xz")
+```

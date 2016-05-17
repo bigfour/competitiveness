@@ -1,0 +1,17 @@
+---
+title: "Analysis"
+author: "Ben Baumer"
+date: "February 2, 2016"
+output: html_document
+---
+
+```{r}
+load("Data/bigfour.rda")
+```
+
+```{r}
+require(mosaic)
+bigfour %>%
+  group_by(sport) %>%
+  summarize(N = n(), earliest = min(gameDate), latest = max(gameDate))
+```

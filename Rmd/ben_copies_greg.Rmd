@@ -1,0 +1,139 @@
+---
+title: "Cross-sport competitiveness"
+author: "Ben Baumer"
+date: "May 9, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Ben copies Greg. 
+
+## Data Preparation
+
+```{r}
+load("~/Dropbox/competitiveness/Data/mline.rda")
+logit <- function(p) {
+  return(log(p/(1-p)))
+}
+```
+
+```{r, message=FALSE}
+require(dplyr)
+library(lubridate)
+obs <- mline %>%
+  filter(sport == "mlb" & season %in% 2005:2014) %>%
+  mutate(year = year(gameDate)) %>%
+#  mutate(week = week(gameDate)) %>%
+  mutate(week = as.numeric(strftime(as.Date(gsub(" 0:00","", event_date),"%m/%d/%Y"), format = "%W")))
+
+y <- logit(obs$p_home)
+w <- obs$week - min(obs$week) + 1
+s <- obs$season - min(obs$season) + 1
+n <- nrow(obs)
+
+Teams <- obs %>%
+  select(home_team, visitor_team) %>%
+  as.matrix() %>%
+  as.character() %>%
+  unique() %>%
+  sort()
+
+nteams <- length(Teams)
+nweeks <- diff(range(obs$week)) + 1
+```
+
+#create a design matrix 
+
+```{r}
+x <- matrix(0, nrow = nrow(obs), ncol = length(Teams))
+for (i in 1:nrow(obs)) {
+#  print(i)
+  x[i, which(as.character(obs[i, "home_team"]) == Teams)] <- (1)
+  x[i, which(as.character(obs[i, "visitor_team"]) == Teams)] <- (-1)
+}
+```
+
+```{r}
+model.str <- "model { 
+for (i in 1:n)
+{
+y[i]~dnorm(mu[i], sigma)
+mu[i] <- alpha + inprod(beta[s[i],w[i],],x[i,])
+}
+
+
+for (j in 1:nteams){
+beta[1,1,j] ~ dnorm(0, sigmabSeason)
+}
+
+for (www in 2:nweeks){  
+for (j in 1:nteams){
+beta[1,www,j] ~ dnorm(gammaWeek*beta[1,www-1,j], sigmab)
+}
+}
+
+for (sss in 2:10){
+for (j in 1:nteams){
+beta[sss,1,j] ~ dnorm(gammaSeason*beta[sss-1,nweeks,j], sigmabSeason)
+}
+
+for (www in 2:nweeks){  
+for (j in 1:nteams){
+beta[sss,www,j] ~ dnorm(gammaWeek*beta[sss,www-1,j], sigmab)
+}
+}
+}
+
+alpha ~ dnorm(0,sigmab)
+sigma ~ dgamma(0.0001,0.0001)
+sigmab ~ dgamma(0.0001,0.0001)
+sigmabSeason ~ dgamma(0.0001,0.0001)
+gammaWeek ~ dunif(0,1)
+gammaSeason ~ dunif(0,1)
+
+} "
+```
+
+* $sigma$ is the variability around the game strengths
+* $sigma_b$ is the variability around the $beta$s from week to week
+* $sigma_{season}$ is the variability around the $beta$s from season to season
+
+
+```{r}
+write(model.str, "jags_model_mline.bug")
+library(rjags)
+
+jags <- jags.model('jags_model_mline.bug', 
+                   data = list('nweeks' = nweeks, 'nteams' = nteams, 'y' = y, 
+                               'x' = x, 's' = s, 'w' = w, 'n' = n),
+                   n.chains = 1, n.adapt = 100)
+update(jags, 100)
+z <- jags.samples(jags, c('beta','sigma','sigmab','sigmabSeason','gammaWeek','gammaSeason'), 100)
+```
+
+
+```{r, message=FALSE}
+summary(z)
+str(z)
+
+require(mosaic)
+densityplot(~gammaSeason, data = z)
+densityplot(~gammaWeek, data = z)
+densityplot(~sigma, data = z)
+densityplot(~sigmab, data = z)
+
+str(z$beta)
+z$beta[,,1,,]
+data.frame(Teams, beta = apply(z$beta[,,1,,], 1, mean)) %>%
+  arrange(desc(beta))
+```
+
+### Do diagnostics!!
+
+```{r, eval=FALSE}
+library(coda)
+plot(as.mcmc.list(z$beta))
+```
