@@ -63,9 +63,8 @@ Skidmore College\\
 \texttt{mlopez1@skidmore.edu}
 \and
 Gregory J. Matthews\\
-%Department of Biostatistics and Epidemiology\\
 Loyola University Chicago\\
-\texttt{gjm112@gmail.com}
+\texttt{gmatthews1@luc.edu}
 }
 
 
