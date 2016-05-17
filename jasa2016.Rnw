@@ -1,0 +1,130 @@
+\documentclass[letterpaper,titlepage]{article}
+\pdfminorversion=4
+\usepackage{setspace}
+\doublespacing
+
+\usepackage{amsthm,amsmath,amssymb,natbib}
+\RequirePackage[colorlinks,citecolor=blue,urlcolor=blue]{hyperref}
+
+\usepackage{xspace,soul}
+\usepackage{graphicx}
+
+
+\newcommand{\Ex}{\mathbb{E}}
+\newcommand{\Var}{\text{Var}}
+\newcommand{\bp}{\mathbf{p}}
+
+\newcommand{\R}{\textsf{R}\xspace}
+
+\newcommand{\greg}[1]{\sethlcolor{yellow}\hl{[GM]: #1}}
+\newcommand{\ben}[1]{\sethlcolor{green}\hl{[BB]: #1}}
+\newcommand{\mike}[1]{\sethlcolor{pink}\hl{[SJ]: #1}}
+
+\def\balpha{\pmb{\alpha}}
+\def\bbeta{\pmb{\beta}}
+\def\bgamma{\pmb{\gamma}}
+\def\btheta{\pmb{\theta}}
+\def\bphi{\pmb{\phi}}
+\def\bpsi{\pmb{\psi}}
+\def\bB{\pmb{B}}
+\def\bD{\pmb{D}}
+\def\bH{\pmb{H}}
+\def\bS{\pmb{S}}
+\def\bX{\pmb{X}}
+
+\textwidth = 6in
+\textheight = 9in
+
+\oddsidemargin = +0.3in
+
+\evensidemargin = +0.3in
+
+\parindent 0pt
+
+\parskip 10pt
+
+\topmargin = -1.5cm
+
+
+\begin{document}
+
+\title{Cross-Sport Competitiveness}
+%
+\author{
+Benjamin S. Baumer \\
+%Department of Mathematics \& Statistics \\
+Smith College \\
+%Northampton, MA 01063, USA \\
+\texttt{bbaumer@smith.edu}
+\and
+Michael Lopez\\
+%Department of Statistics \\ 
+Skidmore College\\
+\texttt{mlopez1@skidmore.edu}
+\and
+Gregory J. Matthews\\
+%Department of Biostatistics and Epidemiology\\
+Loyola University Chicago\\
+\texttt{gjm112@gmail.com}
+}
+
+
+\maketitle
+
+\begin{abstract}
+blah
+
+Keywords: baseball, statistical modeling, simulation, \R, reproducibility %bootstrapping?
+\end{abstract}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\input{intro}
+
+We borrowed from \cite{glickman1998state}.
+
+%\input{prelim}
+%\input{model}
+%\input{results}
+
+<<message=FALSE>>=
+load("data/bigfour.rda")
+require(dplyr)
+bigfour %>%
+  group_by(sport) %>%
+  summarize(N = n(), earliest = min(gameDate), latest = max(gameDate))
+@
+
+
+
+%\input{summary}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\bibliographystyle{asa}
+\bibliography{refs}
+
+\newpage
+
+\phantom{xxxx}
+
+\vspace{3cm}
+
+\begin{center}
+{\Large  {\bf Supplementary Materials for \\ 
+
+\vspace{2cm}
+
+``Cross-Sport Competitiveness"}}
+\end{center}
+
+\newpage
+
+%\input{appendix}
+
+
+
+\end{document}
