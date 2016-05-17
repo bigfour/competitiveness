@@ -98,6 +98,10 @@ bigfour %>%
   summarize(N = n(), earliest = min(gameDate), latest = max(gameDate))
 @
 
+<<>>=
+# devtools::install_github("beanumber/teamcolors")
+library(teamcolors)
+@
 
 
 %\input{summary}
