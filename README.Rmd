@@ -1,0 +1,16 @@
+---
+title: "A unified approach to understanding randomness in sport"
+output:
+  github_document:
+    html_preview: true
+---
+
+A paper analyzing competitiveness across the four major sports.
+
+To knit:
+
+#. Use the **Compile PDF** button in RStudio, or
+#. Select **Tools -> Shell...** from the menu and execute:
+```{r, engine='bash', eval=FALSE}
+make
+```
