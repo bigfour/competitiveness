@@ -1,10 +1,10 @@
 ---
-title: "Moneyline Data Wrangling"
-author: "Ben Baumer"
-date: "September 24, 2015"
+title: "Moneyline Data Wrangling Part II"
+author: "Greg Matthews and Mike Lopez"
+date: "June 24, 2016"
 output: html_document
 ---
-
+  
 ```{r, message=FALSE}
 require(mosaic)
 ```
@@ -14,7 +14,7 @@ Load the Results Data
 ### MLB
 
 ```{r}
-mlb_results <- read.csv("Data/MLB_results.csv")
+mlb_results <- read.csv("~/Dropbox/competitiveness/Data/MLB_results.csv")
 require(lubridate)
 require(stringr)
 mlb_res <- mlb_results %>%
@@ -29,7 +29,8 @@ mlb_res <- mlb_results %>%
   mutate(home_win = ifelse(as.numeric(R) > as.numeric(RA), TRUE, FALSE)) %>%
   mutate(sport = "mlb") %>%
   mutate(season = year) %>%
-  select(sport, season, gameDate, dh, home_team_id, home_win)
+  mutate(playoffs = 0) %>%
+  select(sport, season, gameDate, dh, home_team_id, home_win, playoffs)
 ```
 
 Sanity check: should be $162 * 30 / 2 = 2430$ games per year
@@ -45,7 +46,7 @@ mlb_res %>%
 ### NBA
 
 ```{r}
-nba_results <- read.csv("Data/NBA_results.csv")
+nba_results <- read.csv("~/Dropbox/competitiveness/Data/NBAdata.csv")
 nba_res <- nba_results %>%
   mutate(dh = NA) %>%
   mutate(gameDate = parse_date_time(Date, orders = c("%b %d %Y"))) %>%
@@ -53,7 +54,7 @@ nba_res <- nba_results %>%
   mutate(home_win = ifelse(as.numeric(PTS.1) > as.numeric(PTS), TRUE, FALSE)) %>%
   mutate(sport = "nba") %>%
   mutate(season = ifelse(month(gameDate) < 8, year(gameDate), year(gameDate) + 1)) %>%
-  select(sport, season, gameDate, dh, home_team, home_win)
+  select(sport, season, gameDate, dh, home_team, home_win, playoffs)
 # did we get all the dates?
 nba_res %>%
   filter(is.na(gameDate))
@@ -62,7 +63,7 @@ nba_res %>%
 ### NFL
 
 ```{r}
-nfl_results <- read.csv("Data/NFL_results.csv")
+nfl_results <- read.csv("~/Dropbox/competitiveness/Data/NFL_results.csv")
 nfl_res <- nfl_results %>%
   na.omit() %>%
   mutate(dh = NA) %>%
@@ -71,17 +72,30 @@ nfl_res <- nfl_results %>%
   mutate(gameDate = parse_date_time(paste(Date, gameYear), orders = c("%b %d %y"))) %>%
   mutate(home_team = ifelse(Var.7 == "@", as.character(Loser.tie), as.character(Winner.tie))) %>%
   mutate(home_win = ifelse(Winner.tie == home_team, TRUE, FALSE)) %>%
-  mutate(sport = "nfl") %>%
-  select(sport, season, gameDate, dh, home_team, home_win)
-# did we get all the dates?
-nfl_res %>%
-  filter(is.na(gameDate))
+  mutate(sport = "nfl") 
+
+##Week of season
+min.day <- nfl_res %>%
+    group_by(season) %>%
+    summarise(min.day = min(gameDate))
+
+nfl_res <- nfl_res %>%
+    left_join(min.day) %>%
+    mutate(day = as.Date(gameDate) - as.Date(min.day), week = as.numeric(floor(day/7)+1), 
+           playoffs = as.numeric(week > 17))
+head(nfl_res)
+  
+nfl_res <- nfl_res %>%
+  select(sport, season, gameDate, dh, home_team, home_win, playoffs)
+
+### Looks good after 2004: 11 playoff games per year
+table(nfl_res$playoffs, nfl_res$season)
 ```
 
 ### NHL
 
 ```{r}
-nhl_results <- read.csv("Data/NHL_results.csv")
+nhl_results <- read.csv("~/Dropbox/competitiveness/Data/NHL_results.csv")
 nhl_res <- nhl_results %>%
   mutate(dh = NA) %>%
   mutate(gameDate = ymd(Date)) %>%
@@ -90,7 +104,7 @@ nhl_res <- nhl_results %>%
   mutate(home_win = ifelse(G.1 >= G, TRUE, FALSE)) %>%
   mutate(sport = "nhl") %>%
   mutate(season = ifelse(month(gameDate) < 8, year(gameDate), year(gameDate) + 1)) %>%
-  select(sport, season, gameDate, dh, home_team, home_win)
+  select(sport, season, gameDate, dh, home_team, home_win, playoffs)
 # did we get all the dates?
 nhl_res %>%
   filter(is.na(gameDate))
@@ -154,7 +168,7 @@ nba_res <- nba_res %>%
   mutate(home_team = ifelse(grepl("Nets", home_team), "Brooklyn Nets", as.character(home_team))) %>%
   mutate(home_team = ifelse(grepl("Bobcats", home_team), "Charlotte Hornets", as.character(home_team))) %>%
   mutate(home_team = ifelse(grepl("New Orleans.+Hornets", home_team), "New Orleans Pelicans", as.character(home_team)))
-  
+
 ```
 
 ### NFL
@@ -165,20 +179,64 @@ nba_res <- nba_res %>%
 ### Combine them all
 
 ```{r}
-results <- bind_rows(select(mlb_res, -home_team_id), nba_res, nfl_res, nhl_res)
+#results <- bind_rows(select(mlb_res, -home_team_id), nba_res, nfl_res, nhl_res)
+results <- rbind(select(mlb_res, -home_team_id), nba_res, nfl_res, nhl_res)
 ```
 
 
 ## Load the Moneyline Data
 
 ```{r}
-load("Data/mline.rda")
+load("~/Dropbox/competitiveness/Data/mlineGM.rda")
+
+# Check dates for mline data
+mline$month <- month(mline$gameDate)
+mline %>% 
+  group_by(sport, season) %>% 
+  summarise(min.date = min(gameDate), max.date = max(gameDate)) %>%
+  print.data.frame()
+
 ```
 
-Join them together
+Account for differences in team names between the two data sets
+
+
+Last minute addendums:
+- Seattle Supersonics should be merged with OKC Thunder (NBA). Supersonics spelt two ways
+- Atlanta Thrashers should be merged with Winnipeg Jets
+- Coyotes (NHL) are Arizona on the road and Phoenix at home
+- Ducks (NHL) also come in two forms
+
+```{r}
+Seattle <- c("Seattle Supersonics", "Seattle SuperSonics")
+mline[mline$visitor_team %in% Seattle,]$visitor_team <- "Oklahoma City Thunder"
+mline[mline$home_team %in% Seattle,]$home_team <- "Oklahoma City Thunder"
+
+mline[mline$visitor_team=="Atlanta Thrashers",]$visitor_team <- "Winnipeg Jets"
+mline[mline$home_team=="Atlanta Thrashers",]$home_team <- "Winnipeg Jets"
+
+#mline[mline$visitor_team=="Mighty Ducks of Anaheim",]$visitor_team <- "Anaheim Ducks"
+#mline[mline$home_team=="Mighty Ducks of Anaheim",]$home_team <- "Anaheim Ducks"
+
+#mline[mline$visitor_team=="Phoenix Coyotes",]$visitor_team <- "Arizona Coyotes"
+#mline[mline$home_team=="Phoenix Coyotes",]$home_team <- "Arizona Coyotes"
+
+
+Seattle <- c("Seattle Supersonics", "Seattle SuperSonics")
+
+results[results$home_team %in% Seattle,]$home_team <- "Oklahoma City Thunder"
+results[results$home_team=="Atlanta Thrashers",]$home_team <- "Winnipeg Jets"
+results[results$home_team=="Mighty Ducks of Anaheim",]$home_team <- "Anaheim Ducks"
+results[results$home_team=="Phoenix Coyotes",]$home_team <- "Arizona Coyotes"
+
+```
 
 ```{r}
 bigfour <- right_join(x = mline, y = results, by = c("sport", "season", "gameDate", "home_team"))
+
+teams.1 <- unique(filter(bigfour, season > 2004)$home_team)
+teams.2 <- unique(filter(bigfour, season > 2004)$visitor_team)
+teams.2 %in% teams.1 ##The NA is missing
 ```
 
 How many games do we have?
@@ -191,31 +249,30 @@ bigfour %>%
             home_wp = sum(home_win, na.rm = TRUE) / sum(!is.na(home_win)),
             N_mline = sum(!is.na(prob_home)), 
             mean_home_p = mean(prob_home, na.rm = TRUE)) %>%
-  mutate(coverage = N_mline / N_results) %>%
-  print.data.frame()
+  mutate(coverage = N_mline / N_results) 
 ```
-  
+
 ```{r}
 bigfour %>%
   filter(year(gameDate) == 2012 & sport == "nba") %>%
   group_by(home_team) %>%
   summarise(N = n()) %>%
-  arrange((desc(N))) %>%
-  print.data.frame()
+  arrange((desc(N))) 
+
 nba_res %>% 
   filter(sport == "nba") %>%
   filter(grepl("Bobcats|Hornets|New Orleans", home_team)) %>%
   group_by(year(gameDate), home_team) %>%
-  summarise(N = n()) %>%
-  print.data.frame()
+  summarise(N = n()) 
+
 mline %>% 
   filter(sport == "nba") %>%
   filter(grepl("Bobcats|Hornets|New Orleans", home_team)) %>%
   group_by(year(gameDate), home_team) %>%
-  summarise(N = n()) %>%
-  print.data.frame()
+  summarise(N = n()) 
+
 bigfour %>%
-  filter(sport == "nhl" & season == 2006) %>% View()
+  filter(sport == "nhl" & season == 2006) 
 mline %>%
   filter(sport == "nhl" & gameDate == "2005-10-05")
 ```
@@ -247,10 +304,29 @@ We're missing only a tiny fraction of the games:
 
 ```{r}
 bigfour %>%
-  summarize(coverage = sum(!is.na(p_home)) / n())
+summarize(coverage = sum(!is.na(p_home)) / n())
+
+bigfour <- filter(bigfour, !is.na(vig))
+
+bigfour %>%
+summarize(coverage = sum(!is.na(p_home)) / n())
 ```
 
 
-```{r, eval=FALSE}
-save(bigfour, file = "Data/bigfour.rda", compress = "xz")
+Check maximum dates within each sport (look for July NBA and NHL games, look for weird preseason dates)
+
+```{r}
+bigfour %>% 
+group_by(sport, season) %>% 
+summarise(min.date = min(gameDate), max.date = max(gameDate)) %>% 
+print.data.frame()
+```
+
+
+
+```{r}
+table(bigfour$home_team, bigfour$season)
+table(bigfour$visitor_team, bigfour$season)
+bigfour <- select(bigfour, -dh.x, -dh.y)
+save(bigfour, file = "~/Dropbox/competitiveness/Data/bigfourGM.rda", compress = "xz")
 ```
