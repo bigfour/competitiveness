@@ -69,6 +69,13 @@ Loyola University Chicago\\
 }
 
 
+<<echo=FALSE>>=
+library(knitr)
+opts_chunk$set(tidy = FALSE, highlight = TRUE, comment = NA, echo = FALSE,
+               prompt = FALSE, fig.width = 10, fig.height = 5)
+@
+
+
 \maketitle
 
 \begin{abstract}
@@ -311,7 +318,70 @@ Simulate balanced versus unbalanced scheduling to understand how each league's s
 \section{Validation of betting market data}
 \section{Bayesian state-space model}
 \section{Results}
+
+A summary of our data set is shown in Table~\ref{tab:bigfour}.
+
+<<message=FALSE, results='asis'>>=
+load("data/bigfour.rda")
+library(dplyr)
+library(xtable)
+bigfour %>%
+  filter(season %in% 2005:2014) %>%
+  group_by(sport) %>%
+  summarise(N = n(), 
+            earliest = as.character(min(gameDate)), 
+            latest = as.character(max(gameDate)),
+            num_teams = length(unique(setdiff(union(visitor_team, home_team), NA))), 
+            home_wp = sum(home_win, na.rm = TRUE) / sum(!is.na(home_win)),
+            N_bets = sum(!is.na(prob_home)), 
+            mean_home_p = mean(prob_home, na.rm = TRUE)) %>%
+  mutate(coverage = N_bets / N) %>%
+  xtable(caption = "Summary of cross-sport data. Note that we have perfect coverage (betting odds for every game) across all four major sports during the 2005--2014 regular seasons.", 
+         digits = 3, label = "tab:bigfour") %>%
+  print(include.rownames = FALSE)
+@
+
+As expected, the probabilities implied by the betting markets are unbiased and quite accurate. Were this not the case, there would be easy arbitrage opportunities. 
+
+<<betting, fig.height=10, fig.cap="Accuracy of probabilities implied by betting markets. We note that across all four major sports, the observed winning percentage accord with those implied by the betting markets. ">>=
+bigfour_summary <- bigfour %>%
+  group_by(sport) %>%
+  summarize(N = n(), num_seasons = n_distinct(season), 
+            earliest = min(gameDate), latest = max(gameDate),
+            home_win_pct = sum(home_win) / n(), 
+            prob_missing = sum(is.na(p_home)), 
+            prob_pct = sum(!is.na(p_home)) / n(), 
+            home_win_prob = mean(p_home, na.rm = TRUE))
+bigfour_binned <- bigfour %>%
+  mutate(p_home_bin = round(p_home, 2)) %>%
+  group_by(sport, p_home_bin) %>%
+  summarize(N = n(), home_win_bin_pct = mean(home_win))
+library(ggplot2)
+markets_plot <- ggplot(data = bigfour, 
+                       aes(x = p_home, y = as.numeric(home_win), color = sport)) + 
+  geom_point(alpha = 0.1) + 
+  geom_point(data = bigfour_binned, aes(x = p_home_bin, y = home_win_bin_pct, size = N), alpha = 0.5) + 
+  geom_smooth() +
+  geom_abline(slope = 1, intercept = 0, color = "black", lty = 2) + 
+  geom_hline(data = bigfour_summary, aes(yintercept = home_win_pct, color = sport), lty = 3) + 
+  geom_vline(data = bigfour_summary, aes(xintercept = home_win_prob, color = sport), lty = 3) + 
+  coord_equal() + 
+  scale_x_continuous("Betting Market Estimated Probability of Home Win", labels = scales::percent, limits = c(0,1)) + 
+  scale_y_continuous("Observed Probability of Home Win", labels = scales::percent, limits = c(0,1)) + 
+  facet_wrap(~sport)
+#  facet_grid(sport ~ season)
+markets_plot
+# ggsave(filename = "figure/betting_markets.pdf", plot = markets_plot, width = 10, height = 10)
+@
+
+
+<<eval=FALSE>>=
+devtools::install_github("beanumber/teamcolors")
+library(teamcolors)
+@
+
 \subsection{Variability across sports}
+
 \subsection{Uncertainty of postseason tournaments}
 \section{Conclusion}
 \subsection{Summary}
@@ -407,17 +477,3 @@ Gini coefficient as one measure of within season inequality of league outcomes, 
 
 \end{document}
 
-
-
-<<message=FALSE>>=
-load("data/bigfour.rda")
-require(dplyr)
-bigfour %>%
-  group_by(sport) %>%
-  summarize(N = n(), earliest = min(gameDate), latest = max(gameDate))
-@
-
-<<>>=
-devtools::install_github("beanumber/teamcolors")
-library(teamcolors)
-@
