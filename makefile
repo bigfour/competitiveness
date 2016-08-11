@@ -12,3 +12,7 @@ clean:
 
 jasa2016.tex: jasa2016.Rnw
 	Rscript -e "library(knitr); knit('jasa2016.Rnw')"
+	
+
+mcmc: R/jagsFunction.R
+	Rscript R/jagsFunction.R
