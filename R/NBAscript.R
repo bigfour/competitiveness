@@ -12,4 +12,4 @@ seasons[[as.character(yyy)]]<- rbind(cbind(season = yyy,  temp$games, playoffs =
 }
 
 output <- do.call(rbind,seasons)
-write.csv(output,"~/Dropbox/competitiveness/data/NBAdata.csv",row.names=FALSE)
+write.csv(output,"data/NBA_results.csv",row.names=FALSE)

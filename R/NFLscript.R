@@ -8,4 +8,4 @@ seasons[[i]] <- cbind(season = i, readHTMLTable(url)$games)
 
 output <- do.call(rbind,seasons)
 output <- output[output$Date!="Date",]
-write.csv(output,"~/Dropbox/competitiveness/Data/NFL_results.csv",row.names=FALSE)
+write.csv(output,"data/NFL_results.csv",row.names=FALSE)

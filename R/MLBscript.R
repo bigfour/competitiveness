@@ -41,7 +41,7 @@ output$teamYear <- row.names(output)
 #remove rows with variable names
 output <- output[!output$Tm=="Tm",]
 
-write.csv(output,"~/Dropbox/competitiveness/Data/MLB_results.csv",row.names=FALSE)
+write.csv(output, "data/MLB_results.csv", row.names=FALSE)
 
 
 

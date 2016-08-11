@@ -16,4 +16,4 @@ for (yyy in setdiff(1950:2014, 2005)){print(yyy)
 }
 
 output <- do.call(rbind,seasons)
-write.csv(output,"~/Dropbox/competitiveness/Data/NHL_results.csv",row.names=FALSE)
+write.csv(output,"data/NHL_results.csv",row.names=FALSE)

@@ -14,7 +14,7 @@ Ben copies Greg.
 ## Data Preparation
 
 ```{r}
-load("~/Dropbox/competitiveness/Data/mline.rda")
+load("data/mline.rda")
 logit <- function(p) {
   return(log(p/(1-p)))
 }

@@ -7,10 +7,10 @@ output: html_document
 
 ```{r, message=FALSE}
 require(dplyr)
-mlb <- read.csv("~/Dropbox/competitiveness/Data/MLB-Data_moneyline.csv", stringsAsFactors = FALSE)
-nba <- read.csv("~/Dropbox/competitiveness/Data/NBA-Data_moneyline.csv", stringsAsFactors = FALSE)
-nfl <- read.csv("~/Dropbox/competitiveness/Data/NFL-Data_moneyline.csv", stringsAsFactors = FALSE)
-nhl <- read.csv("~/Dropbox/competitiveness/Data/NHL-Data_moneyline.csv", stringsAsFactors = FALSE)
+mlb <- read.csv("data/MLB-Data_moneyline.csv", stringsAsFactors = FALSE)
+nba <- read.csv("data/NBA-Data_moneyline.csv", stringsAsFactors = FALSE)
+nfl <- read.csv("data/NFL-Data_moneyline.csv", stringsAsFactors = FALSE)
+nhl <- read.csv("data/NHL-Data_moneyline.csv", stringsAsFactors = FALSE)
 ```
 
 Clean up the NHL data
@@ -204,13 +204,13 @@ Save the resulting data frame
 
 ```{r, eval=FALSE}
 mline <- ds
-save(mline, file = "~/Dropbox/competitiveness/Data/mlineGM.rda", compress = "xz")
+save(mline, file = "data/mline.rda", compress = "xz")
 ```
 
 
 ```{r}
-load("~/Dropbox/competitiveness/Data/mlineGM.rda")
-mlb_results <- read.csv("~/Dropbox/competitiveness/Data/MLB_results.csv")
+load("data/mline.rda")
+mlb_results <- read.csv("data/MLB_results.csv")
 require(stringr)
 mlb_res <- mlb_results %>%
   filter(Rk != "Rk") %>%
