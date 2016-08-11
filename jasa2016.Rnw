@@ -18,7 +18,7 @@
 
 \newcommand{\greg}[1]{\sethlcolor{yellow}\hl{[GM]: #1}}
 \newcommand{\ben}[1]{\sethlcolor{green}\hl{[BB]: #1}}
-%\newcommand{\mike}[1]{\sethlcolor{pink}\hl{[SJ]: #1}}
+\newcommand{\mike}[1]{\sethlcolor{cyan}\hl{[ML]: #1}}
 
 \def\balpha{\pmb{\alpha}}
 \def\bbeta{\pmb{\beta}}
@@ -49,7 +49,7 @@
 \begin{document}
 %\SweaveOpts{concordance=TRUE}
 
-\title{Cross-Sport Competitiveness}
+\title{A unified approach to understanding randomness in sport}
 %
 \author{
 Benjamin S. Baumer \\
@@ -100,13 +100,13 @@ While sporting leagues fail in practice to give us an infinite number of games, 
 
 Because of the differences in the way that games in each sport are structured, researchers who hope to contrast one league to another often focus on the one outcome common to all sports: won-loss ratio. Among other flaws, measuring team strength based only on wins and losses performs poorly in a small sample size, ignores the game's final score (which is known to be more predictive of future performance than won-loss ratio \citep{boulier2003predicting}), and is unduly impacted by, among other sources, fluctuations in league scheduling, injury to key players, and the general advantage of playing in a home arena.  
 
-Although more technical approaches for team strength estimation have also been developed, most of these have focused on a single sport. These approaches typically blend past game scores with game, team and player characteristics in a statistical model. Corresponding estimates of talent are often checked or calibrated by comparing out-of-sample estimated probabilities of wins and losses to observed outcomes. While excellent work has been done in this domain, such a process suffers from a few limitations. First, given the array of differences between sports, models built using one sport cannot generally be applied to another. Second, model-estimated probabilities rarely, if ever, outperform a simple benchmark: the implied probability from betting markets. In other words, even the most sophisticated statistical models are generally unable to predict games more accurately than simple models built on sports betting market data~\citep{harville1980predictions, stern1991probability}. Third, there is a notable absence of technical and interpretable cross-sport measurements to help us better understand league-level characteristics. That is, after accounting for league characteristics including schedule, home advantage, and season length, what are the inherent differences in the dispersion and evolution of team strength across sports? %\mike{'effect of randomness' seemed strange: this was the old sentence - That is, are there inherent differences in the effect of randomness across sports? Or are the observed differences in sports entirely a function of talent dispersion, length of schedule, etc.?}
+Although more technical approaches for team strength estimation have also been developed, most of these have focused on a single sport. These approaches typically blend past game scores with game, team and player characteristics in a statistical model. Corresponding estimates of talent are often checked or calibrated by comparing out-of-sample estimated probabilities of wins and losses to observed outcomes. While excellent work has been done in this domain, such a process suffers from a few limitations. First, given the array of differences between sports, models built using one sport cannot generally be applied to another. Second, model-estimated probabilities rarely, if ever, outperform a simple benchmark: the implied probability from betting markets. In other words, even the most sophisticated statistical models are generally unable to predict games more accurately than simple models built on sports betting market data~\citep{harville1980predictions, stern1991probability}. Third, there is a notable absence of technical and interpretable cross-sport measurements to help us better understand league-level characteristics. That is, after accounting for league characteristics including schedule, home advantage, and season length, what are the inherent differences in the dispersion and evolution of team strength across sports? \mike{'effect of randomness' seemed strange: this was the old sentence - That is, are there inherent differences in the effect of randomness across sports? Or are the observed differences in sports entirely a function of talent dispersion, length of schedule, etc.?}
 
 
 
-This manuscript aims to fill these voids. Instead of estimating team strengths within a single sport and using those estimates to generate estimated win probabilities, we work backwards. First, we assume, and work to validate, an assumption that betting market probabilities provide unbiased and low-variance estimates of the true probabilities of wins and losses in each game. Second, using the logit transform of those probabilities, we propose a modified Bayesian state-space model that captures implied team strength and variability. An advantage of this model is that, apart from a few user-defined inputs, it can be applied uniformly across leagues. Finally, by looking at posterior estimates of within and between season variability, as well as the overall dispersion in team strength estimates, we present unique league-level contrasts which, to this point, have been difficult to capture. As examples, we find that %\mike{fill in blanks with major findings here}. 
-Additionally, we estimate %\mike{fill in blanks with secondary findings here}.
-All together, our results better inform an understanding of the dispersion of both talent and randomness in sport. %\greg{This paper is awesome} \ben{:)}
+This manuscript aims to fill these voids. Instead of estimating team strengths within a single sport and using those estimates to generate estimated win probabilities, we work backwards. First, we assume, and work to validate, an assumption that betting market probabilities provide unbiased and low-variance estimates of the true probabilities of wins and losses in each game. Second, using the logit transform of those probabilities, we propose a modified Bayesian state-space model that captures implied team strength and variability. An advantage of this model is that, apart from a few user-defined inputs, it can be applied uniformly across leagues. Finally, by looking at posterior estimates of within and between season variability, as well as the overall dispersion in team strength estimates, we present unique league-level contrasts which, to this point, have been difficult to capture. As examples, we find that \mike{fill in blanks with major findings here}. 
+Additionally, we estimate \mike{fill in blanks with secondary findings here}.
+All together, our results better inform an understanding of the dispersion of both talent and randomness in sport. \greg{This paper is awesome} \ben{:)}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
