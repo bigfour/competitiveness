@@ -84,9 +84,9 @@ jagsModel <- function(data,
   }
 
 
-num_adapt <- 10
-num_adapt <- 20
-num_draws <- 200
+num_adapt <- 100
+num_adapt <- 2000
+num_draws <- 20000
 
 ## Runs JAGS in each league with constant HFA
 
