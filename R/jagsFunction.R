@@ -4,19 +4,7 @@ library(rjags)
 library(dplyr)
 load(file.path(root, "data", "bigfour.rda"))
 
-bigfour <- filter(bigfour, playoffs==0)
-
-test <- bigfour %>% filter(sport == "nfl") %>% mutate(bins = cut(p_home,breaks=25)) %>% group_by(bins) %>% summarise(pct = sum(home_win)/n(), n = n(), meanBin = mean(p_home))
-ggplot(test, aes(x = meanBin, y = pct)) + geom_point(aes(size = n)) + geom_smooth(aes(weight = n)) + geom_abline(intercept = 0, slope = 1)
-
-test <- bigfour %>% filter(sport == "mlb") %>% mutate(bins = cut(p_home,breaks=25)) %>% group_by(bins) %>% summarise(pct = sum(home_win)/n(), n = n(), meanBin = mean(p_home))
-ggplot(test, aes(x = meanBin, y = pct)) + geom_point(aes(size = n)) + geom_smooth(aes(weight = n)) + geom_abline(intercept = 0, slope = 1)
-
-test <- bigfour %>% filter(sport == "nhl") %>% mutate(bins = cut(p_home,breaks=25)) %>% group_by(bins) %>% summarise(pct = sum(home_win)/n(), n = n(), meanBin = mean(p_home))
-ggplot(test, aes(x = meanBin, y = pct)) + geom_point(aes(size = n)) + geom_smooth(aes(weight = n)) + geom_abline(intercept = 0, slope = 1)
-
-test <- bigfour %>% filter(sport == "nba") %>% mutate(bins = cut(p_home,breaks=25)) %>% group_by(bins) %>% summarise(pct = sum(home_win)/n(), n = n(), meanBin = mean(p_home))
-ggplot(test, aes(x = meanBin, y = pct)) + geom_point(aes(size = n)) + geom_smooth(aes(weight = n)) + geom_abline(intercept = 0, slope = 1)
+bigfour <- filter(bigfour, playoffs == 0)
 
 logit <- function(p){out <- log(p/(1-p));return(out)}
 

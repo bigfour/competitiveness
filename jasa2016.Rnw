@@ -327,7 +327,7 @@ load("data/bigfour.rda")
 library(dplyr)
 library(xtable)
 bigfour %>%
-  filter(season %in% 2005:2014) %>%
+  filter(season %in% 2005:2014, playoffs == 0) %>%
   group_by(sport) %>%
   summarise(N = n(), 
             earliest = as.character(min(gameDate)), 
@@ -346,6 +346,7 @@ As expected, the probabilities implied by the betting markets are unbiased and q
 
 <<betting, fig.height=10, fig.cap="Accuracy of probabilities implied by betting markets. We note that across all four major sports, the observed winning percentage accord with those implied by the betting markets. ">>=
 bigfour_summary <- bigfour %>%
+  filter(playoffs == 0) %>%
   group_by(sport) %>%
   summarize(N = n(), num_seasons = n_distinct(season), 
             earliest = min(gameDate), latest = max(gameDate),
@@ -354,19 +355,23 @@ bigfour_summary <- bigfour %>%
             prob_pct = sum(!is.na(p_home)) / n(), 
             home_win_prob = mean(p_home, na.rm = TRUE))
 bigfour_binned <- bigfour %>%
+  filter(playoffs == 0) %>%
   mutate(p_home_bin = round(p_home, 2)) %>%
   group_by(sport, p_home_bin) %>%
   summarize(N = n(), home_win_bin_pct = mean(home_win))
 library(ggplot2)
 markets_plot <- ggplot(data = bigfour, 
-                       aes(x = p_home, y = as.numeric(home_win), color = sport)) + 
+                       aes(x = p_home, y = as.numeric(home_win), 
+                           color = sport)) + 
   geom_point(alpha = 0.1) + 
   geom_point(data = bigfour_binned, 
              aes(x = p_home_bin, y = home_win_bin_pct, size = N), alpha = 0.5) + 
   geom_smooth() +
   geom_abline(slope = 1, intercept = 0, color = "black", lty = 2) + 
-  geom_hline(data = bigfour_summary, aes(yintercept = home_win_pct, color = sport), lty = 3) + 
-  geom_vline(data = bigfour_summary, aes(xintercept = home_win_prob, color = sport), lty = 3) + 
+  geom_hline(data = bigfour_summary, 
+             aes(yintercept = home_win_pct, color = sport), lty = 3) + 
+  geom_vline(data = bigfour_summary, 
+             aes(xintercept = home_win_prob, color = sport), lty = 3) + 
   coord_equal() + 
   scale_x_continuous("Betting Market Estimated Probability of Home Win", 
                      labels = scales::percent, limits = c(0,1)) + 
