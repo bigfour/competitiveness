@@ -1,0 +1,38 @@
+model { 
+for (i in 1:n)
+{
+  y[i]~dnorm(mu[i], sigma)
+  mu[i] <- alpha + inprod(beta[s[i],w[i],],x[i,])
+}
+
+
+for (j in 1:nTeams){
+beta[1,1,j] ~ dnorm(0, sigmabSeason)
+}
+
+for (www in 2:nWeeks){  
+for (j in 1:nTeams){
+beta[1,www,j] ~ dnorm(gammaWeek*beta[1,www-1,j], sigmab)
+}
+}
+
+for (sss in 2:10){
+for (j in 1:nTeams){
+beta[sss,1,j] ~ dnorm(gammaSeason*beta[sss-1,nWeeks,j], sigmabSeason)
+}
+
+for (www in 2:nWeeks){  
+for (j in 1:nTeams){
+beta[sss,www,j] ~ dnorm(gammaWeek*beta[sss,www-1,j], sigmab)
+}
+}
+}
+
+alpha ~ dnorm(0,0.0001)
+sigma ~ dgamma(0.0001,0.0001)
+sigmab ~ dgamma(0.0001,0.0001)
+sigmabSeason ~ dgamma(0.0001,0.0001)
+gammaWeek ~ dunif(0,2)
+gammaSeason ~ dunif(0,2)
+
+} 

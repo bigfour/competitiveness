@@ -1,16 +1,16 @@
 ---
-title: "Moneyline Data Wrangling"
-author: "Ben Baumer"
-date: "September 24, 2015"
+title: "Moneyline Data Wrangling Part II"
+author: "Greg Matthews & Mike Lopez"
+date: "June 24, 2016"
 output: html_document
 ---
 
 ```{r, message=FALSE}
 require(dplyr)
-mlb <- read.csv("~/Dropbox/competitiveness/Data/MLB-Data_moneyline.csv", stringsAsFactors = FALSE)
-nba <- read.csv("~/Dropbox/competitiveness/Data/NBA-Data_moneyline.csv", stringsAsFactors = FALSE)
-nfl <- read.csv("~/Dropbox/competitiveness/Data/NFL-Data_moneyline.csv", stringsAsFactors = FALSE)
-nhl <- read.csv("~/Dropbox/competitiveness/Data/NHL-Data_moneyline.csv", stringsAsFactors = FALSE)
+mlb <- read.csv("data/MLB-Data_moneyline.csv", stringsAsFactors = FALSE)
+nba <- read.csv("data/NBA-Data_moneyline.csv", stringsAsFactors = FALSE)
+nfl <- read.csv("data/NFL-Data_moneyline.csv", stringsAsFactors = FALSE)
+nhl <- read.csv("data/NHL-Data_moneyline.csv", stringsAsFactors = FALSE)
 ```
 
 Clean up the NHL data
@@ -96,8 +96,9 @@ Remove multiple lines for each game
 ```{r}
 games <- ds %>%
   group_by(home_team, gameTime) %>%
-  summarise(max_visitor_nss = max(visitor_nss))
-ds <- semi_join(ds, games, by = c("home_team", "gameTime", "visitor_nss" = "max_visitor_nss"))
+  summarise(min_visitor_nss = min(visitor_nss))
+ds <- semi_join(ds, games, by = c("home_team", "gameTime", "visitor_nss" = "min_visitor_nss"))
+ds <- filter(ds, visitor_nss < 1000)
 ```
 
 Still have multiple lines for some NHL games!
@@ -140,7 +141,7 @@ ds <- ds %>%
 # no tripleheaders
 ds <- filter(ds, is.na(dh) == TRUE | dh < 2)
 
-ds2 %>%
+ds %>%
   group_by(gameDate, home_team) %>%
   summarise(numGames = n()) %>%
   filter(numGames > 2)
@@ -152,9 +153,9 @@ Identify preseason and postseason games
 ds <- ds %>%
   # these could be more specific
   filter(!(sport == "mlb" & month(gameDate) < 4)) %>%
-  filter(!(sport == "nba" & month(gameDate) < 10 & month(gameDate) > 5)) %>%
+  filter(!(sport == "nba" & month(gameDate) < 10 & month(gameDate) > 6)) %>%
   filter(!(sport == "nfl" & month(gameDate) > 2 & month(gameDate) < 9)) %>%
-  filter(!(sport == "nhl" & month(gameDate) < 9 & month(gameDate) > 5))
+  filter(!(sport == "nhl" & month(gameDate) < 9 & month(gameDate) > 6))
 ```
 
 ```{r}
@@ -176,23 +177,40 @@ ds <- ds %>%
   mutate(vig = (prob_vis + prob_home) - 1) %>%
   mutate(p_vis = prob_vis / (prob_vis + prob_home)) %>%
   mutate(p_home = prob_home / (prob_vis + prob_home))
-# double-check
-test <- filter(ds, ml_vis > 0 & p_vis > 0.5)
-# bad data???
-test
 ```
+
+# double-check for bad data
+
+```{r}
+test <- filter(ds, ml_vis > 0 & p_vis > 0.5)
+test
+test$ml_vis
+
+test <- filter(ds, vig > 0.1)
+test
+test$ml_vis
+test$ml_home
+
+```
+
+Get rid of these problematic money lines 
+
+```{r}
+ds <- filter(ds, !ml_vis==56, !ml_home ==65)
+```
+
 
 Save the resulting data frame
 
 ```{r, eval=FALSE}
 mline <- ds
-save(mline, file = "Data/mline.rda", compress = "xz")
+save(mline, file = "data/mline.rda", compress = "xz")
 ```
 
 
 ```{r}
-load("Data/mline.rda")
-mlb_results <- read.csv("Data/MLB_results.csv")
+load("data/mline.rda")
+mlb_results <- read.csv("data/MLB_results.csv")
 require(stringr)
 mlb_res <- mlb_results %>%
   filter(Rk != "Rk") %>%

@@ -18,7 +18,7 @@
 
 \newcommand{\greg}[1]{\sethlcolor{yellow}\hl{[GM]: #1}}
 \newcommand{\ben}[1]{\sethlcolor{green}\hl{[BB]: #1}}
-%\newcommand{\mike}[1]{\sethlcolor{pink}\hl{[SJ]: #1}}
+\newcommand{\mike}[1]{\sethlcolor{cyan}\hl{[ML]: #1}}
 
 \def\balpha{\pmb{\alpha}}
 \def\bbeta{\pmb{\beta}}
@@ -49,7 +49,7 @@
 \begin{document}
 %\SweaveOpts{concordance=TRUE}
 
-\title{Cross-Sport Competitiveness}
+\title{A unified approach to understanding randomness in sport}
 %
 \author{
 Benjamin S. Baumer \\
@@ -67,6 +67,15 @@ Gregory J. Matthews\\
 Loyola University Chicago\\
 \texttt{gmatthews1@luc.edu}
 }
+
+
+<<echo=FALSE>>=
+source("config.R")
+library(knitr)
+opts_chunk$set(tidy = FALSE, highlight = TRUE, comment = NA, echo = FALSE,
+               prompt = FALSE, fig.width = 10, fig.height = 5, 
+               message = FALSE, warning = FALSE)
+@
 
 
 \maketitle
@@ -100,13 +109,13 @@ While sporting leagues fail in practice to give us an infinite number of games, 
 
 Because of the differences in the way that games in each sport are structured, researchers who hope to contrast one league to another often focus on the one outcome common to all sports: won-loss ratio. Among other flaws, measuring team strength based only on wins and losses performs poorly in a small sample size, ignores the game's final score (which is known to be more predictive of future performance than won-loss ratio \citep{boulier2003predicting}), and is unduly impacted by, among other sources, fluctuations in league scheduling, injury to key players, and the general advantage of playing in a home arena.  
 
-Although more technical approaches for team strength estimation have also been developed, most of these have focused on a single sport. These approaches typically blend past game scores with game, team and player characteristics in a statistical model. Corresponding estimates of talent are often checked or calibrated by comparing out-of-sample estimated probabilities of wins and losses to observed outcomes. While excellent work has been done in this domain, such a process suffers from a few limitations. First, given the array of differences between sports, models built using one sport cannot generally be applied to another. Second, model-estimated probabilities rarely, if ever, outperform a simple benchmark: the implied probability from betting markets. In other words, even the most sophisticated statistical models are generally unable to predict games more accurately than simple models built on sports betting market data~\citep{harville1980predictions, stern1991probability}. Third, there is a notable absence of technical and interpretable cross-sport measurements to help us better understand league-level characteristics. That is, after accounting for league characteristics including schedule, home advantage, and season length, what are the inherent differences in the dispersion and evolution of team strength across sports? %\mike{'effect of randomness' seemed strange: this was the old sentence - That is, are there inherent differences in the effect of randomness across sports? Or are the observed differences in sports entirely a function of talent dispersion, length of schedule, etc.?}
+Although more technical approaches for team strength estimation have also been developed, most of these have focused on a single sport. These approaches typically blend past game scores with game, team and player characteristics in a statistical model. Corresponding estimates of talent are often checked or calibrated by comparing out-of-sample estimated probabilities of wins and losses to observed outcomes. While excellent work has been done in this domain, such a process suffers from a few limitations. First, given the array of differences between sports, models built using one sport cannot generally be applied to another. Second, model-estimated probabilities rarely, if ever, outperform a simple benchmark: the implied probability from betting markets. In other words, even the most sophisticated statistical models are generally unable to predict games more accurately than simple models built on sports betting market data~\citep{harville1980predictions, stern1991probability}. Third, there is a notable absence of technical and interpretable cross-sport measurements to help us better understand league-level characteristics. That is, after accounting for league characteristics including schedule, home advantage, and season length, what are the inherent differences in the dispersion and evolution of team strength across sports? \mike{'effect of randomness' seemed strange: this was the old sentence - That is, are there inherent differences in the effect of randomness across sports? Or are the observed differences in sports entirely a function of talent dispersion, length of schedule, etc.?}
 
 
 
-This manuscript aims to fill these voids. Instead of estimating team strengths within a single sport and using those estimates to generate estimated win probabilities, we work backwards. First, we assume, and work to validate, an assumption that betting market probabilities provide unbiased and low-variance estimates of the true probabilities of wins and losses in each game. Second, using the logit transform of those probabilities, we propose a modified Bayesian state-space model that captures implied team strength and variability. An advantage of this model is that, apart from a few user-defined inputs, it can be applied uniformly across leagues. Finally, by looking at posterior estimates of within and between season variability, as well as the overall dispersion in team strength estimates, we present unique league-level contrasts which, to this point, have been difficult to capture. As examples, we find that %\mike{fill in blanks with major findings here}. 
-Additionally, we estimate %\mike{fill in blanks with secondary findings here}.
-All together, our results better inform an understanding of the dispersion of both talent and randomness in sport. %\greg{This paper is awesome} \ben{:)}
+This manuscript aims to fill these voids. Instead of estimating team strengths within a single sport and using those estimates to generate estimated win probabilities, we work backwards. First, we assume, and work to validate, an assumption that betting market probabilities provide unbiased and low-variance estimates of the true probabilities of wins and losses in each game. Second, using the logit transform of those probabilities, we propose a modified Bayesian state-space model that captures implied team strength and variability. An advantage of this model is that, apart from a few user-defined inputs, it can be applied uniformly across leagues. Finally, by looking at posterior estimates of within and between season variability, as well as the overall dispersion in team strength estimates, we present unique league-level contrasts which, to this point, have been difficult to capture. As examples, we find that \mike{fill in blanks with major findings here}. 
+Additionally, we estimate \mike{fill in blanks with secondary findings here}.
+All together, our results better inform an understanding of the dispersion of both talent and randomness in sport. \greg{This paper is awesome} \ben{:)}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -346,9 +355,85 @@ Simulate balanced versus unbalanced scheduling to understand how each league's s
 
 
 \section{Validation of betting market data}
+
+
+A summary of our data set is shown in Table~\ref{tab:bigfour}.
+
+<<message=FALSE, results='asis'>>=
+load("data/bigfour.rda")
+library(dplyr)
+library(xtable)
+bigfour %>%
+  filter(season %in% 2005:2014, playoffs == 0) %>%
+  group_by(sport) %>%
+  summarise(N = n(), 
+            earliest = as.character(min(gameDate)), 
+            latest = as.character(max(gameDate)),
+            num_teams = length(unique(setdiff(union(visitor_team, home_team), NA))), 
+            home_wp = sum(home_win, na.rm = TRUE) / sum(!is.na(home_win)),
+            N_bets = sum(!is.na(prob_home)), 
+            mean_home_p = mean(prob_home, na.rm = TRUE)) %>%
+  mutate(coverage = N_bets / N) %>%
+  xtable(caption = "Summary of cross-sport data. Note that we have perfect coverage (betting odds for every game) across all four major sports during the 2005--2014 regular seasons.", 
+         digits = 3, label = "tab:bigfour") %>%
+  print(include.rownames = FALSE)
+@
+
+As expected, the probabilities implied by the betting markets are unbiased and quite accurate. Were this not the case, there would be easy arbitrage opportunities. 
+
+<<betting, fig.height=10, fig.cap="Accuracy of probabilities implied by betting markets. We note that across all four major sports, the observed winning percentage accord with those implied by the betting markets. ">>=
+bigfour_summary <- bigfour %>%
+  filter(playoffs == 0) %>%
+  group_by(sport) %>%
+  summarize(N = n(), num_seasons = n_distinct(season), 
+            earliest = min(gameDate), latest = max(gameDate),
+            home_win_pct = sum(home_win) / n(), 
+            prob_missing = sum(is.na(p_home)), 
+            prob_pct = sum(!is.na(p_home)) / n(), 
+            home_win_prob = mean(p_home, na.rm = TRUE))
+bigfour_binned <- bigfour %>%
+  filter(playoffs == 0) %>%
+  mutate(p_home_bin = round(p_home, 2)) %>%
+  group_by(sport, p_home_bin) %>%
+  summarize(N = n(), home_win_bin_pct = mean(home_win))
+library(ggplot2)
+markets_plot <- ggplot(data = bigfour, 
+                       aes(x = p_home, y = as.numeric(home_win), 
+                           color = sport)) + 
+  geom_point(alpha = 0.1) + 
+  geom_point(data = bigfour_binned, 
+             aes(x = p_home_bin, y = home_win_bin_pct, size = N), alpha = 0.5) + 
+  geom_smooth() +
+  geom_abline(slope = 1, intercept = 0, color = "black", lty = 2) + 
+  geom_hline(data = bigfour_summary, 
+             aes(yintercept = home_win_pct, color = sport), lty = 3) + 
+  geom_vline(data = bigfour_summary, 
+             aes(xintercept = home_win_prob, color = sport), lty = 3) + 
+  coord_equal() + 
+  scale_x_continuous("Betting Market Estimated Probability of Home Win", 
+                     labels = scales::percent, limits = c(0,1)) + 
+  scale_y_continuous("Observed Probability of Home Win", 
+                     labels = scales::percent, limits = c(0,1)) + 
+  facet_wrap(~sport)
+#  facet_grid(sport ~ season)
+markets_plot
+# ggsave(filename = "figure/betting_markets.pdf", plot = markets_plot, width = 10, height = 10)
+@
+
+
+
 \section{Bayesian state-space model}
 \section{Results}
+
+\input{results}
+
+<<eval=FALSE>>=
+devtools::install_github("beanumber/teamcolors")
+library(teamcolors)
+@
+
 \subsection{Variability across sports}
+
 \subsection{Uncertainty of postseason tournaments}
 \section{Conclusion}
 \subsection{Summary}
@@ -420,7 +505,7 @@ Gini coefficient as one measure of within season inequality of league outcomes, 
 
 \vspace{2cm}
 
-``Cross-Sport Competitiveness"}}
+``A unified approach to understanding randomness in sport"}}
 \end{center}
 
 \newpage
@@ -444,17 +529,3 @@ Gini coefficient as one measure of within season inequality of league outcomes, 
 
 \end{document}
 
-
-
-<<message=FALSE>>=
-load("data/bigfour.rda")
-require(dplyr)
-bigfour %>%
-  group_by(sport) %>%
-  summarize(N = n(), earliest = min(gameDate), latest = max(gameDate))
-@
-
-<<>>=
-devtools::install_github("beanumber/teamcolors")
-library(teamcolors)
-@
