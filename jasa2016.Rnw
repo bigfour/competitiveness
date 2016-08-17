@@ -182,7 +182,7 @@ where $\bf{G}$ is the matrix that transforms $\bf{\theta_{s,g_{s}}}$ to $\bf{\th
 
 The model parameters also vary from week to week as follows: 
 $$
-\theta_{(s,k+1)} | \gamma_{week}, \bf{\theta}_{s,k}, \phi, \omega_{week} \sim N (\gamma_{week}\bf{G}\bf{\theta}_{s,k},\phi\omega_{week}^{-1}I_{t})
+\theta_{(s,k+1)} | \gamma_{week}, \bf{\theta}_{s,k}, \phi, \omega_{week} \sim N (\gamma_{week}\bf{G}\bf{\theta}_{s,k},)\phi\omega_{week})^{-1}I_{t})
 $$
 
 %$Y_{ij}$ is the number of times that team $i$ beats team $j$ and $p_{ij}$ is the probability that team $i$ beats team $j$.  
@@ -226,22 +226,21 @@ In addition to being used as standards by which to judge predictive accuracy, be
 
 
 
-\subsection{Next steps/model fitting}
-
-Our model: 
+\subsection{Model Fitting}
 %We need an index for the sports?  What a good sports index?  q? 
-%$t_q$ is the number of teams in the $q$-th sports league?  This notation is getting crazy.  
+%$T_q$ is the number of teams in the $q$-th sports league?  This notation is getting crazy.  
 %s season, k week, home team i, away team j, t_q number of teams in league, n_(s,k) number of games in week k of season s.
+For each of the 4 sports considered here (NFL, MLB, NHL, NBA), the following model was fit with sport indexed by $q \in \{NFL, MLB, NHL, NBA\}$.
 
-Let $p_{(s,k)ij}$ correspond to the probability that team $i$ will beat team $j$ in season $s$ during week $k$.  These quantities are estimated to give $\hat{p}_{(s,k)ij}$ using the implied odds of the betting market given the money line odds for a game where team $i$ plays team $j$ in week $k$ of season $s$.  
+Let $p_{(q,s,k)ij}$ correspond to the probability that team $i$ will beat team $j$ from sports league $q$ in season $s$ during week $k$.  Further, let ${\bf p}_{(q,s,k)}$ represent the vector of length $g_{(q,s,k)}$ (i.e. the number of games in week $k$ of season $s$ in league $q$) containing all the probabilities that team $i$ will beat team $j$ in league $q$ in week $k$ of season $s$.  These quantities are estimated to give $\hat{p}_{(q,s,k)ij}$ using the implied odds of the betting market given the money line odds for a game where team $i$ plays team $j$ from league $q$ in week $k$ of season $s$.  
 
 We then fit the model
 
 $$
-logit(p_{(s,k)ij}) \sim N(\bf{\theta_{(s,k)}}\bf{X}_{s,k} + \bf{\alpha}\bf{Z}_{s,k}, \tau^{2}_{error}\bf{I}_{g_{(s,k)}})
+logit(p_{(q,s,k)}) \sim N(\bf{\theta_{(q,s,k)}}\bf{X}_{q,s,k} + \alpha_{q0}\bf{J}_{g_{q,s,k}} + \bf{\alpha}_{q}\bf{Z}_{q,s,k}, \tau^{2}_{q,error}\bf{I}_{g_{(q,s,k)}})
 $$
 
-where $\bf{\theta_{(s,k)}}$ is a vector of length $t$ containing the team strength parameters in season $s$ during week $k$ and $\bf{\alpha}$ is a vector of length $t$ containing home field advantage parameters that do not vary over time (i.e. HFA is assumed to be constant for a team over weeks and seasons). $\bf{X}_{s,k}$ and $\bf{Z}_{s,k}$ are both of dimension $g_{(s,k)}$ (i.e. the number of games in season $s$ of week $k$.) by $t$.   The matrix $\bf{X}_{s,k}$ contains the values 1, 0, and -1 where for a given row (i.e. one game) the value of $i$-th column in that row is a 1/-1 if the $i$-th team played at home/away in the given game and 0 otherwise.  $\bf{Z}_{s,k}$ is a matrix containing a 1 in the $i$-th column if the $i$-th team played the game corresponding to that row at home and 0 otherwise.  Finally, $\tau^{2}_{error} =  \frac{1}{\sigma^{2}_{error}}$ is the precision and $\bf{I}_{n_{(s,k)}}$ is an identity matrix with  dimension ${n_{(s,k)}}$ by ${n_{(s,k)}}$.  
+$\bf{\theta_{(q,s,k)}}$ is a vector of length $t_{q}$, where $t_{q}$ is the number of teams in league $q$, containing the team strength parameters in season $s$ during week $k$, $\alpha_{q0}$ is the overall home field advantage parameter for sports league $q$, and $\bf{\alpha}_{q}$ is a vector of length $T_{q}$ containing team specific home field advantage parameters for league $q$ that do not vary over time (i.e. HFA is assumed to be constant for a team over weeks and seasons). $\bf{X}_{q,s,k}$ and $\bf{Z}_{q,s,k}$ are both of dimension $g_{(q,s,k)}$, the number of games in league $q$ during week $k$ of season $s$, by $t_{q}$.   The matrix $\bf{X}_{q,s,k}$ contains the values 1, 0, and -1 where for a given row (i.e. one game) the value of $i$-th column in that row is a 1/-1 if the $i$-th team played at home/away in the given game and 0 otherwise.  $\bf{Z}_{q,s,k}$ is a matrix containing a 1 in the $i$-th column if the $i$-th team played the game corresponding to that row at home and 0 otherwise.  Finally, $\tau^{2}_{q,error} =  \frac{1}{\sigma^{2}_{q,error}}$ is the precision, $\bf{J}_{g_{q,s,k}}$ is a column vector of length $g_{q,s,k}$ containing all 1's,and $\bf{I}_{g_{(q,s,k)}}$ is an identity matrix with dimension ${g_{(q,s,k)}}$ by ${g_{(q,s,k)}}$.  
 
 Similarly to \citep{glickman1998state}, we allow the strength parameters of the teams to vary from week to week and from season to season.  
 
@@ -250,19 +249,57 @@ $$
 $$
 
 $$
-\theta_{(s,k+1)} | \gamma_{week}, \bf{\theta_{s,k}}, \tau^{2}_{week},  \sim N (\gamma_{seas}\bf{G}\bf{\theta}_{(s,k)},(\tau^{2}_{week})I_{t})
+\theta_{(s,k+1)} | \gamma_{week}, \bf{\theta_{s,k}}, \tau^{2}_{week},  \sim N (\gamma_{week}\bf{G}\bf{\theta}_{(s,k)},(\tau^{2}_{week})I_{t})
 $$
 
 We depart from \citep{glickman1998state} here in our specification of precision.  Here, we estimate three separate parameters, $\tau^{2}_{error}$, $\tau^{2}_{season}$, and $\tau^{2}_{week}$.  This allows these three parameters to be estimated separately.  
 
-PUT PRIORS FOR EVERYTHING HERE.
+
+
+The team strength parameters for week $k=1$ and season $s=1$ have a prior of
 $$
-\theta \sim 
-\alpha \sim
-\gamma_{week}
-\gamma_{seas}
-\tau 
+\theta_{(1,1)i}\sim N(0, \tau^{2}_{season})
 $$
+for $i$ in $1, \cdots, t$.  
+
+The team specific home field advantage parameter has a similar prior, namely, 
+$$
+\alpha_{i}\sim N(0, \tau^{2}_{\alpha})
+$$
+for $i$ in $1, \cdots, t$.  
+
+Finally, we assume the following prior distributions: 
+
+$$
+\tau^{2}_{error}\sim \Gamma(0.0001,0.0001)
+$$
+
+$$
+\tau^{2}_{season}\sim \Gamma(0.0001,0.0001)
+$$
+
+$$
+\tau^{2}_{week}\sim \Gamma(0.0001,0.0001)
+$$
+
+$$
+\tau^{2}_{\alpha}\sim \Gamma(0.0001,0.0001)
+$$
+
+$$
+\alpha\sim N(0,10000)
+$$
+
+$$
+\gamma_{week}\sim Uniform(0,2)
+$$
+
+$$
+\gamma_{season}\sim Uniform(0,2)
+$$
+
+
+
 
 Model assessment using DIC \citep{koopmeiners2012comparison}
 
