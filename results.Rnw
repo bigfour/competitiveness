@@ -16,22 +16,80 @@ get_sport <- function(sport) {
   message(paste("reading", sport, "data..."))
   load(file.path(mcmc_dir, paste0(sport, "_7_23_constantHFA.RData")))
   out <- data.frame(
-    gamma_w = 1/z$sigmab[,,1],
-    gamma_s = 1/z$sigmabSeason[,,1]
+    sigma_w = 1/z$sigmab[,,1],
+    sigma_s = 1/z$sigmabSeason[,,1],
+    gamma_w = z$gammaWeek[,,1],
+    gamma_s = z$gammaSeason[,,1]
   ) %>%
     mutate(sport = sport)
+  beta <- z$beta
   rm(z)
-  return(out)
+  return(list(out = out , beta = beta))
 }
 
-sigmas <- lapply(sports[1:3], get_sport) %>% bind_rows()
+#Your code is so much better written than mine that I feel physical pain.  
+dat <- lapply(sports[1:4], get_sport) 
+sigmas <- lapply(dat,function(x){return(x[["out"]])})  %>% bind_rows()
+@
+
+<<>>=
+devtools::install_github("beanumber/teamcolors")
+library(ggplot2)
+library(teamcolors)
+
+betas <- lapply(dat,function(x){return(x[["beta"]])})  
+rm(dat)
+names(betas) <-  sports
+
+makePrettySportPlot <- function(sport){
+sportcolors <- teamcolors[teamcolors$sport==sport,]
+#Our data has the St. Louis Rams.  The colors has LA Rams.  
+sportcolors$name[sportcolors$name=="Los Angeles Rams"]<-"St. Louis Rams"
+sportcolors <- sportcolors[order(sportcolors$name),]
+
+#Season, week, teams, iterations, chains
+out <- apply(betas[[sport]],c(1,2,3),mean)
+
+dims <- dim(betas[[sport]])
+names(dims) <- c("nseasons","nweeks","nteams","iteration","chain")
+
+getbetas <- function(i){
+out <- data.frame(betas = as.vector(t(out[,,i])), team = sportcolors$name[i], week = rep(1:dims["nweeks"],dims["nseasons"]), season = rep(1:dims["nseasons"],each=dims["nweeks"]) , cumweek = c(1:(dims["nweeks"]*dims["nseasons"])))
+}
+
+datbetas2 <- datbetas <- lapply(c(1:dims["nteams"]),getbetas) %>% bind_rows()
+
+gg <- ggplot()  + ggtitle(toupper(sport)) + xlab("Year")
+for (i in 1:nrow(sportcolors)){
+gg <- gg + geom_line(data = subset(datbetas,team==sportcolors$name[i]),aes(x = cumweek, y = betas),linetype=1,lwd=3,colour=sportcolors$primary[i]) 
+gg <- gg + geom_line(data = subset(datbetas,team==sportcolors$name[i]),aes(x = cumweek, y = betas),linetype=2,lwd=3,colour=sportcolors$secondary[i]) 
+}
+gg <- gg + scale_x_continuous(breaks = seq(1,nrow(subset(datbetas,team==sportcolors$name[i])),dims["nweeks"]), labels = c(2006:2015))
+
+return(gg)
+}
+
+ggmlb <- makePrettySportPlot("mlb")
+ggnfl <- makePrettySportPlot("nfl")
+ggnhl <- makePrettySportPlot("nhl")
+ggnba <- makePrettySportPlot("nba")
+
+ggmlb
+ggnfl
+ggnhl
+ggnba
 @
 
 
-<<contour, fig.cap="Contour plot of the season-to-season and week-to-week variability across all four major sports.">>=
+
+<<contourSigma, fig.cap="Contour plot of the season-to-season and week-to-week variability across all four major sports.">>=
+ggplot(sigmas, aes(x = sigma_w, y = sigma_s, color = sport)) + 
+  geom_density_2d() + geom_point(alpha = 0.1)
+@
+
+<<contourGamma, fig.cap="Contour plot of the season-to-season and week-to-week auto-regressive parameter across all four major sports.">>=
 library(ggplot2)
 ggplot(sigmas, aes(x = gamma_w, y = gamma_s, color = sport)) + 
   geom_density_2d() + geom_point(alpha = 0.1)
 @
-
 
