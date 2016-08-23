@@ -8,6 +8,9 @@ for (i in 1:n)
 
 for (j in 1:nTeams){
 beta[1,1,j] ~ dnorm(0, sigmabSeason)
+}
+
+for (j in 1:nHFAs){
 alphaInd[j] ~ dnorm(0, sigmaaInd)
 }
 
