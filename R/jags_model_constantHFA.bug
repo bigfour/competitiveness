@@ -16,7 +16,7 @@ beta[1,www,j] ~ dnorm(gammaWeek*beta[1,www-1,j], sigmab)
 }
 }
 
-for (sss in 2:10){
+for (sss in 2:nSeas){
 for (j in 1:nTeams){
 beta[sss,1,j] ~ dnorm(gammaSeason*beta[sss-1,nWeeks,j], sigmabSeason)
 }

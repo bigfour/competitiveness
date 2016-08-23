@@ -44,6 +44,7 @@ jagsModel <- function(data,
   #Defining the number of things
   nTeams <- length(Teams)
   nWeeks <- max(test$week)
+  nSeas <- max(s)
   n <- nrow(test)
   
   #Defining the design matrix
@@ -73,7 +74,8 @@ jagsModel <- function(data,
   
   #bugFile <- file.path("~/Dropbox/Compete/R/jags_model_TeamHFA.bug")
   jags<-jags.model(bugFile,data=list('y'=y,'x'=x, 's'=s, 'w' = w, 'n' = n, 'z' = z, 'nTeams' = nTeams, 
-                                     'nWeeks' = nWeeks, 'nHFAs' = nHFAs), n.chains=n.chains, n.adapt=n.adapt)
+                                     'nWeeks' = nWeeks, 'nHFAs' = nHFAs, 'nSeas' = nSeas), 
+                                      n.chains=n.chains, n.adapt=n.adapt)
   
   update(jags, n.update)
   dic.pD <- dic.samples(jags, 1000, type = "pD") # Deviance Information Criterion
