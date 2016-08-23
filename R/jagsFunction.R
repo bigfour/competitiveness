@@ -17,8 +17,8 @@ jagsModel <- function(data,
                       n.chains = 3, 
                       bugFile = bugFile, 
                       posteriorDraws = c('alpha','beta','sigma','sigmab',
-                      'sigmabSeason','gammaWeek','gammaSeason')){
-
+                                         'sigmabSeason','gammaWeek','gammaSeason')){
+  
   
   test <- subset(bigfour, sport == league & (season >= 2005 & season <= 2014))
   greg <- as.Date(gsub(" 0:00","",test$event_date),"%m/%d/%Y")
@@ -68,17 +68,20 @@ jagsModel <- function(data,
   if (sport == "nhl") {
     z[test$season < 2012 & test$home_team == "Winnipeg Jets"] <- max(z) + 1}
   
+  nHFAs <- max(z)
   
+  
+  #bugFile <- file.path("~/Dropbox/Compete/R/jags_model_TeamHFA.bug")
   jags<-jags.model(bugFile,data=list('y'=y,'x'=x, 's'=s, 'w' = w, 'n' = n, 'z' = z, 'nTeams' = nTeams, 
-         'nWeeks' = nWeeks), n.chains=n.chains, n.adapt=n.adapt)
-
+                                     'nWeeks' = nWeeks, 'nHFAs' = nHFAs), n.chains=n.chains, n.adapt=n.adapt)
+  
   update(jags, n.update)
   dic.pD <- dic.samples(jags, 1000, type = "pD") # Deviance Information Criterion
   #dic.popt <- dic.samples(jags, 100, type = "popt") # Penalized expected deviance
   z<-jags.samples(jags,posteriorDraws,n.draws, thin = thin)
   z$dic <- dic.pD
   return(z)
-  }
+}
 
 
 num_adapt <- 100
@@ -116,4 +119,3 @@ for (league in leagues) {
 
 
 
-  
