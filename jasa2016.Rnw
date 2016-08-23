@@ -48,6 +48,7 @@
 
 \begin{document}
 %\SweaveOpts{concordance=TRUE}
+%\SweaveOpts{concordance=TRUE}
 
 \title{A unified approach to understanding randomness in sport}
 %
@@ -67,7 +68,6 @@ Gregory J. Matthews\\
 Loyola University Chicago\\
 \texttt{gmatthews1@luc.edu}
 }
-
 
 <<echo=FALSE>>=
 source("config.R")
