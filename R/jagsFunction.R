@@ -2,7 +2,7 @@ source("config.R")
 library(ggplot2)
 library(rjags)
 library(dplyr)
-load(file.path(root, "data", "bigfour.rda"))
+load(file.path(root, "data", "bigfourGM.rda"))
 
 bigfour <- filter(bigfour, playoffs == 0)
 
@@ -58,6 +58,15 @@ jagsModel <- function(data,
   z <- apply(x,1,function(x){which(x==1)})
   #z<-x
   #z[z==(-1)]<-0
+  
+  #HFA changes: create a new term for old arena's 
+  ### Seattle to OKC
+  if (sport == "nba") {
+    z[test$season < 2009 & test$home_team == "Oklahoma City Thunder"] <- max(z) + 1}
+  
+  ### Atlanta to Winnipeg
+  if (sport == "nhl") {
+    z[test$season < 2012 & test$home_team == "Winnipeg Jets"] <- max(z) + 1}
   
   
   jags<-jags.model(bugFile,data=list('y'=y,'x'=x, 's'=s, 'w' = w, 'n' = n, 'z' = z, 'nTeams' = nTeams, 
