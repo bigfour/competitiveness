@@ -72,7 +72,7 @@ jagsModel <- function(data,
   nHFAs <- max(z)
   
   
-  #bugFile <- file.path("~/Dropbox/Compete/R/jags_model_TeamHFA.bug")
+  #bugFile <- file.path("R/jags_model_TeamHFA.bug")
   jags<-jags.model(bugFile,data=list('y'=y,'x'=x, 's'=s, 'w' = w, 'n' = n, 'z' = z, 'nTeams' = nTeams, 
                                      'nWeeks' = nWeeks, 'nHFAs' = nHFAs, 'nSeas' = nSeas), 
                                       n.chains=n.chains, n.adapt=n.adapt)
