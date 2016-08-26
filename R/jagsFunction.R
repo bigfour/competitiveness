@@ -79,7 +79,7 @@ jagsModel <- function(data,
                                       n.chains=n.chains, n.adapt=n.adapt)
   
   update(jags, n.update)
-  dic.pD <- dic.samples(jags, 1000, type = "pD") # Deviance Information Criterion
+  dic.pD <- dic.samples(jags, 100, type = "pD") # Deviance Information Criterion
   #dic.popt <- dic.samples(jags, 100, type = "popt") # Penalized expected deviance
   z<-jags.samples(jags,posteriorDraws,n.draws, thin = thin)
   z$dic <- dic.pD
@@ -92,11 +92,13 @@ num_update <- 200
 num_draws <- 200
 
 ## Runs JAGS in each league with constant HFA
+## Note: update DIC to use more than 100 samples
+
 
 leagues <- c("nba", "nhl")
 for (league in leagues) {
   print(league)
-  bugFile <- file.path(root, "R/jags_model_constantHFA.bug")
+  bugFile <- file.path("R/jags_model_constantHFA.bug")
   posteriorDraws = c('alpha','beta','sigma','sigmab',
                      'sigmabSeason','gammaWeek','gammaSeason')
   z<-jagsModel(data=bigfour, league = league, bugFile = bugFile, posteriorDraws = posteriorDraws,
@@ -110,7 +112,7 @@ for (league in leagues) {
 leagues <- c("nba", "nhl")
 for (league in leagues) {
   print(league)
-  bugFile <- file.path(root, "R/jags_model_TeamHFA.bug")
+  bugFile <- file.path("R/jags_model_TeamHFA.bug")
   posteriorDraws = c('alpha','beta','sigma','sigmab',
                      'sigmabSeason','gammaWeek','gammaSeason', 'alphaInd', 'sigmaaInd')
   z<-jagsModel(data=bigfour, league = league, bugFile = bugFile, posteriorDraws = posteriorDraws,
