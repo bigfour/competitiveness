@@ -73,6 +73,7 @@ jagsModel <- function(data,
   
   
   #bugFile <- file.path("R/jags_model_TeamHFA.bug")
+  #bugFile <- file.path("R/jags_model_constantHFA.bug")
   jags<-jags.model(bugFile,data=list('y'=y,'x'=x, 's'=s, 'w' = w, 'n' = n, 'z' = z, 'nTeams' = nTeams, 
                                      'nWeeks' = nWeeks, 'nHFAs' = nHFAs, 'nSeas' = nSeas), 
                                       n.chains=n.chains, n.adapt=n.adapt)
@@ -87,34 +88,34 @@ jagsModel <- function(data,
 
 
 num_adapt <- 100
-num_adapt <- 2000
-num_draws <- 20000
+num_update <- 200
+num_draws <- 200
 
 ## Runs JAGS in each league with constant HFA
 
-leagues <- c("nfl", "mlb", "nba", "nhl")
+leagues <- c("nba", "nhl")
 for (league in leagues) {
   print(league)
   bugFile <- file.path(root, "R/jags_model_constantHFA.bug")
   posteriorDraws = c('alpha','beta','sigma','sigmab',
                      'sigmabSeason','gammaWeek','gammaSeason')
   z<-jagsModel(data=bigfour, league = league, bugFile = bugFile, posteriorDraws = posteriorDraws,
-               n.adapt = num_adapt, n.update = num_adapt, n.draws = num_draws, n.chains = 3, thin = 5)
-  filename <- paste0(mcmc_dir, "/", league, "_7_23_constantHFA.RData")
+               n.adapt = num_adapt, n.update = num_update, n.draws = num_draws, n.chains = 3, thin = 5)
+  filename <- paste0(mcmc_dir, "/", league, "_8_23_constantHFA.RData")
   save(z, file = filename, compress = "xz")
 }  
 
 
 ## Runs JAGS in each league with team-varying HFA (partial pooling)
-leagues <- c("nfl", "mlb", "nba", "nhl")
+leagues <- c("nba", "nhl")
 for (league in leagues) {
   print(league)
   bugFile <- file.path(root, "R/jags_model_TeamHFA.bug")
   posteriorDraws = c('alpha','beta','sigma','sigmab',
                      'sigmabSeason','gammaWeek','gammaSeason', 'alphaInd', 'sigmaaInd')
   z<-jagsModel(data=bigfour, league = league, bugFile = bugFile, posteriorDraws = posteriorDraws,
-               n.adapt = num_adapt, n.update = num_adapt, n.draws = num_draws, n.chains = 3, thin = 5)
-  filename <- paste0(mcmc_dir, "/", league, "_7_23_teamHFA.RData")
+               n.adapt = num_adapt, n.update = num_update, n.draws = num_draws, n.chains = 3, thin = 5)
+  filename <- paste0(mcmc_dir, "/", league, "_8_23_teamHFA.RData")
   save(z, file = filename, compress = "xz")
 }  
 
