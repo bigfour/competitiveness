@@ -1,0 +1,274 @@
+"","first.seed","second.seed","season","sport","first.team","second.team","better.winP"
+"1",1,2,2005,"mlb","New York Yankees","Boston Red Sox",0.5936
+"2",1,3,2005,"mlb","New York Yankees","St Louis Cardinals",0.6488
+"3",1,4,2005,"mlb","New York Yankees","Cleveland Indians",0.6517
+"4",1,5,2005,"mlb","New York Yankees","Los Angeles Angels",0.6492
+"5",1,6,2005,"mlb","New York Yankees","Atlanta Braves",0.6715
+"6",1,7,2005,"mlb","New York Yankees","Oakland Athletics",0.6768
+"7",1,8,2005,"mlb","New York Yankees","Miami Marlins",0.6847
+"8",1,2,2006,"mlb","New York Yankees","Detroit Tigers",0.608
+"9",1,3,2006,"mlb","New York Yankees","Los Angeles Angels",0.6126
+"10",1,4,2006,"mlb","New York Yankees","Minnesota Twins",0.6205
+"11",1,5,2006,"mlb","New York Yankees","Chicago White Sox",0.6173
+"12",1,6,2006,"mlb","New York Yankees","Philadelphia Phillies",0.6279
+"13",1,7,2006,"mlb","New York Yankees","Toronto Blue Jays",0.6422
+"14",1,8,2006,"mlb","New York Yankees","Oakland Athletics",0.6505
+"15",1,2,2007,"mlb","New York Yankees","Boston Red Sox",0.5984
+"16",1,3,2007,"mlb","New York Yankees","Los Angeles Angels",0.619
+"17",1,4,2007,"mlb","New York Yankees","Cleveland Indians",0.6426
+"18",1,5,2007,"mlb","New York Yankees","New York Mets",0.6463
+"19",1,6,2007,"mlb","New York Yankees","Detroit Tigers",0.6811
+"20",1,7,2007,"mlb","New York Yankees","Atlanta Braves",0.6832
+"21",1,8,2007,"mlb","New York Yankees","Toronto Blue Jays",0.6857
+"22",1,2,2008,"mlb","Boston Red Sox","New York Yankees",0.5615
+"23",1,3,2008,"mlb","Boston Red Sox","New York Mets",0.5623
+"24",1,4,2008,"mlb","Boston Red Sox","Minnesota Twins",0.5821
+"25",1,5,2008,"mlb","Boston Red Sox","Tampa Bay Rays",0.5919
+"26",1,6,2008,"mlb","Boston Red Sox","Philadelphia Phillies",0.5787
+"27",1,7,2008,"mlb","Boston Red Sox","Chicago Cubs",0.5845
+"28",1,8,2008,"mlb","Boston Red Sox","Toronto Blue Jays",0.601
+"29",1,2,2009,"mlb","New York Yankees","Boston Red Sox",0.5766
+"30",1,3,2009,"mlb","New York Yankees","Philadelphia Phillies",0.591
+"31",1,4,2009,"mlb","New York Yankees","Los Angeles Angels",0.6164
+"32",1,5,2009,"mlb","New York Yankees","Tampa Bay Rays",0.6244
+"33",1,6,2009,"mlb","New York Yankees","St Louis Cardinals",0.617
+"34",1,7,2009,"mlb","New York Yankees","Los Angeles Dodgers",0.6304
+"35",1,8,2009,"mlb","New York Yankees","Atlanta Braves",0.6325
+"36",1,2,2010,"mlb","New York Yankees","Philadelphia Phillies",0.5531
+"37",1,3,2010,"mlb","New York Yankees","Tampa Bay Rays",0.5613
+"38",1,4,2010,"mlb","New York Yankees","Boston Red Sox",0.5934
+"39",1,5,2010,"mlb","New York Yankees","Atlanta Braves",0.5893
+"40",1,6,2010,"mlb","New York Yankees","Texas Rangers",0.6228
+"41",1,7,2010,"mlb","New York Yankees","Colorado Rockies",0.6432
+"42",1,8,2010,"mlb","New York Yankees","St Louis Cardinals",0.6603
+"43",1,2,2011,"mlb","Philadelphia Phillies","Texas Rangers",0.5299
+"44",1,3,2011,"mlb","Philadelphia Phillies","Boston Red Sox",0.5232
+"45",1,4,2011,"mlb","Philadelphia Phillies","Tampa Bay Rays",0.5469
+"46",1,5,2011,"mlb","Philadelphia Phillies","New York Yankees",0.5834
+"47",1,6,2011,"mlb","Philadelphia Phillies","Milwaukee Brewers",0.6107
+"48",1,7,2011,"mlb","Philadelphia Phillies","St Louis Cardinals",0.6163
+"49",1,8,2011,"mlb","Philadelphia Phillies","Detroit Tigers",0.6291
+"50",1,2,2012,"mlb","New York Yankees","Los Angeles Angels",0.5113
+"51",1,3,2012,"mlb","New York Yankees","Texas Rangers",0.528
+"52",1,4,2012,"mlb","New York Yankees","Detroit Tigers",0.5337
+"53",1,5,2012,"mlb","New York Yankees","Tampa Bay Rays",0.546
+"54",1,6,2012,"mlb","New York Yankees","St Louis Cardinals",0.6017
+"55",1,7,2012,"mlb","New York Yankees","Washington Nationals",0.6063
+"56",1,8,2012,"mlb","New York Yankees","Cincinnati Reds",0.6116
+"57",1,2,2013,"mlb","Detroit Tigers","Tampa Bay Rays",0.5469
+"58",1,3,2013,"mlb","Detroit Tigers","Texas Rangers",0.5667
+"59",1,4,2013,"mlb","Detroit Tigers","Boston Red Sox",0.566
+"60",1,5,2013,"mlb","Detroit Tigers","St Louis Cardinals",0.5901
+"61",1,6,2013,"mlb","Detroit Tigers","Cincinnati Reds",0.5897
+"62",1,7,2013,"mlb","Detroit Tigers","Los Angeles Dodgers",0.5962
+"63",1,8,2013,"mlb","Detroit Tigers","Oakland Athletics",0.6047
+"64",1,2,2014,"mlb","Oakland Athletics","Seattle Mariners",0.5615
+"65",1,3,2014,"mlb","Oakland Athletics","Washington Nationals",0.5692
+"66",1,4,2014,"mlb","Oakland Athletics","Los Angeles Dodgers",0.595
+"67",1,5,2014,"mlb","Oakland Athletics","Detroit Tigers",0.5978
+"68",1,6,2014,"mlb","Oakland Athletics","Pittsburgh Pirates",0.6174
+"69",1,7,2014,"mlb","Oakland Athletics","Los Angeles Angels",0.6156
+"70",1,8,2014,"mlb","Oakland Athletics","Kansas City Royals",0.6179
+"71",1,2,2005,"nba","Phoenix Suns","Dallas Mavericks",0.6366
+"72",1,3,2005,"nba","Phoenix Suns","Miami Heat",0.7423
+"73",1,4,2005,"nba","Phoenix Suns","Detroit Pistons",0.7678
+"74",1,5,2005,"nba","Phoenix Suns","Houston Rockets",0.7744
+"75",1,6,2005,"nba","Phoenix Suns","San Antonio Spurs",0.7829
+"76",1,7,2005,"nba","Phoenix Suns","Denver Nuggets",0.7975
+"77",1,8,2005,"nba","Phoenix Suns","Memphis Grizzlies",0.8476
+"78",1,2,2006,"nba","San Antonio Spurs","Dallas Mavericks",0.6468
+"79",1,3,2006,"nba","San Antonio Spurs","Detroit Pistons",0.7115
+"80",1,4,2006,"nba","San Antonio Spurs","Phoenix Suns",0.7205
+"81",1,5,2006,"nba","San Antonio Spurs","Sacramento Kings",0.8127
+"82",1,6,2006,"nba","San Antonio Spurs","Memphis Grizzlies",0.8175
+"83",1,7,2006,"nba","San Antonio Spurs","Los Angeles Lakers",0.8439
+"84",1,8,2006,"nba","San Antonio Spurs","Indiana Pacers",0.8604
+"85",1,2,2007,"nba","San Antonio Spurs","Phoenix Suns",0.5689
+"86",1,3,2007,"nba","San Antonio Spurs","Dallas Mavericks",0.7386
+"87",1,4,2007,"nba","San Antonio Spurs","Houston Rockets",0.7568
+"88",1,5,2007,"nba","San Antonio Spurs","Cleveland Cavaliers",0.7935
+"89",1,6,2007,"nba","San Antonio Spurs","Chicago Bulls",0.8056
+"90",1,7,2007,"nba","San Antonio Spurs","Utah Jazz",0.8214
+"91",1,8,2007,"nba","San Antonio Spurs","Detroit Pistons",0.8373
+"92",1,2,2008,"nba","Los Angeles Lakers","San Antonio Spurs",0.6224
+"93",1,3,2008,"nba","Los Angeles Lakers","Utah Jazz",0.656
+"94",1,4,2008,"nba","Los Angeles Lakers","New Orleans Pelicans",0.6725
+"95",1,5,2008,"nba","Los Angeles Lakers","Phoenix Suns",0.6819
+"96",1,6,2008,"nba","Los Angeles Lakers","Dallas Mavericks",0.7249
+"97",1,7,2008,"nba","Los Angeles Lakers","Boston Celtics",0.7252
+"98",1,8,2008,"nba","Los Angeles Lakers","Denver Nuggets",0.7457
+"99",1,2,2009,"nba","Los Angeles Lakers","Cleveland Cavaliers",0.6001
+"100",1,3,2009,"nba","Los Angeles Lakers","Orlando Magic",0.7423
+"101",1,4,2009,"nba","Los Angeles Lakers","Utah Jazz",0.756
+"102",1,5,2009,"nba","Los Angeles Lakers","Houston Rockets",0.7719
+"103",1,6,2009,"nba","Los Angeles Lakers","Portland Trail Blazers",0.7852
+"104",1,7,2009,"nba","Los Angeles Lakers","Denver Nuggets",0.8108
+"105",1,8,2009,"nba","Los Angeles Lakers","San Antonio Spurs",0.8221
+"106",1,2,2010,"nba","Orlando Magic","Denver Nuggets",0.6502
+"107",1,3,2010,"nba","Orlando Magic","Los Angeles Lakers",0.6641
+"108",1,4,2010,"nba","Orlando Magic","Utah Jazz",0.6653
+"109",1,5,2010,"nba","Orlando Magic","Phoenix Suns",0.7037
+"110",1,6,2010,"nba","Orlando Magic","San Antonio Spurs",0.7083
+"111",1,7,2010,"nba","Orlando Magic","Cleveland Cavaliers",0.706
+"112",1,8,2010,"nba","Orlando Magic","Dallas Mavericks",0.7264
+"113",1,2,2011,"nba","Los Angeles Lakers","Chicago Bulls",0.5781
+"114",1,3,2011,"nba","Los Angeles Lakers","Miami Heat",0.6337
+"115",1,4,2011,"nba","Los Angeles Lakers","Dallas Mavericks",0.6984
+"116",1,5,2011,"nba","Los Angeles Lakers","Oklahoma City Thunder",0.7063
+"117",1,6,2011,"nba","Los Angeles Lakers","Boston Celtics",0.783
+"118",1,7,2011,"nba","Los Angeles Lakers","Orlando Magic",0.7806
+"119",1,8,2011,"nba","Los Angeles Lakers","San Antonio Spurs",0.7895
+"120",1,2,2012,"nba","Memphis Grizzlies","San Antonio Spurs",0.5864
+"121",1,3,2012,"nba","Memphis Grizzlies","Chicago Bulls",0.5991
+"122",1,4,2012,"nba","Memphis Grizzlies","Oklahoma City Thunder",0.6114
+"123",1,5,2012,"nba","Memphis Grizzlies","Denver Nuggets",0.6684
+"124",1,6,2012,"nba","Memphis Grizzlies","Los Angeles Clippers",0.6645
+"125",1,7,2012,"nba","Memphis Grizzlies","Miami Heat",0.7128
+"126",1,8,2012,"nba","Memphis Grizzlies","Boston Celtics",0.7268
+"127",1,2,2013,"nba","Oklahoma City Thunder","Los Angeles Clippers",0.5971
+"128",1,3,2013,"nba","Oklahoma City Thunder","San Antonio Spurs",0.6875
+"129",1,4,2013,"nba","Oklahoma City Thunder","Memphis Grizzlies",0.7314
+"130",1,5,2013,"nba","Oklahoma City Thunder","Denver Nuggets",0.7743
+"131",1,6,2013,"nba","Oklahoma City Thunder","Houston Rockets",0.7948
+"132",1,7,2013,"nba","Oklahoma City Thunder","Indiana Pacers",0.8308
+"133",1,8,2013,"nba","Oklahoma City Thunder","Miami Heat",0.8353
+"134",1,2,2014,"nba","Oklahoma City Thunder","San Antonio Spurs",0.599
+"135",1,3,2014,"nba","Oklahoma City Thunder","Los Angeles Clippers",0.6293
+"136",1,4,2014,"nba","Oklahoma City Thunder","Memphis Grizzlies",0.7353
+"137",1,5,2014,"nba","Oklahoma City Thunder","Houston Rockets",0.7459
+"138",1,6,2014,"nba","Oklahoma City Thunder","Dallas Mavericks",0.7754
+"139",1,7,2014,"nba","Oklahoma City Thunder","Miami Heat",0.7913
+"140",1,8,2014,"nba","Oklahoma City Thunder","Phoenix Suns",0.792
+"141",1,2,2005,"nfl","San Diego Chargers","Indianapolis Colts",0.6141
+"142",1,3,2005,"nfl","San Diego Chargers","Pittsburgh Steelers",0.6483
+"143",1,4,2005,"nfl","San Diego Chargers","Denver Broncos",0.6517
+"144",1,5,2005,"nfl","San Diego Chargers","Carolina Panthers",0.6659
+"145",1,6,2005,"nfl","San Diego Chargers","Kansas City Chiefs",0.6667
+"146",1,7,2005,"nfl","San Diego Chargers","New York Giants",0.6988
+"147",1,8,2005,"nfl","San Diego Chargers","Seattle Seahawks",0.6841
+"148",1,2,2006,"nfl","San Diego Chargers","Dallas Cowboys",0.6045
+"149",1,3,2006,"nfl","San Diego Chargers","Indianapolis Colts",0.6176
+"150",1,4,2006,"nfl","San Diego Chargers","Chicago Bears",0.6745
+"151",1,5,2006,"nfl","San Diego Chargers","New England Patriots",0.6967
+"152",1,6,2006,"nfl","San Diego Chargers","Cincinnati Bengals",0.6875
+"153",1,7,2006,"nfl","San Diego Chargers","Pittsburgh Steelers",0.7135
+"154",1,8,2006,"nfl","San Diego Chargers","Baltimore Ravens",0.713
+"155",1,2,2007,"nfl","New England Patriots","Dallas Cowboys",0.7322
+"156",1,3,2007,"nfl","New England Patriots","San Diego Chargers",0.7738
+"157",1,4,2007,"nfl","New England Patriots","Indianapolis Colts",0.7915
+"158",1,5,2007,"nfl","New England Patriots","Pittsburgh Steelers",0.8032
+"159",1,6,2007,"nfl","New England Patriots","Tennessee Titans",0.8159
+"160",1,7,2007,"nfl","New England Patriots","Green Bay Packers",0.8214
+"161",1,8,2007,"nfl","New England Patriots","Minnesota Vikings",0.8246
+"162",1,2,2008,"nfl","Pittsburgh Steelers","Dallas Cowboys",0.5902
+"163",1,3,2008,"nfl","Pittsburgh Steelers","Philadelphia Eagles",0.6041
+"164",1,4,2008,"nfl","Pittsburgh Steelers","New York Giants",0.6102
+"165",1,5,2008,"nfl","Pittsburgh Steelers","Tennessee Titans",0.6055
+"166",1,6,2008,"nfl","Pittsburgh Steelers","New England Patriots",0.618
+"167",1,7,2008,"nfl","Pittsburgh Steelers","Indianapolis Colts",0.6451
+"168",1,8,2008,"nfl","Pittsburgh Steelers","Baltimore Ravens",0.6425
+"169",1,2,2009,"nfl","Minnesota Vikings","New Orleans Saints",0.6371
+"170",1,3,2009,"nfl","Minnesota Vikings","New England Patriots",0.6541
+"171",1,4,2009,"nfl","Minnesota Vikings","Dallas Cowboys",0.6676
+"172",1,5,2009,"nfl","Minnesota Vikings","Philadelphia Eagles",0.6729
+"173",1,6,2009,"nfl","Minnesota Vikings","Green Bay Packers",0.6687
+"174",1,7,2009,"nfl","Minnesota Vikings","Baltimore Ravens",0.6865
+"175",1,8,2009,"nfl","Minnesota Vikings","Pittsburgh Steelers",0.6926
+"176",1,2,2010,"nfl","New England Patriots","San Diego Chargers",0.6315
+"177",1,3,2010,"nfl","New England Patriots","Philadelphia Eagles",0.6593
+"178",1,4,2010,"nfl","New England Patriots","New Orleans Saints",0.6645
+"179",1,5,2010,"nfl","New England Patriots","Pittsburgh Steelers",0.686
+"180",1,6,2010,"nfl","New England Patriots","Baltimore Ravens",0.6878
+"181",1,7,2010,"nfl","New England Patriots","Green Bay Packers",0.6881
+"182",1,8,2010,"nfl","New England Patriots","New York Giants",0.7074
+"183",1,2,2011,"nfl","Green Bay Packers","New England Patriots",0.5908
+"184",1,3,2011,"nfl","Green Bay Packers","New Orleans Saints",0.6125
+"185",1,4,2011,"nfl","Green Bay Packers","Detroit Lions",0.6757
+"186",1,5,2011,"nfl","Green Bay Packers","Baltimore Ravens",0.6832
+"187",1,6,2011,"nfl","Green Bay Packers","San Francisco 49ers",0.6898
+"188",1,7,2011,"nfl","Green Bay Packers","Pittsburgh Steelers",0.693
+"189",1,8,2011,"nfl","Green Bay Packers","Atlanta Falcons",0.6903
+"190",1,2,2012,"nfl","New England Patriots","Denver Broncos",0.6148
+"191",1,3,2012,"nfl","New England Patriots","San Francisco 49ers",0.6231
+"192",1,4,2012,"nfl","New England Patriots","Houston Texans",0.642
+"193",1,5,2012,"nfl","New England Patriots","Green Bay Packers",0.6571
+"194",1,6,2012,"nfl","New England Patriots","Seattle Seahawks",0.6905
+"195",1,7,2012,"nfl","New England Patriots","New York Giants",0.7108
+"196",1,8,2012,"nfl","New England Patriots","Atlanta Falcons",0.7217
+"197",1,2,2013,"nfl","Denver Broncos","Seattle Seahawks",0.5818
+"198",1,3,2013,"nfl","Denver Broncos","New Orleans Saints",0.6764
+"199",1,4,2013,"nfl","Denver Broncos","San Francisco 49ers",0.6819
+"200",1,5,2013,"nfl","Denver Broncos","Carolina Panthers",0.7164
+"201",1,6,2013,"nfl","Denver Broncos","Cincinnati Bengals",0.7191
+"202",1,7,2013,"nfl","Denver Broncos","New England Patriots",0.7138
+"203",1,8,2013,"nfl","Denver Broncos","Philadelphia Eagles",0.7338
+"204",1,2,2014,"nfl","Green Bay Packers","Seattle Seahawks",0.5973
+"205",1,3,2014,"nfl","Green Bay Packers","Denver Broncos",0.6106
+"206",1,4,2014,"nfl","Green Bay Packers","New England Patriots",0.628
+"207",1,5,2014,"nfl","Green Bay Packers","Baltimore Ravens",0.6831
+"208",1,6,2014,"nfl","Green Bay Packers","Philadelphia Eagles",0.7313
+"209",1,7,2014,"nfl","Green Bay Packers","Dallas Cowboys",0.7377
+"210",1,8,2014,"nfl","Green Bay Packers","Detroit Lions",0.7442
+"211",1,2,2006,"nhl","Ottawa Senators","Detroit Red Wings",0.5822
+"212",1,3,2006,"nhl","Ottawa Senators","Dallas Stars",0.6811
+"213",1,4,2006,"nhl","Ottawa Senators","Carolina Hurricanes",0.698
+"214",1,5,2006,"nhl","Ottawa Senators","San Jose Sharks",0.7026
+"215",1,6,2006,"nhl","Ottawa Senators","Calgary Flames",0.6982
+"216",1,7,2006,"nhl","Ottawa Senators","Colorado Avalanche",0.7154
+"217",1,8,2006,"nhl","Ottawa Senators","Philadelphia Flyers",0.719
+"218",1,2,2007,"nhl","Ottawa Senators","Detroit Red Wings",0.5421
+"219",1,3,2007,"nhl","Ottawa Senators","San Jose Sharks",0.5437
+"220",1,4,2007,"nhl","Ottawa Senators","Nashville Predators",0.5697
+"221",1,5,2007,"nhl","Ottawa Senators","Anaheim Ducks",0.5864
+"222",1,6,2007,"nhl","Ottawa Senators","Buffalo Sabres",0.6137
+"223",1,7,2007,"nhl","Ottawa Senators","Minnesota Wild",0.6197
+"224",1,8,2007,"nhl","Ottawa Senators","Dallas Stars",0.6368
+"225",1,2,2008,"nhl","Detroit Red Wings","San Jose Sharks",0.5906
+"226",1,3,2008,"nhl","Detroit Red Wings","New York Rangers",0.6017
+"227",1,4,2008,"nhl","Detroit Red Wings","Ottawa Senators",0.6047
+"228",1,5,2008,"nhl","Detroit Red Wings","Dallas Stars",0.6229
+"229",1,6,2008,"nhl","Detroit Red Wings","Pittsburgh Penguins",0.6249
+"230",1,7,2008,"nhl","Detroit Red Wings","Colorado Avalanche",0.6376
+"231",1,8,2008,"nhl","Detroit Red Wings","Anaheim Ducks",0.6382
+"232",1,2,2009,"nhl","Detroit Red Wings","San Jose Sharks",0.5761
+"233",1,3,2009,"nhl","Detroit Red Wings","Pittsburgh Penguins",0.6084
+"234",1,4,2009,"nhl","Detroit Red Wings","Boston Bruins",0.6207
+"235",1,5,2009,"nhl","Detroit Red Wings","Vancouver Canucks",0.6223
+"236",1,6,2009,"nhl","Detroit Red Wings","Calgary Flames",0.6531
+"237",1,7,2009,"nhl","Detroit Red Wings","New Jersey Devils",0.6554
+"238",1,8,2009,"nhl","Detroit Red Wings","Chicago Blackhawks",0.6556
+"239",1,2,2010,"nhl","Washington Capitals","Chicago Blackhawks",0.5404
+"240",1,3,2010,"nhl","Washington Capitals","San Jose Sharks",0.5965
+"241",1,4,2010,"nhl","Washington Capitals","Detroit Red Wings",0.5992
+"242",1,5,2010,"nhl","Washington Capitals","Pittsburgh Penguins",0.6208
+"243",1,6,2010,"nhl","Washington Capitals","Vancouver Canucks",0.6481
+"244",1,7,2010,"nhl","Washington Capitals","New Jersey Devils",0.6622
+"245",1,8,2010,"nhl","Washington Capitals","Los Angeles Kings",0.7008
+"246",1,2,2011,"nhl","Chicago Blackhawks","Vancouver Canucks",0.554
+"247",1,3,2011,"nhl","Chicago Blackhawks","San Jose Sharks",0.5975
+"248",1,4,2011,"nhl","Chicago Blackhawks","Boston Bruins",0.6104
+"249",1,5,2011,"nhl","Chicago Blackhawks","Philadelphia Flyers",0.623
+"250",1,6,2011,"nhl","Chicago Blackhawks","Detroit Red Wings",0.622
+"251",1,7,2011,"nhl","Chicago Blackhawks","New York Rangers",0.65
+"252",1,8,2011,"nhl","Chicago Blackhawks","Washington Capitals",0.649
+"253",1,2,2012,"nhl","Pittsburgh Penguins","St. Louis Blues",0.5776
+"254",1,3,2012,"nhl","Pittsburgh Penguins","Boston Bruins",0.6338
+"255",1,4,2012,"nhl","Pittsburgh Penguins","Detroit Red Wings",0.6334
+"256",1,5,2012,"nhl","Pittsburgh Penguins","San Jose Sharks",0.6398
+"257",1,6,2012,"nhl","Pittsburgh Penguins","Vancouver Canucks",0.6451
+"258",1,7,2012,"nhl","Pittsburgh Penguins","Los Angeles Kings",0.6501
+"259",1,8,2012,"nhl","Pittsburgh Penguins","New York Rangers",0.6523
+"260",1,2,2013,"nhl","Boston Bruins","St. Louis Blues",0.5332
+"261",1,3,2013,"nhl","Boston Bruins","Pittsburgh Penguins",0.5793
+"262",1,4,2013,"nhl","Boston Bruins","Chicago Blackhawks",0.5892
+"263",1,5,2013,"nhl","Boston Bruins","Los Angeles Kings",0.5958
+"264",1,6,2013,"nhl","Boston Bruins","San Jose Sharks",0.6274
+"265",1,7,2013,"nhl","Boston Bruins","New York Rangers",0.6521
+"266",1,8,2013,"nhl","Boston Bruins","Detroit Red Wings",0.647
+"267",1,2,2014,"nhl","St. Louis Blues","San Jose Sharks",0.5297
+"268",1,3,2014,"nhl","St. Louis Blues","Boston Bruins",0.5718
+"269",1,4,2014,"nhl","St. Louis Blues","Chicago Blackhawks",0.5809
+"270",1,5,2014,"nhl","St. Louis Blues","Los Angeles Kings",0.6108
+"271",1,6,2014,"nhl","St. Louis Blues","New York Rangers",0.6225
+"272",1,7,2014,"nhl","St. Louis Blues","Pittsburgh Penguins",0.6224
+"273",1,8,2014,"nhl","St. Louis Blues","Anaheim Ducks",0.6252
