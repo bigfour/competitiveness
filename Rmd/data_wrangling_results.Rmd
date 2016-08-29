@@ -290,6 +290,20 @@ bigfour %>%
             mean_home_p = mean(prob_home, na.rm = TRUE)) %>%
   mutate(coverage = N_mline / N_results) %>%
   print.data.frame()
+
+bigfour %>%
+  filter(season %in% 2005:2014, !playoffs) %>%
+  group_by(sport) %>%
+  summarise(N_results = n(), 
+            numTeams = length(unique(setdiff(union(visitor_team, home_team), NA))), 
+            home_wp = sum(home_win, na.rm = TRUE) / sum(!is.na(home_win)),
+            N_mline = sum(!is.na(prob_home)), 
+            mean_home_p = mean(prob_home, na.rm = TRUE)) %>%
+  mutate(coverage = N_mline / N_results) %>% 
+  select(N_results) %>%
+  print.data.frame()
+
+
 ```
 
 ```{r}
