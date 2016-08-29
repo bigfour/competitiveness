@@ -422,10 +422,17 @@ In addition to slightly different rules regarding postseason eligibility, league
 
 Teams in league $q$ at season $s$ were ranked based on $\hat{\bar{\theta_{q,s}}} = \{\hat{\theta}_{q,s,(k*-4)}, \hat{\theta}_{q,s,(k*-3)}, \hat{\theta}_{q,s,(k*-2)}, \hat{\theta}_{q,s,(k*-1)},\hat{\theta}_{q,s,(k)}$, the average posterior team strength over the last five weeks of the regular season. These draws are meant to roughly reflect team quality entering the postseason; five weeks are used in place of one week to account for the fact that in many instances, top performing teams rest top players in the final few games, thereby likely lowering their perceived team quality.
 
-Next, let $\hat{\bar{\theta_{q,s}}}_{\|r\|}$ be the $r^{th}$ ranked team strength in sport $q$ in season $s$. For example, the $\hat{\bar{\theta_{MLB,2005}}}_{\|1\|} = 0.499$ represents the average posterior draw of team strength for 2005 New York Yankees, which ranks first in MLB for that season. Teams ranked first in each season in each sport were matched-up against teams ranked No. 2 - No. 8. To simulate a 'best of $n$' series between the first ranked team ($r_{1, q, s}$) and a lower ranked team ($r_{2, q, s}, \ldots r_{8, q, s}$), the following procedure was used. 
+Next, let $\hat{\bar{\theta_{q,s}}}_{\|r\|}$ be the $r^{th}$ ranked team strength in sport $q$ in season $s$. For example, the $\hat{\bar{\theta_{MLB,2005}}}_{\|1\|} = 0.499$ represents the average posterior draw of team strength for 2005 New York Yankees, which ranks first in MLB for that season. Teams ranked first in each season in each sport were matched-up against teams ranked No. 2 - No. 8. To simulate a 'best of $n$' series between the first ranked team (team $i_1$, where $\hat{\bar{\theta_{q,s}}}_{\|i_1\|}$ = $\hat{\bar{\theta_{q,s}}}_{\|1\|}) and the second ranked team ($i_2$), the following procedure was used in each $q$ and $s$. 
 
 \begin{enumerate}
-\item Draw $n$ $\theta_{r,q,s}$
+\item Draw $n$ samples from the posterior distributions of $\hat{\theta}_{i_1,q,s}$ and $\hat{\theta}_{i_2,q,s}$, respectively, labeled as $\tilde{\theta}_{i_1,q,s}$ amd $\tilde{\theta}_{i_2,q,s}$, respectively.
+\item Draw $n$ samples from the posterior distribution of $\hat{\alpha_q}$, labeled as $\tilde{\alpha_q}$. 
+\item Estimate $\tilde{logit}(p_{i_1, i_2, q, s})$ = $\tilde{\theta}_{i_1,q,s}$ - $\tilde{\theta}_{i_2,q,s}$ + $\tilde{\alpha_q}$*\mathds{1*}$, where $\mathds{1*}$ is an $n$-dimensional vector of alternating 1's and -1's to account for rotating home advantages.  
+\item Sample from $\tilde{logit}(p_{i_1, i_2, q, s})$ to obtain 1's and 0's reflecting simulated postseason outcomes. If the sum of these simulations is greater than $n/2$, team $i_1$ wins the series. Otherwise, team $i_2$ wins the series.
+\item Repeat 10,000 times for each $q$ and $s$, and for teams ranked third ($i_3$) through eight ($i_8$). 
+\end{enumerate}
+
+Figure XX shows a plot of the estimated probabilities that the top-ranked team beats opponents ranked No. 2 - No. 8 in each sport, averaged over $s$. 
 
 
 <<sevenSeries, fig.cap="Probability top ranked team wins a postseason series by sport and opponent rank">>=
