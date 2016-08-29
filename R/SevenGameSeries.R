@@ -98,6 +98,10 @@ df.sim1 <- df.sim %>%
   select(-mean.beta) %>% 
   filter(first.seed == 1)
 
+##########################
+## Simulate the postseason
+##########################
+
 n.sim <- 10000
 df.sim1$better.winP <- NULL
 for (i in 1:nrow(df.sim1)){
@@ -149,5 +153,42 @@ p + geom_density(alpha = 0.25) + ggtitle("2005 MLB team strengths")
 #Text for each year
 
 
+##########################################
+##### How many games to match the NBA's 80% (eighth seed) and 72% (fourth seed)
+##########################################
+
+first.eighth <- filter(df.sim1, second.seed ==4, sport =="mlb"|sport=="nhl")
+n.sim <- 1000
+n.games <- 59
+first.eighth$better.winP <- NULL
+for (i in 1:nrow(first.eighth)){
+  temp <- first.eighth[i,]
+  fave.win <- NULL
+  top.team <- betas.lastfour.all %>% 
+    filter(season == temp$season, team == temp$first.team) %>%
+    select(betas)
+  lower.team <- betas.lastfour.all %>% 
+    filter(season == temp$season, team == temp$second.team) %>%
+    select(betas)
+  hfa.all <- hfa %>%
+    filter(sport == temp$sport) %>%
+    select(alpha)
+  for (j in 1:n.sim){
+    top.draws <- top.team %>% do(sample_n(., n.games)) 
+    lower.draws <- lower.team %>% do(sample_n(., n.games)) 
+    hfa.draws <- hfa.all %>% do(sample_n(., n.games))
+    hfa.switch <- c(rep(1, ceiling(n.games/2)), rep(-1, floor(n.games/2)))
+    logit.probs <- top.draws - lower.draws + hfa.draws*hfa.switch
+    ### Note: want to add in sport-specific variability in draws (e.g., residuals)
+    probs <- exp(logit.probs)/(1+exp(logit.probs))
+    fave.win[j] <- sum(rbinom(n.games, 1, probs$betas)) >= ceiling(n.games/2)  
+  }
+  first.eighth$better.winP[i] <- mean(fave.win)
+  print(i)
+}
 
 
+first.eighth %>% group_by(sport) %>% summarise(ave.win = mean(better.winP))
+
+#Most similar using No. 1 v No. 8 (80%): NFL (9 games), NHL (39 games), MLB (51 games)
+#Most similar using No. 1 v No. 4 (72%): NFL (9 games), NHL (39 games), MLB (51 games)
