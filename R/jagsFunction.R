@@ -79,7 +79,7 @@ jagsModel <- function(data,
                                       n.chains=n.chains, n.adapt=n.adapt)
   
   update(jags, n.update)
-  dic.pD <- dic.samples(jags, 100, type = "pD") # Deviance Information Criterion
+  dic.pD <- dic.samples(jags, 2000, type = "pD") # Deviance Information Criterion
   #dic.popt <- dic.samples(jags, 100, type = "popt") # Penalized expected deviance
   z<-jags.samples(jags,posteriorDraws,n.draws, thin = thin)
   z$dic <- dic.pD
@@ -87,15 +87,15 @@ jagsModel <- function(data,
 }
 
 
-num_adapt <- 100
-num_update <- 200
-num_draws <- 200
+num_adapt <- 1000
+num_update <- 2000
+num_draws <- 20000
 
 ## Runs JAGS in each league with constant HFA
 ## Note: update DIC to use more than 100 samples
 
 
-leagues <- c("nba", "nhl")
+leagues <- c("nba", "nhl", "nfl", "mlb")
 for (league in leagues) {
   print(league)
   bugFile <- file.path("R/jags_model_constantHFA.bug")
@@ -109,7 +109,7 @@ for (league in leagues) {
 
 
 ## Runs JAGS in each league with team-varying HFA (partial pooling)
-leagues <- c("nba", "nhl")
+leagues <- c("nba", "nhl", "nfl", "mlb")
 for (league in leagues) {
   print(league)
   bugFile <- file.path("R/jags_model_TeamHFA.bug")

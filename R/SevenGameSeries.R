@@ -135,31 +135,6 @@ print(i)
 ### df.sim1 stores simulated draws of each series
 ### probability is probability the better team wins
 ##################################################
-
-probs <- read.csv("data/seven.simulations.csv")
-library(dplyr)
-library(ggplot2)
-probs.1 <- probs %>%
-  group_by(sport, second.seed) %>%
-  summarise(mean.win = mean(better.winP))
-
-p <- ggplot(probs.1, aes(second.seed, mean.win, group = sport, colour = sport)) 
-p + geom_point() + 
-  geom_line() + 
-  ggtitle("Probability of No. 1 team winning in postseason") + 
-  scale_x_continuous("Opponent rank", breaks = 2:8) + 
-  scale_y_continuous("", breaks = c(0.6, 0.7, 0.8), labels = c("60%", "70%", "80%"))
-
-
-p <- ggplot(probs, aes(second.seed, better.winP, group = as.factor(season), colour = as.factor(season))) 
-p + geom_point() + 
-  geom_line() + 
-  theme_bw() + 
-  ggtitle("Probability of best team winning in the PS") + 
-  scale_x_continuous("Opponent rank", breaks = 2:8) + 
-  scale_y_continuous("", breaks = c(0.5, 0.6, 0.7, 0.8, 0.9, 1), 
-                     labels = c("50%","60%", "70%", "80%", "90%", "100%")) + 
-  facet_wrap(~sport)
  
 
 
@@ -172,67 +147,6 @@ draws.transitivity <- betas.lastfour.all %>%
 p <- ggplot(draws.transitivity, aes(x = betas, fill = team))
 p + geom_density(alpha = 0.25) + ggtitle("2005 MLB team strengths")
 #Text for each year
-
-
-## How sure are we?  Update these numbers
-#NBA probability: 84% after 7 games, 
-#NFL probability: 77% after 7 games, 83% after 15 games
-#MLB probability: 71% after 7 games, 79% after 15 games, 83% after 25 games, 
-#NHL probability: 65% after 7 games, 74% after 15 games, 82% after 35 games
-
-
-
-
-
-
-
-####################
-## Assuming no team-numbers (sample top teams. This is a work in progress)
-####################
-
-select.teams <- function(df, season, numteams){
-  out <- df %>%
-  filter(seas==season) %>%
-  group_by(unique.names) %>%
-  summarise(ave = mean(beta.est), sd = sd(beta.est)) %>%
-  arrange(desc(ave)) %>%
-  mutate(rank = 1:n()) %>%
-  head(numteams)
-  return(out)
-}
-
-nfl.teams <- select.teams(nfl.beta, 2010, 12)
-mlb.teams <- select.teams(mlb.beta, 2010, 8)
-nba.teams <- select.teams(nba.beta, 2010, 16)
-nhl.teams <- select.teams(nhl.beta, 2010, 16)
-
-
-function.series <- function(n.games, teams, betas, simulations){
-fave.win <- NULL
-for (i in 1:simulations){
- pair <- sample(teams, 2, replace = FALSE)
- draws <- betas %>%
-   filter(unique.names %in% pair$unique.names, seas == 2010) %>%
-   group_by(unique.names) %>%
-   do(sample_n(.,n.games)) %>%
-   inner_join(pair, by = "unique.names") %>%
-   ungroup() %>%
-   arrange(rank)
- logit.probs <- draws$beta.est[1:n.games] - draws$beta.est[(n.games+1):(2*n.games)]
-        ### Note: want to add in sport-specific variability in draws (e.g., residuals)
- probs <- exp(logit.probs)/(1+exp(logit.probs))
- fave.win[i] <- rbinom(1, n.games, probs) >= ceiling(n.games/2)
-}
-return(mean(fave.win)); print(mean(fave.win))
-}
-
-function.series(101, mlb.teams, mlb.beta, 1000)
-
-## How sure are we?
-#NBA probability: 69% after 7 games, 73% after 51 games, 76% after 101 games
-#NFL probability: 57% after 7 games, 63% after 51 games, 67% after 101 games
-#NHL probability: 55% after 7 games, 59% after 51 games, 65% after 101 games
-#MLB probability: 54% after 7 games, 63% after 51 games, 64% after 101 games
 
 
 
