@@ -62,11 +62,11 @@ jagsModel <- function(data,
   
   #HFA changes: create a new term for old arena's 
   ### Seattle to OKC
-  if (sport == "nba") {
+  if (league == "nba") {
     z[test$season < 2009 & test$home_team == "Oklahoma City Thunder"] <- max(z) + 1}
   
   ### Atlanta to Winnipeg
-  if (sport == "nhl") {
+  if (league == "nhl") {
     z[test$season < 2012 & test$home_team == "Winnipeg Jets"] <- max(z) + 1}
   
   nHFAs <- max(z)
