@@ -261,29 +261,6 @@ Posterior distribution of the gammaWeek
 -Function of injuries and players resting, which aren't necessarily getting at team strength
 
 
-\subsection{Future work}
-
-value of unbalanced vs balanced schedule: fix team strengths, estimate results relative to current system. 
-
-Change to a day-by-day structure to account for MLB starting pitchers
-
-Different model specification: use stochastic variance terms which may more aptly account for sudden changes in team strength. Related: out of sample testing with respect to model fits.
-
-Simulate balanced versus unbalanced scheduling to understand how each league's schedule impacts winning percentages (and the resulting measurements of competitive balance in the econ literature)
-
-%\input{prelim}
-
-%Next
-%4.  Verify the validity of the betting data
-%5.  Describe fitting process + alternate models.  
-%6.  Results/Posterior Plots 
-
-%Extensions
-%7.  Seven game series stuff
-%8.  Comepetitive balance.  
-%9.  Tanking
-
-
 \section{Validation of betting market data}
 
 
@@ -439,7 +416,12 @@ library(teamcolors)
 
 \subsection{Uncertainty of postseason tournaments}
 
-One logical application of our work looks at postseason tournaments. 
+One logical application of our work extends our team strength information to understand the randomness in each league's postseason tournament. Each of the four league's uses a knockout-style postseason format, in which teams with stronger regular season performances are matched against lower-performing teams, with the winner advancing to future rounds. In the MLB, NHL, and NBA, match-ups use a series format, where the series winner is generally determined by which of the two participating teams wins the majority of games. Generally, series lengths are capped at seven games (the MLB, among other leagues, used to use five games in earlier rounds), entailing that the series winner is the first team to win four games. Informally, these are known as 'best of 7' series. In these formats, one team is given a home advantage, which yields one extra game at home over the course of the series duration. Generally, this is the team with the stronger regular season performance, although league's allow for slight adaptations of this requirement. In contrast to the other three leagues, NFL postseason tournaments have consisted only of compilations of one game competitions; there is no 'best of $n$' series in its history. 
+
+In addition to slightly different rules regarding postseason eligibility, leagues also differ with respect to the number of teams eligible for postseason play. As of 2016, 10 (MLB), 12 (NFL), and 16 (NFL, NBA) teams make the postseason in each season, although for the duration of our data, the MLB used only 8 teams each year. Given these general guidelines, we assess the randomness of postseason formats by comparing the top 8 teams in each league.
+
+Teams were ranked based on $\{\hat{\theta}_{q,s,(k*-4)}, \hat{\theta}_{q,s,(k*-3)}, \hat{\theta}_{q,s,(k*-2)}, \hat{\theta}_{q,s,(k*-1)},\hat{\theta}_{q,s,(k)}$ for all $q$ and $s$, the average posterior mean performance in each o
+
 
 
 
@@ -463,6 +445,29 @@ ggplot(probs.1, aes(second.seed, mean.win, group = sport, colour = sport))  +
 \section{Conclusion}
 \subsection{Summary}
 \subsection{Open Problems}
+
+
+value of unbalanced vs balanced schedule: fix team strengths, estimate results relative to current system. 
+
+Change to a day-by-day structure to account for MLB starting pitchers
+
+Different model specification: use stochastic variance terms which may more aptly account for sudden changes in team strength. Related: out of sample testing with respect to model fits.
+
+Simulate balanced versus unbalanced scheduling to understand how each league's schedule impacts winning percentages (and the resulting measurements of competitive balance in the econ literature)
+
+%\input{prelim}
+
+%Next
+%4.  Verify the validity of the betting data
+%5.  Describe fitting process + alternate models.  
+%6.  Results/Posterior Plots 
+
+%Extensions
+%7.  Seven game series stuff
+%8.  Comepetitive balance.  
+%9.  Tanking
+
+
 
 \section{Assorted notes}
 
