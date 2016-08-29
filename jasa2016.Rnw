@@ -449,10 +449,11 @@ library(dplyr)
 library(ggplot2)
 probs.1 <- probs %>%
   group_by(sport, second.seed) %>%
-  summarise(mean.win = mean(better.winP))
-
+  summarise(mean.win = mean(better.winP)) %>% 
+  ungroup() %>%
+  mutate(sport = factor(sport, levels = c("nba", "nfl", "nhl", "mlb")))
 ggplot(probs.1, aes(second.seed, mean.win, group = sport, colour = sport))  + 
-  geom_point() + 
+  geom_point(aes(shape = sport)) + 
   geom_line() + 
   ggtitle("Probability of No. 1 team winning in postseason") + 
   scale_x_continuous("Opponent rank", breaks = 2:8) + 
