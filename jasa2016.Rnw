@@ -274,15 +274,16 @@ n.games <- data.frame(sport = c("mlb","nba", "nfl", "nhl"), N_results = c(24299,
 bigfour %>%
   filter(season %in% 2005:2014, playoffs == 0) %>%
   group_by(sport) %>%
-  summarise(earliest = as.character(min(gameDate)), 
+  summarise(N = n(), 
+            earliest = as.character(min(gameDate)), 
             latest = as.character(max(gameDate)),
             num_teams = length(unique(setdiff(union(visitor_team, home_team), NA))), 
             home_wp = sum(home_win, na.rm = TRUE) / sum(!is.na(home_win)),
-            mean_home_p = mean(prob_home, na.rm = TRUE),
-            N_bets = sum(!is.na(prob_home))) %>%
+            N_bets = sum(!is.na(prob_home)), 
+            mean_home_p = mean(prob_home, na.rm = TRUE)) %>%
   left_join(n.games) %>%
   mutate(coverage = N_bets / N_results) %>%
-  xtable(caption = "Summary of cross-sport data. Note that we have about 99.6% coverage (betting odds for every game) across all four major sports during the 2005--2014 regular seasons.", 
+  xtable(caption = "Summary of cross-sport data. Note that we have near perfect coverage (betting odds for every game) across all four major sports during the 2005--2014 regular seasons.", 
          digits = 3, label = "tab:bigfour") %>%
   print(include.rownames = FALSE)
 @
