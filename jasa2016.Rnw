@@ -443,7 +443,7 @@ One logical application of our work looks at postseason tournaments.
 
 
 
-<<sevenSeries, fig.cap="Probabiliy top ranked team wins a postseason series by sport and opponent rank">>=
+<<sevenSeries, fig.cap="Probability top ranked team wins a postseason series by sport and opponent rank">>=
 probs <- read.csv("data/seven.simulations.csv")
 library(dplyr)
 library(ggplot2)
