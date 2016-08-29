@@ -420,9 +420,12 @@ One logical application of our work extends our team strength information to und
 
 In addition to slightly different rules regarding postseason eligibility, leagues also differ with respect to the number of teams eligible for postseason play. As of 2016, 10 (MLB), 12 (NFL), and 16 (NFL, NBA) teams make the postseason in each season, although for the duration of our data, the MLB used only 8 teams each year. Given these general guidelines, we assess the randomness of postseason formats by comparing the top 8 teams in each league.
 
-Teams were ranked based on $\{\hat{\theta}_{q,s,(k*-4)}, \hat{\theta}_{q,s,(k*-3)}, \hat{\theta}_{q,s,(k*-2)}, \hat{\theta}_{q,s,(k*-1)},\hat{\theta}_{q,s,(k)}$ for all $q$ and $s$, the average posterior mean performance in each o
+Teams in league $q$ at season $s$ were ranked based on $\hat{\bar{\theta_{q,s}}} = \{\hat{\theta}_{q,s,(k*-4)}, \hat{\theta}_{q,s,(k*-3)}, \hat{\theta}_{q,s,(k*-2)}, \hat{\theta}_{q,s,(k*-1)},\hat{\theta}_{q,s,(k)}$, the average posterior team strength over the last five weeks of the regular season. These draws are meant to roughly reflect team quality entering the postseason; five weeks are used in place of one week to account for the fact that in many instances, top performing teams rest top players in the final few games, thereby likely lowering their perceived team quality.
 
+Next, let $\hat{\bar{\theta_{q,s}}}_{\|r\|}$ be the $r^{th}$ ranked team strength in sport $q$ in season $s$. For example, the $\hat{\bar{\theta_{MLB,2005}}}_{\|1\|} = 0.499$ represents the average posterior draw of team strength for 2005 New York Yankees, which ranks first in MLB for that season. Teams ranked first in each season in each sport were matched-up against teams ranked No. 2 - No. 8. To simulate a 'best of $n$' series between the first ranked team ($r_{1, q, s}$) and a lower ranked team ($r_{2, q, s}, \ldots r_{8, q, s}$), the following procedure was used. 
 
+\begin{enumerate}
+\item Draw $n$ $\theta_{r,q,s}$
 
 
 <<sevenSeries, fig.cap="Probability top ranked team wins a postseason series by sport and opponent rank">>=
