@@ -2,7 +2,7 @@
 \pdfminorversion=4
 \usepackage{setspace}
 \doublespacing
-
+\usepackage{ dsfont }
 \usepackage{amsthm,amsmath,amssymb,natbib}
 \RequirePackage[colorlinks,citecolor=blue,urlcolor=blue]{hyperref}
 
@@ -416,19 +416,23 @@ library(teamcolors)
 
 \subsection{Uncertainty of postseason tournaments}
 
-One logical application of our work extends our team strength information to understand the randomness in each league's postseason tournament. Each of the four league's uses a knockout-style postseason format, in which teams with stronger regular season performances are matched against lower-performing teams, with the winner advancing to future rounds. In the MLB, NHL, and NBA, match-ups use a series format, where the series winner is generally determined by which of the two participating teams wins the majority of games. Generally, series lengths are capped at seven games (the MLB, among other leagues, used to use five games in earlier rounds), entailing that the series winner is the first team to win four games. Informally, these are known as 'best of 7' series. In these formats, one team is given a home advantage, which yields one extra game at home over the course of the series duration. Generally, this is the team with the stronger regular season performance, although league's allow for slight adaptations of this requirement. In contrast to the other three leagues, NFL postseason tournaments have consisted only of compilations of one game competitions; there is no 'best of $n$' series in its history. 
+One application of our work extends our team strength information to explore the randomness in each league's respective postseason tournament. The four league's all use a knockout-style postseason format, in which teams with stronger regular season performances are matched against lower-performing teams, with the winner advancing to future rounds. In the MLB, NHL, and NBA, match-ups use a series format, where the series winner is generally determined by which of the two participating teams wins the majority of games. Generally, series lengths are capped at seven games (the MLB, for example, has also used five games in earlier rounds), entailing that the series winner is the first team to win four games. Informally, these are known as 'best of 7' series. In these formats, one team is given a home advantage, which allows for one extra home game over the duration of the series Generally, the team with the stronger regular season performance receives the extra home game, although league's allow for slight adaptations of this requirement. In contrast to the other three leagues, NFL postseason tournaments have consisted only of compilations of one game competitions; there is no 'best of $n$' series in its history. 
 
 In addition to slightly different rules regarding postseason eligibility, leagues also differ with respect to the number of teams eligible for postseason play. As of 2016, 10 (MLB), 12 (NFL), and 16 (NFL, NBA) teams make the postseason in each season, although for the duration of our data, the MLB used only 8 teams each year. Given these general guidelines, we assess the randomness of postseason formats by comparing the top 8 teams in each league.
 
-Teams in league $q$ at season $s$ were ranked based on $\hat{\bar{\theta_{q,s}}} = \{\hat{\theta}_{q,s,(k*-4)}, \hat{\theta}_{q,s,(k*-3)}, \hat{\theta}_{q,s,(k*-2)}, \hat{\theta}_{q,s,(k*-1)},\hat{\theta}_{q,s,(k)}$, the average posterior team strength over the last five weeks of the regular season. These draws are meant to roughly reflect team quality entering the postseason; five weeks are used in place of one week to account for the fact that in many instances, top performing teams rest top players in the final few games, thereby likely lowering their perceived team quality.
+Let $\widehat{\theta}_{q,s,k,i}$ be the posterior distribution of the team estimated team strength of $i$ at week $k$. Teams in league $q$ at season $s$ were ranked based on $\bar{\widehat{\theta}}_{q,s} = (\widehat{\theta}_{q,s,(k*-4)} + \widehat{\theta}_{q,s,(k*-3)} + \widehat{\theta}_{q,s,(k*-2)} + \widehat{\theta}_{q,s,(k*-1)}+ \widehat{\theta}_{q,s,(k)} \})/5, the average posterior team strength over the last five weeks of the regular season. These draws are meant to roughly reflect team quality entering the postseason; five weeks are used in place of one week to account for the fact that in many instances, top performing teams rest top players in the final few games, thereby likely lowering their perceived team quality.
 
-Next, let $\hat{\bar{\theta_{q,s}}}_{\|r\|}$ be the $r^{th}$ ranked team strength in sport $q$ in season $s$. For example, the $\hat{\bar{\theta_{MLB,2005}}}_{\|1\|} = 0.499$ represents the average posterior draw of team strength for 2005 New York Yankees, which ranks first in MLB for that season. Teams ranked first in each season in each sport were matched-up against teams ranked No. 2 - No. 8. To simulate a 'best of $n$' series between the first ranked team (team $i_1$, where $\hat{\bar{\theta_{q,s}}}_{\|i_1\|}$ = $\hat{\bar{\theta_{q,s}}}_{\|1\|}) and the second ranked team ($i_2$), the following procedure was used in each $q$ and $s$. 
+Next, let $\widehat{\bar{\theta}}_{q,s, \|r\|}$ be the $r^{th}$ ranked team strength in sport $q$ in season $s$. For example, the $\widehat{\bar{\theta}}_{MLB,2005,\|1\|} = 0.499$ represents the average posterior draw of team strength for 2005 New York Yankees, which ranks first in MLB for that season. Teams ranked first in each season in each sport were matched-up against teams ranked No. 2 - No. 8. To simulate a 'best of $n$' series between the first ranked team (team $i_1$, where $\widehat{\bar{\theta}}_{q,s,|i_1|}$ = $\widehat{\bar{\theta}}_{q,s,|1|}$) and the second ranked team ($i_2$), the following procedure was used in each $q$ and $s$. 
 
 \begin{enumerate}
-\item Draw $n$ samples from the posterior distributions of $\hat{\theta}_{i_1,q,s}$ and $\hat{\theta}_{i_2,q,s}$, respectively, labeled as $\tilde{\theta}_{i_1,q,s}$ amd $\tilde{\theta}_{i_2,q,s}$, respectively.
-\item Draw $n$ samples from the posterior distribution of $\hat{\alpha_q}$, labeled as $\tilde{\alpha_q}$. 
-\item Estimate $\tilde{logit}(p_{i_1, i_2, q, s})$ = $\tilde{\theta}_{i_1,q,s}$ - $\tilde{\theta}_{i_2,q,s}$ + $\tilde{\alpha_q}$*\mathds{1*}$, where $\mathds{1*}$ is an $n$-dimensional vector of alternating 1's and -1's to account for rotating home advantages.  
-\item Sample from $\tilde{logit}(p_{i_1, i_2, q, s})$ to obtain 1's and 0's reflecting simulated postseason outcomes. If the sum of these simulations is greater than $n/2$, team $i_1$ wins the series. Otherwise, team $i_2$ wins the series.
+
+\item Draw $n$ samples from each the posterior distributions of $\widehat{\theta}_{i_1,q,s}$ and $\widehat{\theta}_{i_2,q,s}$, respectively, labeled as $\widetilde{\theta}_{i_1,q,s}$ amd $\widetilde{\theta}_{i_2,q,s}$, respectively.
+
+\item Draw $n$ samples from the posterior distribution of $\widehat{\alpha_q}$, labeled as $\widetilde{\alpha_q}$. 
+
+\item Estimate $\widetilde{logit}(p_{i_1, i_2, q, s}) = \widetilde{\theta}_{i_1,q,s} - \widetilde{\theta}_{i_2,q,s} + \widetilde{\alpha_q}*\mathds{1*}$, where $\mathds{1*}$ is an $n$-dimensional vector of alternating 1's and -1's to account for rotating home advantages.  
+
+\item Sample from $\widetilde{logit}(p_{i_1, i_2, q, s})$ to obtain 1's and 0's reflecting simulated postseason outcomes. If the sum of these simulations is greater than $n/2$, team $i_1$ wins the series. Otherwise, team $i_2$ wins the series.
 \item Repeat 10,000 times for each $q$ and $s$, and for teams ranked third ($i_3$) through eight ($i_8$). 
 \end{enumerate}
 
