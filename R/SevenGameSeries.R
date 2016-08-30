@@ -9,7 +9,7 @@ library(knitr)
 
 get_sport <- function(sport) {
   message(paste("reading", sport, "data..."))
-  load(file.path(mcmc_dir, paste0(sport, "_7_23_teamHFA.RData")))
+  load(file.path(mcmc_dir, paste0(sport, "_8_23_teamHFA.RData")))
   out <- data.frame(
     sigma_w = 1/z$sigmab[,,1],
     sigma_s = 1/z$sigmabSeason[,,1],
