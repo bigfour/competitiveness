@@ -438,6 +438,8 @@ library(teamcolors)
 
 Describe the three parity measures here.
 
+NHL converges over time: why? Cite lower scoring and increased overtime. 
+
 \subsection{Uncertainty of postseason tournaments}
 
 One application of our work extends estimated team strengths to explore the each league's respective postseason The four league's all use a knockout-style postseason tournament, in which teams with stronger regular season performances are matched against lower-performing teams, with the winner advancing to future rounds. In the MLB, NHL, and NBA, match-ups use a series format, where the series winner is generally determined by which of the two participating teams wins the majority of games. Generally, series lengths are capped at seven games (the MLB, for example, has also used five games in earlier rounds), entailing that the series winner is the first team to win four games. Informally, these are known as `best of 7' series. In these formats, one team is given a home advantage, which allows for one extra home game over the duration of the series. Traditionally, the team with the stronger regular season performance receives the extra home game, although league's allow for slight adaptations of this requirement. In contrast to the other three leagues, NFL postseason tournaments have consisted only of compilations of one game competitions; there is no `best of $n$' series in its history. 
