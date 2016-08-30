@@ -10,9 +10,12 @@ get_sport <- function(sport) {
   diff.dic <- diffdic(z.alt$dic, z.null$dic)
   print(diff.dic)
   print(sport)
-  return(list(out = diff.dic , sport = sport))
+  return(list(diff.dic = diff.dic, 
+              constant.dic = z.null$dic, 
+              team.dic = z.alt$dic, 
+              sport = sport))
 }
 
 #Your code is so much better written than mine that I feel physical pain.  
 dat <- lapply(sports[1:4], get_sport) 
-
+dat

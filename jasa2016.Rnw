@@ -407,6 +407,26 @@ $$
 
 \section{Results}
 
+Paragraph about model checks being satisfied. Do we include trace plots?
+
+Model fit comparisons differed by league. Table \ref{tab:DIC} shows the DIC for each fit in each league, along with the difference in DIC values and its standard error. In the NBA and NHL, fits with a team-specific HFA yielded significantly lower DIC's (lower is better), while in the NFL and MLB, DIC values were roughly similar between fits. 
+
+\begin{table}[!ht]
+\makebox[\linewidth]{
+\begin{tabular}{l r r r}
+\hline
+ & DIC (unique HFA) & DIC (constant HFA) & Difference (SE) \\ \hline
+MLB &  -7580 & -7569  & -10.9 (7.7) \\
+NBA & 5219 & 5547 & -327.9 (25.6) \\
+NFL & -1427  & -1427 & 0.8 (3.0) \\
+NHL & -14912  & -14739 & -172.2 (19.0)\\
+\hline
+\end{tabular}
+}
+\caption{Deviance information criterion (DIC) by sport and model, along with difference in DIC (standard errors of the difference shown in parenthesis) ) \label{tab:DIC}}
+\end{table}
+
+
 \input{results}
 
 <<eval=FALSE>>=
@@ -415,6 +435,8 @@ library(teamcolors)
 @
 
 \subsection{Variability across sports}
+
+Describe the three parity measures here.
 
 \subsection{Uncertainty of postseason tournaments}
 
