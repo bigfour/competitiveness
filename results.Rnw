@@ -14,7 +14,7 @@ sports <- c("mlb", "nba", "nfl", "nhl")
 
 get_sport <- function(sport) {
   message(paste("reading", sport, "data..."))
-  load(file.path(mcmc_dir, paste0(sport, "_7_23_constantHFA.RData")))
+  load(file.path(mcmc_dir, paste0(sport, "_8_23_constantHFA.RData")))
   out <- data.frame(
     sigma_w = 1/z$sigmab[,,1],
     sigma_s = 1/z$sigmabSeason[,,1],
@@ -64,8 +64,10 @@ for (i in 1:nrow(sportcolors)){
 gg <- gg + geom_line(data = subset(datbetas,team==sportcolors$name[i]),aes(x = cumweek, y = betas),linetype=1,lwd=3,colour=sportcolors$primary[i]) 
 gg <- gg + geom_line(data = subset(datbetas,team==sportcolors$name[i]),aes(x = cumweek, y = betas),linetype=2,lwd=3,colour=sportcolors$secondary[i]) 
 }
-gg <- gg + scale_x_continuous(breaks = seq(1,nrow(subset(datbetas,team==sportcolors$name[i])),dims["nweeks"]), labels = c(2006:2015))
-
+if (sport == "nhl"){
+gg <- gg + scale_x_continuous(breaks = seq(1,nrow(subset(datbetas,team==sportcolors$name[i])),dims["nweeks"]), labels = c(2006:2014))}
+if (sport != "nhl"){
+gg <- gg + scale_x_continuous(breaks = seq(1,nrow(subset(datbetas,team==sportcolors$name[i])),dims["nweeks"]), labels = c(2005:2014))}
 return(gg)
 }
 
