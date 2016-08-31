@@ -141,7 +141,7 @@ p1 <- p + geom_point() +
   coord_flip()
 @
 
-<<alphaAll, height = 10, width = 6, fig.cap="Median posterior draw (with 2.5th, 97.5th quantiles) of each franchise's home advantage intercept, on log odds scale">>=
+<<alphaAll, fig.height = 10, fig.width = 6, fig.cap="Median posterior draw (with 2.5th, 97.5th quantiles) of each franchise's home advantage intercept, on log odds scale">>=
 p1
 @
 
