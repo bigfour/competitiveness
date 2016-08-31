@@ -174,9 +174,9 @@ $$
 $$
 
 
-where $\bf{y}_{(s,k)}$ is a vector of score differentials, $\tilde{\theta}_{(s,k)}$ is a vector containing both the team strengths and the HFA parameters, $\bf{\alpha}$, $\phi$ is the precision and $n_{(s,k)}$ is the number of games played in week $k$ during season $s$.  The matrix $\tilde{X}_{(s,k)}$ consists of $n_{(s,k)}$ rows and $2t$ columns.  The first $t$ columns contain the values 1, 0, and -1 where a 1/-1 in the $i$-th column indicates that team $i$ was the home/away team for the game corresponding to that row and a $0$ otherwise.  The second set of $t$ columns (i.e. t+1 to 2t) contains a 1 in the $i$-th column (i.e column t+i) if team $i$ is playing at home and 0 otherwise.  
+where $\bf{y}_{(s,k)}$ is a vector of score differentials, $\tilde{\theta}_{(s,k)}$ is a vector containing the team strengths and the home advantage parameters, $\phi$ is the precision, and $n_{(s,k)}$ is the number of games played in week $k$ during season $s$.  The matrix $\tilde{X}_{(s,k)}$ consists of $n_{(s,k)}$ rows and $2t$ columns.  The first $t$ columns contain the values 1, 0, and -1 where a 1/-1 in the $i$-th column indicates that team $i$ was the home/away team for the game corresponding to that row and a $0$ otherwise.  The second set of $t$ columns (i.e. t+1 to 2t) contains a 1 in the $i$-th column (i.e column t+i) if team $i$ is playing at home and 0 otherwise.  
 
-The model of \citep{glickman1998state} allows for team strength parameters to vary stochastically in two distinct ways: 1) from the last week of season $s$ to the first week of season $s+1$, and 2) from week $k$ of season $s$ to week $k+1$ of season $s$.  
+The model of \cite{glickman1998state} allows for team strength parameters to vary stochastically in two distinct ways: 1) from the last week of season $s$ to the first week of season $s+1$, and 2) from week $k$ of season $s$ to week $k+1$ of season $s$.  
 
 The variation from the last week of one season to the first week of the next season is expressed as: 
 
@@ -184,14 +184,14 @@ The variation from the last week of one season to the first week of the next sea
 
 
 $$
-\theta_{(s+1,1)} | \gamma_{seas}, \bf{\theta_{(s,g_{s})}}, \phi, \omega_{seas} \sim N (\gamma_{seas}\bf{G}\bf{\theta_{(s,g_{s})}},(\phi\omega_{seas})^{-1}I_{t}
+\theta_{(s+1,1)} | \gamma_{seas}, \bf{\theta_{(s,g_{s})}}, \phi, \omega_{seas} \sim N (\gamma_{seas}\bf{G}\bf{\theta_{(s,g_{s})}},(\phi\omega_{seas})^{-1}I_{t})
 $$
 
 where $\bf{G}$ is the matrix that transforms $\bf{\theta_{(s,g_{s})}}$ to $\bf{\theta_{(s,g_{s})}} - \bar{\bf{\theta}}_{(s,g_{s})}$ and $g_{s}$ is the number of weeks in season $s$.  
 
-The model parameters also vary from week to week as follows: 
+Team strength parameters also vary from week to week as follows: 
 $$
-\theta_{(s,k+1)} | \gamma_{week}, \bf{\theta}_{(s,k)}, \phi, \omega_{week} \sim N (\gamma_{week}\bf{G}\bf{\theta}_{(s,k)},)\phi\omega_{week})^{-1}I_{t})
+\theta_{(s,k+1)} | \gamma_{week}, \bf{\theta}_{(s,k)}, \phi, \omega_{week} \sim N (\gamma_{week}\bf{G}\bf{\theta}_{(s,k)},(\phi\omega_{week})^{-1}I_{t})
 $$
 
 %$Y_{ij}$ is the number of times that team $i$ beats team $j$ and $p_{ij}$ is the probability that team $i$ beats team $j$.  
@@ -206,7 +206,7 @@ $$
 
 
 
-Once nice property of the state-space model is that it prior and future season performances are incorporated into season-specific measurements of team quality. Perhaps as a result, \cite{koopmeiners2012comparison} identified stronger fits when comparing state-space models to BTM's fit separately within each season. Additionally, while the standard BTM would suffer from an identifiability problem were a team to either win or lose all of its games, %\footnote{In the NFL, for example, the 2007 New England Patriots won all of its regular season games, while the 2008 Detroit Lions lost all of its regular season games} this is less of an issue in dynamic models estimated across multiple seasons. 
+An attractive property of the state-space model is that it prior and future season performances are incorporated into season-specific measurements of team quality. Perhaps as a result, \cite{koopmeiners2012comparison} identified stronger fits when comparing state-space models to BTM's fit separately within each season. Additionally, state space models to not typically suffer from identifiability problems were a team to win or lose all of its games in a single season. %\footnote{In the NFL, for example, the 2007 New England Patriots won all of its regular season games, while the 2008 Detroit Lions lost all of its regular season games} this is less of an issue in dynamic models estimated across multiple seasons. 
 
 
 
@@ -216,49 +216,24 @@ Alternative specifications to the original state-space model have been proposed.
 
 
 
-As additional and related BTM resources, team-specific home advantages using a BTM were compared to a constant HFA model by \citep{tutz2015extended} in soccer and \cite{koopmeiners2012comparison} in football. \cite{matthews2005improving} considered data transformations of NFL score outcomes to account for blowouts in BTM's, and \cite{owen2011dynamic} used dynamic Bayesian models in association football with evolution variance parameters. \citep{koopmeiners2012comparison} explicitly modeled the variance parameters of team strength in football, finding little change over time. 
+As additional and related BTM resources, team-specific home advantages using a BTM were compared to a constant HFA model by \citep{tutz2015extended} in soccer and \cite{koopmeiners2012comparison} in football. \cite{matthews2005improving} considered data transformations of NFL score outcomes to account for blowouts in BTM's, and \cite{owen2011dynamic} used dynamic Bayesian models in association football with evolution variance parameters. \cite{koopmeiners2012comparison} explicitly modeled the variance parameters of team strength in football, finding little change over time. 
 
 
 
 %Elo should go in somewhere
-Alternative measures for estimating team strength have also been developed in place of paired comparison models. \citep{massey1997statistical} used maximum likelihood estimation to develop a rating system using American football outcomes, called Massey rankings. A more general summary of other rating systems for forecasting use is explored by \cite{boulier2003predicting}. In addition, support vector machines and simulation models have been proposed in hockey \citep{demers2015riding, buttrey2016beating}, neural networks and Naive Bayes implemented in basketball \citep{loeffelholz2009predicting, miljkovic2010use}, linear models and probit regressions in football \cite{harville1980predictions, boulier2003predicting}, and two stage Bayesian models in baseball \citep{yang2004two}. While this is no doubt an incomplete list, it speaks to the depth and variety of coverage that sports prediction models have generated. 
+In place of paired comparison models, alternative measures for estimating team strength have also been developed. \citep{massey1997statistical} used maximum likelihood estimation to develop a rating system using American football outcomes, called Massey rankings. A more general summary of other rating systems for forecasting use is explored by \cite{boulier2003predicting}. In addition, support vector machines and simulation models have been proposed in hockey \citep{demers2015riding, buttrey2016beating}, neural networks and Naive Bayes implemented in basketball \citep{loeffelholz2009predicting, miljkovic2010use}, linear models and probit regressions in football \cite{harville1980predictions, boulier2003predicting}, and two stage Bayesian models in baseball \citep{yang2004two}. While this is no doubt an incomplete list, it speaks to the depth and variety of coverage that sports prediction models have generated. 
 
 
-One final predictive measure that has often been used for sake of comparison is that provided by betting markets. Before each contest, sports books, including those in Las Vegas and in overseas markets, provide a price for each team, more commonly known as the money line. For example, assume team $i$ was -140 on the money line against team $j$, which was priced at +120. A bet of \$140 on team $i$ would yield a \$100 profit, while backing $j$ for \$100 would produce a \$120 profit. A savvy bettor would back team $i$ if there was a belief that $i$'s actual win probability against $j$ was greater than 58.3\% (140/240). Alternatively, that bettor would back $j$ if the expectation was that $j$ would win more than 45.4\$ (100/220) of the time. Note that these two probabilities sum to more than 1; this accounts for the 'vigorish' taken in by markets which helps them, over the long run, remain profitable. However, it is straightforward to normalize money-line prices to sum to unity. In our example, dividing each probability by 1.038 (140/240 + 100/220) suggests $i$ has a 56.2\% chance of defeating $j$. 
+One final predictive measure that has often been used for sake of comparison is that provided by betting markets. Before each contest, sports books, including those in Las Vegas and in overseas markets, provide a price for each team, more commonly known as the money line. For example, assume team $i$ was -140 on the money line against team $j$, which was priced at +120. A bet of \$140 on team $i$ would yield a \$100 profit with an $i$ victory, while backing $j$ for \$100 would produce a \$120 profit were $j$ to win. A savvy bettor would back team $i$ if there was a belief that $i$'s actual win probability against $j$ was greater than 58.3\% (140/240). Alternatively, that bettor would back $j$ if the expectation was that $j$ would win more than 45.4\% (100/220) of the time. Note that these two probabilities sum to more than 1; this accounts for the 'vigorish' taken in by markets which helps them, over the long run, remain profitable. However, it is straightforward to normalize money-line prices to sum to unity. In our example, dividing each probability by 1.038 (140/240 + 100/220) implies $i$ has a 56.2\% chance of defeating $j$. 
 
-In principal, money line prices account for all determinants of game outcomes, including team strength, location, and injuries. Across time and sporting leagues, researchers have identified that these prices are incredibly difficult to beat; i.e, that the betting markets are efficient. As an incomplete list, see \citep{harville1980predictions}, \citep{stern1991probability}, \cite{carlin1996improved}, \cite{colquitt2001testing}, \cite{nichols2012impact}, \cite{paul2014market}. Interestingly, \citep{colquitt2001testing} suggested that the efficiency of college basketball markets was proportional to the amount of pre-game information available, which would suggest that markets in professional sports are as efficient as they come. \citep{manner2015modeling} merged predictions from a state-space model with those from betting markets, finding that the combination of predictions only occasionally outperformed betting markets alone.
-
-
-
-
-In addition to being used as standards by which to judge predictive accuracy, betting markets have been used to suggest that NBA teams `tank' \citep{soebbing2013gamblers}, that bettors place larger shares of bets on the home team \citep{paul2011nfl}, and that markets do not move lines to attract an even number of bets on each side \citep{paul2008price,humphreys2014understanding}. We are not aware of any published findings that have compared leagues using implied probabilities. In one somewhat related cross-sport project, \citep{wolfson2015s} used BTM's and margin-of-victory BTM's to find a clear separation between two pairs of leagues, the NFL and the NBA versus the NHL and MLB, as far as predictive accuracy when testing out of sample.
-
-
-
-\subsection{Model Fitting}
+In principal, money line prices account for all determinants of game outcomes, including team strength, location, and injuries. Across time and sporting leagues, researchers have identified that these prices are incredibly difficult to beat; i.e, that the betting markets are efficient. As an incomplete list, see \citep{harville1980predictions}, \citep{stern1991probability}, \cite{carlin1996improved}, \cite{colquitt2001testing}, \cite{nichols2012impact}, \cite{paul2014market}. Interestingly, \citep{colquitt2001testing} suggested that the efficiency of college basketball markets was proportional to the amount of pre-game information available, which would suggest that markets in professional sports are as efficient as they come. \cite{manner2015modeling} merged predictions from a state-space model with those from betting markets, finding that the combination of predictions only occasionally outperformed betting markets alone.
 
 
 
 
-Model assessment using DIC \citep{koopmeiners2012comparison}
+In addition to being used as standards by which to judge predictive accuracy, betting markets have been used to suggest that NBA teams `tank' \citep{soebbing2013gamblers}, that bettors place larger shares of bets on the home team \citep{paul2011nfl}, and that markets do not move lines to attract an even number of bets on each side \citep{paul2008price,humphreys2014understanding}. We are not aware of any published findings that have compared leagues using implied probabilities. In one somewhat related cross-sport project, \cite{wolfson2015s} used BTM's and margin-of-victory BTM's to find a clear separation between two pairs of leagues, the NFL and the NBA versus the NHL and MLB, as far as predictive accuracy when testing out of sample.
 
-Measurements of competitive balance
-
-Competitive balance at a single point in time (independent of scheduling)
-
-Fix point in time. Draw from posterior distribution of each team's beta at that time. Calculate standard deviation of those posterior draws. Repeat 10000 times to get a posterior distribution of the standard deviation of team strength (CBR at that time)
-
-Competitive balance between seasons
-
-Posterior distribution of gamma season
-
-Possible issue: we are assuming same HFA pre and post reallignment. Supersonics HFA is different than Thunder's (same with Thrashers to Jets in NHL)
-
-Competitive balance within a season
-
-Posterior distribution of the gammaWeek
--Function of overall differences in team strength (2\% in NBA is not same as 2\% in MLB)
--Function of injuries and players resting, which aren't necessarily getting at team strength
+Paragraph setting up our goals
 
 
 \section{Validation of betting market data}
@@ -406,6 +381,35 @@ $$
 
 
 \section{Results}
+
+
+
+\subsection{Model Fitting}
+
+
+
+
+Model assessment using DIC \citep{koopmeiners2012comparison}
+
+Measurements of competitive balance
+
+Competitive balance at a single point in time (independent of scheduling)
+
+Fix point in time. Draw from posterior distribution of each team's beta at that time. Calculate standard deviation of those posterior draws. Repeat 10000 times to get a posterior distribution of the standard deviation of team strength (CBR at that time)
+
+Competitive balance between seasons
+
+Posterior distribution of gamma season
+
+Possible issue: we are assuming same HFA pre and post reallignment. Supersonics HFA is different than Thunder's (same with Thrashers to Jets in NHL)
+
+Competitive balance within a season
+
+Posterior distribution of the gammaWeek
+-Function of overall differences in team strength (2\% in NBA is not same as 2\% in MLB)
+-Function of injuries and players resting, which aren't necessarily getting at team strength
+
+
 
 Paragraph about model checks being satisfied. Do we include trace plots?
 
