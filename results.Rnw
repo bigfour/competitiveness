@@ -14,7 +14,7 @@ sports <- c("mlb", "nba", "nfl", "nhl")
 
 get_sport <- function(sport) {
   message(paste("reading", sport, "data..."))
-  load(file.path(mcmc_dir, paste0(sport, "_8_23_constantHFA.RData")))
+  load(file.path(mcmc_dir, paste0(sport, "_8_23_teamHFA.RData")))
   out <- data.frame(
     sigma_w = 1/z$sigmab[,,1],
     sigma_s = 1/z$sigmabSeason[,,1],
@@ -22,9 +22,14 @@ get_sport <- function(sport) {
     gamma_s = z$gammaSeason[,,1]
   ) %>%
     mutate(sport = sport)
+  alpha <- data.frame(
+    alpha = z$alpha[,,1]
+  ) %>%
+    mutate(sport = sport)
+  alphaInd <- z$alphaInd
   beta <- z$beta
   rm(z)
-  return(list(out = out , beta = beta))
+  return(list(out = out , beta = beta, alpha = alpha, alphaInd = alphaInd))
 }
 
 #Your code is so much better written than mine that I feel physical pain.  
@@ -38,7 +43,12 @@ library(ggplot2)
 library(teamcolors)
 
 betas <- lapply(dat,function(x){return(x[["beta"]])})  
+alphaInds <- lapply(dat, function(x) {return(x[["alphaInd"]])})
+alphas <- lapply(dat,function(x){return(x[["alpha"]])})  %>% bind_rows()
+
 rm(dat)
+
+names(alphaInds) <- sports
 names(betas) <-  sports
 
 makePrettySportPlot <- function(sport){
@@ -80,7 +90,7 @@ ggmlb
 ggnfl
 ggnhl
 ggnba
-@
+ @
 
 
 
@@ -90,9 +100,51 @@ ggplot(sigmas, aes(x = sigma_w, y = sigma_s, color = sport)) +
 @
 
 <<contourGamma, fig.cap="Contour plot of the season-to-season and week-to-week auto-regressive parameter across all four major sports.">>=
-library(ggplot2)
 ggplot(sigmas, aes(x = gamma_w, y = gamma_s, color = sport)) + 
   geom_density_2d() + geom_point(alpha = 0.1)
 @
+
+
+
+<<>>=
+## Home advantage plots
+load("data/bigfour.rda")
+sport.est <- alphas %>% group_by(sport) %>% summarise(alpha.sport = mean(alpha))
+makeAlphas <- function(sport){
+  teamnames <- sort(t(unique(bigfour[bigfour$sport==sport,"home_team"])))
+  if (sport == "nba"){teamnames[31] <- "Seattle Supersonics"}
+  if (sport == "nhl"){teamnames[31] <- "Atlanta Thrashers"}
+  out.med <- apply(alphaInds[[sport]],c(1),median)
+  out.lower <- apply(alphaInds[[sport]],c(1), quantile, probs = 0.025)
+  out.upper <- apply(alphaInds[[sport]],c(1), quantile, probs = 0.975)
+  dat.alphas <- data.frame(alpha.team = out.med, alpha.lower = out.lower, 
+                           alpha.upper = out.upper, team = teamnames, sport = sport)
+  return(dat.alphas)
+}
+
+dat.alphas <- lapply(sports[1:4], makeAlphas) 
+alphas.all <- lapply(dat.alphas,function(x){return(x[])}) %>%  
+        bind_rows() %>% 
+        left_join(sport.est) %>%
+        mutate(alpha.team.overall = alpha.team + alpha.sport, 
+               alpha.team.lower = alpha.lower + alpha.sport, 
+               alpha.team.upper = alpha.upper + alpha.sport, 
+               sport = factor(sport, levels = c("nba", "nfl", "nhl", "mlb")))
+
+limits <- aes(ymax = alpha.team.upper, ymin=alpha.team.lower)
+positions <- alphas.all[order(alphas.all$alpha.team.overall),]$team
+p <- ggplot(alphas.all, aes(y=alpha.team.overall, x=team, colour = sport))
+breaks <- c(log(seq(1.2, 1.8, by = 0.2)))
+p1 <- p + geom_point() + 
+  geom_errorbar(limits, width=0.2) + 
+  scale_x_discrete(limits = positions) + 
+  coord_flip()
+@
+
+<<alphaAll, height = 10, width = 6, fig.cap="Median posterior draw (with 2.5th, 97.5th quantiles) of each franchise's home advantage intercept, on log odds scale">>=
+p1
+@
+
+
 
 
