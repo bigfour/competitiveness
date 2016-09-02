@@ -3,7 +3,7 @@ library(RCurl)
 
 
 seasons<-list()
-for (yyy in 2014:2014){print(yyy)
+for (yyy in 1950:2015){print(yyy)
 url<-paste("http://www.basketball-reference.com/leagues/NBA_",yyy,"_games.html?lid=header_seasons",sep="")
 print(url)
 temp <- readHTMLTable(url)
