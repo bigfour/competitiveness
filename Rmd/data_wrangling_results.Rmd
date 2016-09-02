@@ -342,5 +342,5 @@ print.data.frame()
 table(bigfour$home_team, bigfour$season)
 table(bigfour$visitor_team, bigfour$season)
 bigfour <- select(bigfour, -dh.x, -dh.y)
-save(bigfour, file = "data/bigfour.rda", compress = "xz")
+#save(bigfour, file = "data/bigfour.rda", compress = "xz")
 ```
