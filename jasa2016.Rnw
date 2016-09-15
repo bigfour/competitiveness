@@ -420,13 +420,16 @@ Taken wholly, this suggests non-random differences in the home advantage between
 
 \subsection{Posterior estimates}
 
-Do we want a table of the sigma's and the gamma's and the alpha's (overall)?
+
+A summary of of the posterior draws of several coefficients is shown in Table~\ref{tab:summary}, which uses draws from Model (\ref{model.full}).
+
+%Do we want a table of the sigma's and the gamma's and the alpha's (overall)?  
 
 Figure XX-XY show estimated team coefficients over time, approximated by using posterior mean draws from Model (\ref{model.full}) for all weeks $k$ and seasons $s$. Teams in Figures XX-XY are depicted using their two primary colors, scraped from \url{http://jim-nielsen.com/teamcolors/} via the `teamcolors` package (\url{https://github.com/beanumber/teamcolors}) in R.
 
-Overall, there tends to be larger amounts of variability in team strength parameters at any given point in time in both the NFL and NBA, with posterior team strength coefficients tending to vary between -1.5 and 1.5 (on the logit scale). Team-to-team level variability is substantially lower in the MLB (roughly between -0.5 and 0.5) and the NHL (-0.6 to 0.6). Among other findings in the four figures, the New England Patriots' 2007 season (NFL) stands out as the top individual performance of the last decade. That franchise finished the regular season 16-0 before eventually losing in the Super Bowl. Additionally, in the NBA, it is interesting to notice that the worse team strength estimates - for example, Cleveland in 2007-08 - lie further from 0 than the best teams. This possibly relates to the tendency for teams in this league to `tank`, which involves losing games as to increase the chances of improved positioning in the upcoming league draft \citep{soebbing2013gamblers}.
+Overall, there tends to be larger amounts of variability in team strength parameters at any given point in time in both the NFL and NBA, with posterior team strength coefficients tending to vary between -1.5 and 1.5 (on the logit scale). Team-to-team level variability is substantially lower in the MLB (roughly between -0.5 and 0.5) and the NHL (-0.6 to 0.6). Among other findings in the four figures, the New England Patriots' 2007 season (NFL) stands out as the top individual performance of the last decade. In that season, New England finished the regular season 16-0 before eventually losing in the Super Bowl. Additionally, in the NBA, it is interesting to notice that the team strength estimates of the bad teams - for example, Cleveland in 2007-08 - lie further from 0 than the the estimates for the good teams. This possibly relates to the tendency for teams in this league to `tank`, which involves losing games as to increase the chances of improved positioning in the upcoming league draft \citep{soebbing2013gamblers}.
 
-In the NHL and only the NHL, there seems to be a peculiar convergence of team strength estimates towards 0, perhaps implying that team talent is less variable in recent years. Alternatively, the league's point system, which changed before the 2005-06 season and encouraged teams to play more overtime games \citep{lopez2013 inefficiencies}, could be responsible. If teams were purposefully playing more overtime to secure points towards season standings, it would lead to changes in how betting markets views team strenths, as overtime sessions and frequent shootouts are, by and large, coin flips \citep{lopez2016predicting}. As one final point of clarification, the periods with straight lines of team strength estimates in the 2013 season (NHL) and 2012 season (NBA) reflect time lost due to lockouts. 
+In the NHL and only the NHL, there seems to be a peculiar convergence of team strength estimates towards 0 over time, perhaps implying that team talent is less variable in recent years. Alternatively, the league's point system, which changed before the 2005-06 season and encouraged teams to play more overtime games \citep{lopez2013 inefficiencies}, could be responsible. If teams were purposefully playing overtime contests more often, it could lead to different perceptions in how betting markets view team strenths, as overtime sessions and the resulting shootouts are, by and large, coin flips \citep{lopez2016predicting}. As one final point of clarification, the periods with straight lines of team strength estimates in the 2013 season (NHL) and 2012 season (NBA) reflect time lost due to lockouts. 
 
 Contour plots using posterior draws of season-to-season $\sigma_{q,seas}$ and week-to-week $\sigma_{q,week}$ variability in team strength are shown in Figure WW using separate colors for each sport. There is the highest variability in team strength estimates in the NBA, followed in order by the NFL, NHL, and MLB. The importance of star players in the NBA is one potential driver of these findings \citep{berri2006road}; injuries or trades involving the league's best players perhaps have a larger influence in the NBA than in other leagues, causing immediate shifts in the estimates of team strength.
 
@@ -435,34 +438,7 @@ Contour plots using posterior draws of season-to-season $\sigma_{q,seas}$ and we
 
 The joint posterior distribution of $\gamma_{q,seas}$ and $\gamma_{q,week}$ is likewise shown in Figure YY via contour plots for each sport. For each of the NHL, NBA, and NFL, the posterior estimates of $ \gamma_{q,week}$ (and 95\% credible intervals) do not cross 1, implying some auto-regressive nature to team caliber within each season. In the MLB, meanwhile, team strength estimates quite possibly follow a random walk (as in $\gamma_{q, week} = 1$). 
 
-On a season-to-season basis, team strengths in each of the leagues tend to revert towards the league average (0). Reversion towards the mean is largest in the NHL (posterior mean $\gamma_{q,seas} = 0.55$, implying 45\% reversion), followed by MLB (38\% reversion), NBA (36\%), and the NFL (30\%). 
-In the NFL, the slight inverse association between the autoregressive parameters, as shown in Figure YY, matches that shown in \cite{glickman1998state}.
-
-
-
-
-
-A summary of of these three competitive balance estimates is shown in Table~\ref{tab:summary}, which uses draws from Model (\ref{model.full}).
-
-
-Model assessment using DIC \citep{koopmeiners2012comparison}
-
-Measurements of competitive balance
-
-Competitive balance at a single point in time (independent of scheduling)
-
-Fix point in time. Draw from posterior distribution of each team's beta at that time. Calculate standard deviation of those posterior draws. Repeat 10000 times to get a posterior distribution of the standard deviation of team strength (CBR at that time)
-
-Competitive balance between seasons
-
-Posterior distribution of gamma season
-
-Competitive balance within a season
-
-Posterior distribution of the gammaWeek
--Function of overall differences in team strength (2\% in NBA is not same as 2\% in MLB)
--Function of injuries and players resting, which aren't necessarily getting at team strength
-
+On a season-to-season basis, team strengths in each of the leagues tend to revert towards the league average (0). Reversion towards the mean is largest in the NHL (posterior mean $\gamma_{q,seas} = 0.55$, implying 45\% reversion), followed by MLB (38\% reversion), NBA (36\%), and the NFL (30\%). However, there is enough uncertainty in the posterior distribution of $\gamma_{q, seas}$ that we are unable to say for certain if the differences in the season-to-season autocorrelation between MLB, the NBA, and the NBA are significant. In the NFL, the slight inverse association between the two autoregressive parameters, as shown in Figure YY, matches that obseved in \cite{glickman1998state}.
 
 
 \input{results}
@@ -472,11 +448,6 @@ devtools::install_github("beanumber/teamcolors")
 library(teamcolors)
 @
 
-\subsection{Variability across sports}
-
-Describe the three parity measures here.
-
-NHL converges over time: why? Cite lower scoring and increased overtime. 
 
 \subsection{Visualizing the home advantage}
 
@@ -538,6 +509,22 @@ One likely reason that the NFL falls short of the NBA in this chart is that the 
 
 
 \section{Conclusion}
+
+
+Measurements of competitive balance: Competitive balance at a single point in time (independent of scheduling, compare to ???), Competitive balance between seasons (compare to Humphreys), competitiveness within a season (compare to )
+
+Alternative idea: Fix point in time. Draw from posterior distribution of each team's beta at that time. Calculate standard deviation of those posterior draws. Repeat 10000 times to get a posterior distribution of the standard deviation of team strength (CBR at that time)
+
+Competitive balance between seasons
+
+Posterior distribution of gamma season
+
+Competitive balance within a season
+
+Posterior distribution of the gammaWeek
+-Function of overall differences in team strength (2\% in NBA is not same as 2\% in MLB)
+-Function of injuries and players resting, which aren't necessarily getting at team strength
+
 \subsection{Summary}
 \subsection{Open Problems}
 
