@@ -420,73 +420,12 @@ Taken wholly, this suggests non-random differences in the home advantage between
 
 \subsection{Posterior estimates & competitive balance}
 
-Figure XX-XY show estimated team coefficients over time, approximated using the posterior mean draws from Model (\ref{model.full}). Each team in Figures XX-XY are depicted using their two primary colors, taken from \url{http://jim-nielsen.com/teamcolors/} into R via the `teamcolors` package (\url{https://github.com/beanumber/teamcolors}).
+Figure XX-XY show estimated team coefficients over time, approximated using the posterior mean draws from Model (\ref{model.full}). Each team in Figures XX-XY are depicted using their two primary colors, taken from \url{http://jim-nielsen.com/teamcolors/} via the `teamcolors` package (\url{https://github.com/beanumber/teamcolors}) in R.
 
-Team equivalence at a single snapshot in time can be estimated by taking the standard deviation of team strength estimates shown in Figures XX-XY, while season-to-season and week-to-week variability are approximated by posterior draws of \gamma_{q,seas} ($p(\tilde{x})) and \gamma_{q,week}, respectively. 
+The joint posterior distribution of $\gamma_{q,seas}$ and $\gamma_{q,week}$ is shown in Figure YY, which uses contour plots with separate colors for each sport. For each of the NHL, NBA, and NFL, the posterior estimate of $ \gamma_{q,week}$
 
 
 A summary of of these three competitive balance estimates is shown in Table~\ref{tab:summary}, which uses draws from Model (\ref{model.full}).
-
-<<message=FALSE, results='asis'>>=
-library(dplyr) 
-library(ggplot2)
-
-sports <- c("mlb", "nba", "nfl", "nhl")
-source("config.R")
-library(knitr)
-
-get_sport <- function(sport) {
-  message(paste("reading", sport, "data..."))
-  load(file.path(mcmc_dir, paste0(sport, "_8_23_teamHFA.RData")))
-  out <- data.frame(
-    sigma_w = 1/z$sigmab[,,1],
-    sigma_s = 1/z$sigmabSeason[,,1],
-    gamma_w = z$gammaWeek[,,1],
-    gamma_s = z$gammaSeason[,,1],
-    alpha = z$alpha[,,1]
-  ) %>%
-    mutate(sport = sport)
-  beta <- z$beta
-  rm(z)
-  return(list(out = out , beta = beta))
-}
-
-dat <- lapply(sports[1:4], get_sport) 
-betas <- lapply(dat,function(x) {return(x[["beta"]])})  
-sigmas <- lapply(dat,function(x){return(x[["out"]])})  %>% bind_rows()
-
-
-
-
-
-
-
-
-
-
-
-load("data/bigfour.rda")
-library(dplyr)
-library(xtable)
-n.games <- data.frame(sport = c("mlb","nba", "nfl", "nhl"), N_results = c(24299, 12059, 2560, 10564))
-bigfour %>%
-  filter(season %in% 2005:2014, playoffs == 0) %>%
-  group_by(sport) %>%
-  summarise(N = n(), 
-            earliest = as.character(min(gameDate)), 
-            latest = as.character(max(gameDate)),
-            num_teams = length(unique(setdiff(union(visitor_team, home_team), NA))), 
-            home_wp = sum(home_win, na.rm = TRUE) / sum(!is.na(home_win)),
-            N_bets = sum(!is.na(prob_home)), 
-            mean_home_p = mean(prob_home, na.rm = TRUE)) %>%
-  left_join(n.games) %>%
-  mutate(coverage = N_bets / N_results) %>%
-  xtable(caption = "Summary of cross-sport data. Note that we have near perfect coverage (betting odds for every game) across all four major sports during the 2005--2014 regular seasons.", 
-         digits = 3, label = "tab:bigfour") %>%
-  print(include.rownames = FALSE)
-@
-
-
 
 
 
