@@ -418,7 +418,7 @@ NHL & -14912  & -14739 & -172.2 (19.0)\\
 
 Taken wholly, this suggests non-random differences in the home advantage between NBA and NHL arenas, while it cannot be ruled out that any differences in the home advantage between NFL and MLB stadia are due to chance.
 
-\subsection{Posterior estimates & competitive balance}
+\subsection{Posterior estimates}
 
 Figure XX-XY show estimated team coefficients over time, approximated using the posterior mean draws from Model (\ref{model.full}). Each team in Figures XX-XY are depicted using their two primary colors, taken from \url{http://jim-nielsen.com/teamcolors/} via the `teamcolors` package (\url{https://github.com/beanumber/teamcolors}) in R.
 
@@ -427,10 +427,6 @@ The joint posterior distribution of $\gamma_{q,seas}$ and $\gamma_{q,week}$ is s
 
 A summary of of these three competitive balance estimates is shown in Table~\ref{tab:summary}, which uses draws from Model (\ref{model.full}).
 
-
-
-
-\subsection
 
 Model assessment using DIC \citep{koopmeiners2012comparison}
 
