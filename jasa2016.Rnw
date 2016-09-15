@@ -421,7 +421,7 @@ Taken wholly, this suggests non-random differences in the home advantage between
 \subsection{Posterior estimates}
 
 
-A summary of of the posterior draws of several coefficients is shown in Table~\ref{tab:summary}, which uses draws from Model (\ref{model.full}).
+A summary of of the posterior draws of several coefficients is shown in Table XX, which uses draws from Model (\ref{model.full}).
 
 %Do we want a table of the sigma's and the gamma's and the alpha's (overall)?  
 
