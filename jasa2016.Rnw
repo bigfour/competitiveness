@@ -386,7 +386,7 @@ logit(p_{(q,s,k)}) \sim N(\bf{\theta_{(q,s,k)}}\bf{X}_{q,s,k} + \alpha_{q0}\bf{J
 \end{eqnarray}
 
 
-Posterior distributions of each parameter are estimated using Markov Chian Monte Carlo (MCMC) methods. We used Gibbs sampling via the R2Winbugs package in the R statistical software \cite{sturtz2005r2winbugs} to obtain the posterior distributions, obtained separately within each $q$. Three chains, using 40,000 iterations after a burn-in of 2,000 draws, fit with a thin of 5 to reduce the autocorrelation within chains, yielded 8,000 posterior samples in each $q$. Visual inspection of trace plots with parallel chains are used to confirm convergence; comparisons of Models (\ref{model.full}) and (\ref{model.red}) are made using the Deviance Information Criterion (DIC, \cite{spiegelhalter2002bayesian}). 
+Posterior distributions of each parameter are estimated using Markov Chian Monte Carlo (MCMC) methods. We used Gibbs sampling via the R2Winbugs package in the R statistical software \cite{sturtz2005r2winbugs} to obtain the posterior distributions, obtained separately within each $q$. Three chains, using 40,000 iterations after a burn-in of 2,000 draws, fit with a thin of 5 to reduce the autocorrelation within chains, yielded 8,000 posterior samples in each $q$. Visual inspection of trace plots with parallel chains are used to confirm convergence; comparisons of Models (\ref{model.full}) and (\ref{model.red}) are made using the Deviance Information Criterion (DIC, \cite{spiegelhalter2002bayesian}), as implemented with a Bayesian state-space model by \cite{koopmeiners2012comparison}. 
 
 While we are unable to share our data, the data wrangling code, Gibbs Sampling code (via R2Winbugs), posterior draws, and the code used to obtain posterior estimates and figures are all posted to a Github repository, available at \url{https://github.com/bigfour/competitiveness}.
 
@@ -394,36 +394,10 @@ While we are unable to share our data, the data wrangling code, Gibbs Sampling c
 
 \section{Results}
 
-
-
 \subsection{Model Fitting}
 
-
-
-
-Model assessment using DIC \citep{koopmeiners2012comparison}
-
-Measurements of competitive balance
-
-Competitive balance at a single point in time (independent of scheduling)
-
-Fix point in time. Draw from posterior distribution of each team's beta at that time. Calculate standard deviation of those posterior draws. Repeat 10000 times to get a posterior distribution of the standard deviation of team strength (CBR at that time)
-
-Competitive balance between seasons
-
-Posterior distribution of gamma season
-
-Possible issue: we are assuming same HFA pre and post reallignment. Supersonics HFA is different than Thunder's (same with Thrashers to Jets in NHL)
-
-Competitive balance within a season
-
-Posterior distribution of the gammaWeek
--Function of overall differences in team strength (2\% in NBA is not same as 2\% in MLB)
--Function of injuries and players resting, which aren't necessarily getting at team strength
-
-
-
 Paragraph about model checks being satisfied. Do we include trace plots?
+
 
 Model fit comparisons differed by league. Table \ref{tab:DIC} shows the DIC for each fit in each league, along with the difference in DIC values and its standard error. In the NBA and NHL, fits with a team-specific HFA yielded significantly lower DIC's (lower is better), while in the NFL and MLB, DIC values were roughly similar between fits. 
 
@@ -442,6 +416,102 @@ NHL & -14912  & -14739 & -172.2 (19.0)\\
 \caption{Deviance information criterion (DIC) by sport and model, along with difference in DIC (standard errors of the difference shown in parenthesis) ) \label{tab:DIC}}
 \end{table}
 
+Taken wholly, this suggests non-random differences in the home advantage between NBA and NHL arenas, while it cannot be ruled out that any differences in the home advantage between NFL and MLB stadia are due to chance.
+
+\subsection{Posterior estimates & competitive balance}
+
+Figure XX-XY show estimated team coefficients over time, approximated using the posterior mean draws from Model (\ref{model.full}). Each team in Figures XX-XY are depicted using their two primary colors, taken from \url{http://jim-nielsen.com/teamcolors/} into R via the `teamcolors` package (\url{https://github.com/beanumber/teamcolors}).
+
+Team equivalence at a single snapshot in time can be estimated by taking the standard deviation of team strength estimates shown in Figures XX-XY, while season-to-season and week-to-week variability are approximated by posterior draws of \gamma_{q,seas} ($p(\tilde{x})) and \gamma_{q,week}, respectively. 
+
+
+A summary of of these three competitive balance estimates is shown in Table~\ref{tab:summary}, which uses draws from Model (\ref{model.full}).
+
+<<message=FALSE, results='asis'>>=
+library(dplyr) 
+library(ggplot2)
+
+sports <- c("mlb", "nba", "nfl", "nhl")
+source("config.R")
+library(knitr)
+
+get_sport <- function(sport) {
+  message(paste("reading", sport, "data..."))
+  load(file.path(mcmc_dir, paste0(sport, "_8_23_teamHFA.RData")))
+  out <- data.frame(
+    sigma_w = 1/z$sigmab[,,1],
+    sigma_s = 1/z$sigmabSeason[,,1],
+    gamma_w = z$gammaWeek[,,1],
+    gamma_s = z$gammaSeason[,,1],
+    alpha = z$alpha[,,1]
+  ) %>%
+    mutate(sport = sport)
+  beta <- z$beta
+  rm(z)
+  return(list(out = out , beta = beta))
+}
+
+dat <- lapply(sports[1:4], get_sport) 
+betas <- lapply(dat,function(x) {return(x[["beta"]])})  
+sigmas <- lapply(dat,function(x){return(x[["out"]])})  %>% bind_rows()
+
+
+
+
+
+
+
+
+
+
+
+load("data/bigfour.rda")
+library(dplyr)
+library(xtable)
+n.games <- data.frame(sport = c("mlb","nba", "nfl", "nhl"), N_results = c(24299, 12059, 2560, 10564))
+bigfour %>%
+  filter(season %in% 2005:2014, playoffs == 0) %>%
+  group_by(sport) %>%
+  summarise(N = n(), 
+            earliest = as.character(min(gameDate)), 
+            latest = as.character(max(gameDate)),
+            num_teams = length(unique(setdiff(union(visitor_team, home_team), NA))), 
+            home_wp = sum(home_win, na.rm = TRUE) / sum(!is.na(home_win)),
+            N_bets = sum(!is.na(prob_home)), 
+            mean_home_p = mean(prob_home, na.rm = TRUE)) %>%
+  left_join(n.games) %>%
+  mutate(coverage = N_bets / N_results) %>%
+  xtable(caption = "Summary of cross-sport data. Note that we have near perfect coverage (betting odds for every game) across all four major sports during the 2005--2014 regular seasons.", 
+         digits = 3, label = "tab:bigfour") %>%
+  print(include.rownames = FALSE)
+@
+
+
+
+
+
+
+\subsection
+
+Model assessment using DIC \citep{koopmeiners2012comparison}
+
+Measurements of competitive balance
+
+Competitive balance at a single point in time (independent of scheduling)
+
+Fix point in time. Draw from posterior distribution of each team's beta at that time. Calculate standard deviation of those posterior draws. Repeat 10000 times to get a posterior distribution of the standard deviation of team strength (CBR at that time)
+
+Competitive balance between seasons
+
+Posterior distribution of gamma season
+
+Competitive balance within a season
+
+Posterior distribution of the gammaWeek
+-Function of overall differences in team strength (2\% in NBA is not same as 2\% in MLB)
+-Function of injuries and players resting, which aren't necessarily getting at team strength
+
+
 
 \input{results}
 
@@ -455,6 +525,12 @@ library(teamcolors)
 Describe the three parity measures here.
 
 NHL converges over time: why? Cite lower scoring and increased overtime. 
+
+\subsection{Visualizing the home advantage}
+
+Informally, team-level home advantage coefficients similar in effect size, both in magnitude and with respect to team ranking, to those depicted by \citep{koopmeiners2012comparison} in the NFL.
+
+
 
 \subsection{Uncertainty of postseason tournaments}
 
