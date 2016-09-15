@@ -385,7 +385,11 @@ In addition, we propose a reduced version of Model (\ref{model.full}) that assum
 logit(p_{(q,s,k)}) \sim N(\bf{\theta_{(q,s,k)}}\bf{X}_{q,s,k} + \alpha_{q0}\bf{J}_{g_{q,s,k}}, \tau^{2}_{q,error}\bf{I}_{g_{(q,s,k)}}) \label{model.red}
 \end{eqnarray}
 
-Comparisons of Models (\ref{model.full}) and (\ref{model.red}) will be made using the Deviance Information Criterion (DIC, )
+
+Posterior distributions of each parameter are estimated using Markov Chian Monte Carlo (MCMC) methods. We used Gibbs sampling via the R2Winbugs package in the R statistical software \cite{sturtz2005r2winbugs} to obtain the posterior distributions, obtained separately within each $q$. Three chains, using 40,000 iterations after a burn-in of 2,000 draws, fit with a thin of 5 to reduce the autocorrelation within chains, yielded 8,000 posterior samples in each $q$. Visual inspection of trace plots with parallel chains are used to confirm convergence; comparisons of Models (\ref{model.full}) and (\ref{model.red}) are made using the Deviance Information Criterion (DIC, \cite{spiegelhalter2002bayesian}). 
+
+While we are unable to share our data, the data wrangling code, Gibbs Sampling code (via R2Winbugs), posterior draws, and the code used to obtain posterior estimates and figures are all posted to a Github repository, available at \url{https://github.com/bigfour/competitiveness}.
+
 
 
 \section{Results}
