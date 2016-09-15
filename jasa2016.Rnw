@@ -316,9 +316,9 @@ Now, let $p_{(q,s,k)ij}$ correspond to the probability that team $i$ will beat t
 
 We then fit the model
 
-$$
-logit(p_{(q,s,k)}) \sim N(\bf{\theta_{(q,s,k)}}\bf{X}_{q,s,k} + \alpha_{q0}\bf{J}_{g_{q,s,k}} + \bf{\alpha}_{q}\bf{Z}_{q,s,k}, \tau^{2}_{q,error}\bf{I}_{g_{(q,s,k)}})
-$$
+\begin{eqnarray}
+logit(p_{(q,s,k)}) \sim N(\bf{\theta_{(q,s,k)}}\bf{X}_{q,s,k} + \alpha_{q0}\bf{J}_{g_{q,s,k}} + \bf{\alpha}_{q}\bf{Z}_{q,s,k}, \tau^{2}_{q,error}\bf{I}_{g_{(q,s,k)}}) \label{model.full}
+\end{eqnarray}
 
 $\bf{\theta_{(q,s,k)}}$ is a vector of length $t_{q}$, where $t_{q}$ is the number of teams in league $q$, containing the team strength parameters in season $s$ during week $k$, $\alpha_{q0}$ is the overall home field advantage parameter for sports league $q$, and $\bf{\alpha}_{q}$ is a vector of length $T_{q}$ containing team specific home field advantage parameters for league $q$ that do not vary over time (i.e. HFA is assumed to be constant for a team over weeks and seasons). $\bf{X}_{q,s,k}$ and $\bf{Z}_{q,s,k}$ are both of dimension $g_{(q,s,k)}$, the number of games in league $q$ during week $k$ of season $s$, by $t_{q}$.   The matrix $\bf{X}_{q,s,k}$ contains the values 1, 0, and -1 where for a given row (i.e. one game) the value of $i$-th column in that row is a 1/-1 if the $i$-th team played at home/away in the given game and 0 otherwise.  $\bf{Z}_{q,s,k}$ is a matrix containing a 1 in the $i$-th column if the $i$-th team played the game corresponding to that row at home and 0 otherwise.  Finally, $\tau^{2}_{q,error} =  \frac{1}{\sigma^{2}_{q,error}}$ is the precision, $\bf{J}_{g_{q,s,k}}$ is a column vector of length $g_{q,s,k}$ containing all 1's,and $\bf{I}_{g_{(q,s,k)}}$ is an identity matrix with dimension ${g_{(q,s,k)}}$ by ${g_{(q,s,k)}}$.  
 
@@ -378,6 +378,14 @@ $$
 $$
 \gamma_{q,season}\sim Uniform(0,2)
 $$
+
+In addition, we propose a reduced version of Model (\ref{model.full}) that assumes a constant sport-level home advantage for each time,
+
+\begin{eqnarray}
+logit(p_{(q,s,k)}) \sim N(\bf{\theta_{(q,s,k)}}\bf{X}_{q,s,k} + \alpha_{q0}\bf{J}_{g_{q,s,k}}, \tau^{2}_{q,error}\bf{I}_{g_{(q,s,k)}}) \label{model.red}
+\end{eqnarray}
+
+Comparisons of Models (\ref{model.full}) and (\ref{model.red}) will be made using the Deviance Information Criterion (DIC, )
 
 
 \section{Results}
