@@ -396,7 +396,9 @@ While we are unable to share our data, the data wrangling code, Gibbs Sampling c
 Paragraph about model checks being satisfied. Do we include trace plots?
 
 
-Model fit comparisons differed by league. Table \ref{tab:DIC} shows the DIC for each fit in each league, along with the difference in DIC values and its standard error. In the NBA and NHL, fits with a team-specific HFA yielded significantly lower DIC's (lower is better), while in the NFL and MLB, DIC values were roughly similar between fits. 
+Model fit comparisons differed by league. Table~\ref{tab:DIC} shows the DIC for each fit in each league, along with the difference in DIC values and its standard error. In the NBA and NHL, fits with a team-specific HFA yielded significantly lower DIC's (lower is better), while in the NFL and MLB, DIC values were roughly similar between fits. 
+
+\ben{Where is the data that creates this table? We should make this table with xtable.}
 
 \begin{table}[!ht]
 \makebox[\linewidth]{
@@ -480,7 +482,7 @@ Next, let $\bar{\widehat{\theta}}_{q,s, |r|}$ be the $r^{th}$ ranked team streng
 \item Repeat 10,000 times for each $q$ and $s$, and for teams ranked third ($i_3$) through eight ($i_8$). 
 \end{enumerate}
 
-Figure XX shows a plot of the estimated probabilities that the top-ranked team beats opponents ranked No. 2 - No. 8 in each sport, averaged over $s$. 
+Figure~\ref{fig:sevenSeries} shows a plot of the estimated probabilities that the top-ranked team beats opponents ranked No. 2 - No. 8 in each sport, averaged over $s$. 
 
 
 <<sevenSeries, fig.cap="Probability top ranked team wins a postseason series by sport and opponent rank">>=
