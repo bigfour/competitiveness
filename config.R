@@ -10,4 +10,7 @@ if (Sys.info()["user"] == "bbaumer") {
   mcmc_dir <- "~/Dropbox/Posterior_Draws"
 }
 
-
+library(knitr)
+opts_chunk$set(tidy = FALSE, highlight = TRUE, comment = NA, echo = FALSE,
+               prompt = FALSE, fig.width = 10, fig.height = 5, 
+               message = FALSE, warning = FALSE)
