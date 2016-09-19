@@ -109,7 +109,7 @@ for (league in leagues) {
 leagues <- c("nfl", "mlb", "nba", "nhl")
 for (league in leagues) {
   print(league)
-  bugFile <- file.path(root, "R/jags_model_TeamHFA.bug")
+  bugFile <- file.path(root, "R", "jags_model_TeamHFA.bug")
   posteriorDraws = c('alpha','beta','sigma','sigmab',
                      'sigmabSeason','gammaWeek','gammaSeason', 'alphaInd', 'sigmaaInd')
   z<-jagsModel(data=bigfour, league = league, bugFile = bugFile, posteriorDraws = posteriorDraws,
