@@ -312,28 +312,29 @@ markets_plot
 %s season, k week, home team i, away team j, t_q number of teams in league, n_(s,k) number of games in week k of season s.
 Whereas in many previous articles, the focus is on one particular league or sport, here we examine all four of the major north American sports together.  There fore, for each of the 4 sports considered here (NFL, MLB, NHL, NBA), the following model described below was fit for each sport and indexed by $q \in \{NFL, MLB, NHL, NBA\}$.
 
-Now, let $p_{(q,s,k)ij}$ correspond to the probability that team $i$ will beat team $j$ from sports league $q$ in season $s$ during week $k$.  Further, let ${\bf p}_{(q,s,k)}$ represent the vector of length $g_{(q,s,k)}$ (i.e. the number of games in week $k$ of season $s$ in league $q$) containing all the probabilities that team $i$ will beat team $j$ in league $q$ in week $k$ of season $s$.  These quantities are estimated to give $\hat{p}_{(q,s,k)ij}$ using the implied odds of the betting market given the money line odds for a game where team $i$ plays team $j$ from league $q$ in week $k$ of season $s$.  
+Now, let $p_{(q,s,k)ij}$ correspond to the probability that team $i$ will beat team $j$ from sports league $q$ in season $s$ during week $k$.  Further, let ${\bf p}_{(q,s,k)}$ represent the vector of length $g_{(q,s,k)}$ (i.e. the number of games in week $k$ of season $s$ in league $q$) containing all the probabilities that team $i$ will beat team $j$ in league $q$ in week $k$ of season $s$.  \greg{These probabilities are assumed to be known and are derived based on the implied odds of the betting market given the money line odds for a game where team $i$ plays team $j$ from league $q$ in week $k$ of season $s$.  }
 
 We then fit the model
 
 \begin{eqnarray}
-logit(p_{(q,s,k)}) \sim N(\bf{\theta_{(q,s,k)}}\bf{X}_{q,s,k} + \alpha_{q0}\bf{J}_{g_{q,s,k}} + \bf{\alpha}_{q}\bf{Z}_{q,s,k}, \tau^{2}_{q,error}\bf{I}_{g_{(q,s,k)}}) \label{model.full}
+logit(p_{(q,s,k)}) \sim N(\bf{\theta_{(q,s,k)}}\bf{X}_{q,s,k} + \alpha_{q0}\bf{J}_{g_{q,s,k}} + \bf{\alpha}_{q}\bf{Z}_{q,s,k}, \tau^{2}_{q,game}\bf{I}_{g_{(q,s,k)}}) \label{model.full}
 \end{eqnarray}
 
-$\bf{\theta_{(q,s,k)}}$ is a vector of length $t_{q}$, where $t_{q}$ is the number of teams in league $q$, containing the team strength parameters in season $s$ during week $k$, $\alpha_{q0}$ is the overall home field advantage parameter for sports league $q$, and $\bf{\alpha}_{q}$ is a vector of length $T_{q}$ containing team specific home field advantage parameters for league $q$ that do not vary over time (i.e. HFA is assumed to be constant for a team over weeks and seasons). $\bf{X}_{q,s,k}$ and $\bf{Z}_{q,s,k}$ are both of dimension $g_{(q,s,k)}$, the number of games in league $q$ during week $k$ of season $s$, by $t_{q}$.   The matrix $\bf{X}_{q,s,k}$ contains the values 1, 0, and -1 where for a given row (i.e. one game) the value of $i$-th column in that row is a 1/-1 if the $i$-th team played at home/away in the given game and 0 otherwise.  $\bf{Z}_{q,s,k}$ is a matrix containing a 1 in the $i$-th column if the $i$-th team played the game corresponding to that row at home and 0 otherwise.  Finally, $\tau^{2}_{q,error} =  \frac{1}{\sigma^{2}_{q,error}}$ is the precision, $\bf{J}_{g_{q,s,k}}$ is a column vector of length $g_{q,s,k}$ containing all 1's,and $\bf{I}_{g_{(q,s,k)}}$ is an identity matrix with dimension ${g_{(q,s,k)}}$ by ${g_{(q,s,k)}}$.  
+$\bf{\theta_{(q,s,k)}}$ is a vector of length $t_{q}$, where $t_{q}$ is the number of teams in league $q$, containing the team strength parameters in season $s$ during week $k$, $\alpha_{q0}$ is the overall home field advantage parameter for sports league $q$, and $\bf{\alpha}_{q}$ is a vector of length \greg{$t^{\star}_{q}$} containing \greg{{\it arena}} specific home field advantage parameters for league $q$ that do not vary over time (i.e. HFA is assumed to be constant for a team over weeks and seasons). \greg{(Note: $t^{\star}_{q}$, the number of home venues in league $q$, is greater than $t_{q}$, the number of teams in league $q$, due to franchise relocation.)} \grag{$\bf{X}_{q,s,k}$ and $\bf{Z}_{q,s,k}$ both contain $g_{(q,s,k)}$, the number of games in league $q$ during week $k$ of season $s$, rows and $t_{q}$ and $t^{\star}_{q}$ columns, respectively.}   The matrix $\bf{X}_{q,s,k}$ contains the values 1, 0, and -1 where for a given row (i.e. one game) the value of $i$-th column in that row is a 1/-1 if the $i$-th team played at home/away in the given game and 0 otherwise.  $\bf{Z}_{q,s,k}$ is a matrix containing a 1 in the $i$-th column if the $i$-th team played the game corresponding to that row at home and 0 otherwise. \greg{ Finally, $\tau^{2}_{q,game} =  \frac{1}{\sigma^{2}_{q,game}}$ is the precision, $\bf{J}_{g_{q,s,k}}$ is a column vector of length $g_{q,s,k}$ containing all 1's,and $\bf{I}_{g_{(q,s,k)}}$ is an identity matrix with dimension ${g_{(q,s,k)}}$ by ${g_{(q,s,k)}}$.  }
 
 Similarly to \citep{glickman1998state}, we allow the strength parameters of the teams to vary from week to week and from season to season.  
 
 $$
-\theta_{(q,s+1,1)} | \gamma_{q,seas}, \bf{\theta_{q,s,g_{q,s,.}}}, \tau^{2}_{q,seas},  \sim N (\gamma_{q,seas}\bf{G}_{q}\bf{\theta}_{(q,s,g_{q,s,.})},(\tau^{2}_{q,seas})I_{t_{q}})
+\theta_{(q,s+1,1)} | \gamma_{q,seas}, \bf{\theta_{q,s,g_{q,s,.}}}, \tau^{2}_{q,seas},  \sim N (\gamma_{q,seas}\bf{\theta}_{(q,s,g_{q,s,.})},(\tau^{2}_{q,seas})I_{t_{q}})
 $$
 and 
 $$
-\theta_{(q,s,k+1)} | \gamma_{q,week}, \bf{\theta_{q,s,k}}, \tau^{2}_{q,week},  \sim N (\gamma_{q,week}\bf{G}_{q}\bf{\theta}_{(q,s,k)},(\tau^{2}_{q,week})I_{t_{q}})
+\theta_{(q,s,k+1)} | \gamma_{q,week}, \bf{\theta_{q,s,k}}, \tau^{2}_{q,week},  \sim N (\gamma_{q,week}\bf{\theta}_{(q,s,k)},(\tau^{2}_{q,week})I_{t_{q}})
 $$
 
-where $g_{q,s,.} = \sum_{k=1}^{k_{q,s}} g_{q,s,k}$ where $k_{q,s}$ is the number of weeks in season $s$ in league $q$.
-We depart from \citep{glickman1998state} here in our specification of precision.  Here, we estimate three separate parameters, $\tau^{2}_{q,error}$, $\tau^{2}_{q,season}$, and $\tau^{2}_{q,week}$.  This allows these three parameters to be estimated separately.  
+where $g_{q,s,.} = \sum_{k=1}^{k^{\star}_{q}} g_{q,s,k}$ where $k^{\star}_{q}$ is the number of weeks in a season in league $q$, $\gamma_{q,week}$ is the autoregressive parameter from week to week and $\gamma_{q,season}$ is the autoregressive parameter from season to season.  
+
+We depart from \citep{glickman1998state} here in our specification of precision.  Here, we estimate three separate parameters, $\tau^{2}_{q,game}$, $\tau^{2}_{q,season}$, and $\tau^{2}_{q,week}$.  This allows these three parameters to be estimated separately.  
 
 
 
@@ -347,12 +348,12 @@ The team specific home field advantage parameter has a similar prior, namely,
 $$
 \alpha_{(q)i}\sim N(0, \tau^{2}_{q,\alpha})
 $$
-for $i$ in $1, \cdots, t_{q}$.  
+for $i$ in $1, \cdots, \greg{t^{\star}_{q}$}.  
 
 Finally, we assume the following prior distributions: 
 
 $$
-\tau^{2}_{q,error}\sim \Gamma(0.0001,0.0001)
+\tau^{2}_{q,game}\sim \Gamma(0.0001,0.0001)
 $$
 
 $$
@@ -382,10 +383,10 @@ $$
 In addition, we propose a reduced version of Model (\ref{model.full}) that assumes a constant sport-level home advantage for each time,
 
 \begin{eqnarray}
-logit(p_{(q,s,k)}) \sim N(\bf{\theta_{(q,s,k)}}\bf{X}_{q,s,k} + \alpha_{q0}\bf{J}_{g_{q,s,k}}, \tau^{2}_{q,error}\bf{I}_{g_{(q,s,k)}}) \label{model.red}
+logit(p_{(q,s,k)}) \sim N(\bf{\theta_{(q,s,k)}}\bf{X}_{q,s,k} + \alpha_{q0}\bf{J}_{g_{q,s,k}}, \tau^{2}_{q,game}\bf{I}_{g_{(q,s,k)}}) \label{model.red}
 \end{eqnarray}
 
-
+\greg{I thought we used JAGS?}
 Posterior distributions of each parameter are estimated using Markov Chian Monte Carlo (MCMC) methods. We used Gibbs sampling via the R2Winbugs package in the R statistical software \cite{sturtz2005r2winbugs} to obtain the posterior distributions, obtained separately within each $q$. Three chains, using 40,000 iterations after a burn-in of 2,000 draws, fit with a thin of 5 to reduce the autocorrelation within chains, yielded 8,000 posterior samples in each $q$. Visual inspection of trace plots with parallel chains are used to confirm convergence; comparisons of Models (\ref{model.full}) and (\ref{model.red}) are made using the Deviance Information Criterion (DIC, \cite{spiegelhalter2002bayesian}), as implemented with a Bayesian state-space model by \cite{koopmeiners2012comparison}. 
 
 While we are unable to share our data, the data wrangling code, Gibbs Sampling code (via R2Winbugs), posterior draws, and the code used to obtain posterior estimates and figures are all posted to a Github repository, available at \url{https://github.com/bigfour/competitiveness}.
