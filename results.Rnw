@@ -1,9 +1,5 @@
 <<echo=FALSE>>=
 source("config.R")
-library(knitr)
-opts_chunk$set(tidy = FALSE, highlight = TRUE, comment = NA, echo = FALSE,
-               prompt = FALSE, fig.width = 10, fig.height = 5, 
-               message = FALSE, warning = FALSE)
 @
 
 \section{Results}
@@ -37,8 +33,11 @@ dat <- lapply(sports[1:4], get_sport)
 sigmas <- lapply(dat,function(x){return(x[["out"]])})  %>% bind_rows()
 @
 
-<<>>=
+<<eval=FALSE>>=
 devtools::install_github("beanumber/teamcolors")
+@
+
+<<>>=
 library(ggplot2)
 library(teamcolors)
 
