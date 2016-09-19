@@ -316,7 +316,7 @@ We then fit the model
 logit(p_{(q,s,k)}) \sim N(\bf{\theta_{(q,s,k)}}\bf{X}_{q,s,k} + \alpha_{q0}\bf{J}_{g_{q,s,k}} + \bf{\alpha}_{q}\bf{Z}_{q,s,k}, \tau^{2}_{q,game}\bf{I}_{g_{(q,s,k)}}) \label{model.full}
 \end{eqnarray}
 
-$\bf{\theta_{(q,s,k)}}$ is a vector of length $t_{q}$, where $t_{q}$ is the number of teams in league $q$, containing the team strength parameters in season $s$ during week $k$, $\alpha_{q0}$ is the overall home field advantage parameter for sports league $q$, and $\bf{\alpha}_{q}$ is a vector of length \greg{$t^{\star}_{q}$} containing \greg{{\it arena}} specific home field advantage parameters for league $q$ that do not vary over time (i.e. HFA is assumed to be constant for a team over weeks and seasons). \greg{(Note: $t^{\star}_{q}$, the number of home venues in league $q$, is greater than $t_{q}$, the number of teams in league $q$, due to franchise relocation.)} \grag{$\bf{X}_{q,s,k}$ and $\bf{Z}_{q,s,k}$ both contain $g_{(q,s,k)}$, the number of games in league $q$ during week $k$ of season $s$, rows and $t_{q}$ and $t^{\star}_{q}$ columns, respectively.}   The matrix $\bf{X}_{q,s,k}$ contains the values 1, 0, and -1 where for a given row (i.e. one game) the value of $i$-th column in that row is a 1/-1 if the $i$-th team played at home/away in the given game and 0 otherwise.  $\bf{Z}_{q,s,k}$ is a matrix containing a 1 in the $i$-th column if the $i$-th team played the game corresponding to that row at home and 0 otherwise. \greg{ Finally, $\tau^{2}_{q,game} =  \frac{1}{\sigma^{2}_{q,game}}$ is the precision, $\bf{J}_{g_{q,s,k}}$ is a column vector of length $g_{q,s,k}$ containing all 1's,and $\bf{I}_{g_{(q,s,k)}}$ is an identity matrix with dimension ${g_{(q,s,k)}}$ by ${g_{(q,s,k)}}$.  }
+$\bf{\theta_{(q,s,k)}}$ is a vector of length $t_{q}$, where $t_{q}$ is the number of teams in league $q$, containing the team strength parameters in season $s$ during week $k$, $\alpha_{q0}$ is the overall home field advantage parameter for sports league $q$, and $\bf{\alpha}_{q}$ is a vector of length \greg{$t^{\star}_{q}$} containing \greg{{\it arena}} specific home field advantage parameters for league $q$ that do not vary over time (i.e. HFA is assumed to be constant for a team over weeks and seasons). \greg{(Note: $t^{\star}_{q}$, the number of home venues in league $q$, is greater than $t_{q}$, the number of teams in league $q$, due to franchise relocation.)} \greg{$\bf{X}_{q,s,k}$ and $\bf{Z}_{q,s,k}$ both contain $g_{(q,s,k)}$, the number of games in league $q$ during week $k$ of season $s$, rows and $t_{q}$ and $t^{\star}_{q}$ columns, respectively.}   The matrix $\bf{X}_{q,s,k}$ contains the values 1, 0, and -1 where for a given row (i.e. one game) the value of $i$-th column in that row is a 1/-1 if the $i$-th team played at home/away in the given game and 0 otherwise.  $\bf{Z}_{q,s,k}$ is a matrix containing a 1 in the $i$-th column if the $i$-th team played the game corresponding to that row at home and 0 otherwise. \greg{ Finally, $\tau^{2}_{q,game} =  \frac{1}{\sigma^{2}_{q,game}}$ is the precision, $\bf{J}_{g_{q,s,k}}$ is a column vector of length $g_{q,s,k}$ containing all 1's,and $\bf{I}_{g_{(q,s,k)}}$ is an identity matrix with dimension ${g_{(q,s,k)}}$ by ${g_{(q,s,k)}}$.  }
 
 Similarly to \citep{glickman1998state}, we allow the strength parameters of the teams to vary from week to week and from season to season.  
 
@@ -344,7 +344,7 @@ The team specific home field advantage parameter has a similar prior, namely,
 $$
 \alpha_{(q)i}\sim N(0, \tau^{2}_{q,\alpha})
 $$
-for $i$ in $1, \cdots, \greg{t^{\star}_{q}$}.  
+for $i$ in $1, \cdots, t^{\star}_{q}$.  
 
 Finally, we assume the following prior distributions: 
 
@@ -396,7 +396,9 @@ While we are unable to share our data, the data wrangling code, Gibbs Sampling c
 Paragraph about model checks being satisfied. Do we include trace plots?
 
 
-Model fit comparisons differed by league. Table \ref{tab:DIC} shows the DIC for each fit in each league, along with the difference in DIC values and its standard error. In the NBA and NHL, fits with a team-specific HFA yielded significantly lower DIC's (lower is better), while in the NFL and MLB, DIC values were roughly similar between fits. 
+Model fit comparisons differed by league. Table~\ref{tab:DIC} shows the DIC for each fit in each league, along with the difference in DIC values and its standard error. In the NBA and NHL, fits with a team-specific HFA yielded significantly lower DIC's (lower is better), while in the NFL and MLB, DIC values were roughly similar between fits. 
+
+\ben{Where is the data that creates this table? We should make this table with xtable.}
 
 \begin{table}[!ht]
 \makebox[\linewidth]{
@@ -426,7 +428,7 @@ Figure XX-XY show estimated team coefficients over time, approximated by using p
 
 Overall, there tends to be larger amounts of variability in team strength parameters at any given point in time in both the NFL and NBA, with posterior team strength coefficients tending to vary between -1.5 and 1.5 (on the logit scale). Team-to-team level variability is substantially lower in the MLB (roughly between -0.5 and 0.5) and the NHL (-0.6 to 0.6). Among other findings in the four figures, the New England Patriots' 2007 season (NFL) stands out as the top individual performance of the last decade. In that season, New England finished the regular season 16-0 before eventually losing in the Super Bowl. Additionally, in the NBA, it is interesting to notice that the team strength estimates of the bad teams - for example, Cleveland in 2007-08 - lie further from 0 than the the estimates for the good teams. This possibly relates to the tendency for teams in this league to `tank`, which involves losing games as to increase the chances of improved positioning in the upcoming league draft \citep{soebbing2013gamblers}.
 
-In the NHL and only the NHL, there seems to be a peculiar convergence of team strength estimates towards 0 over time, perhaps implying that team talent is less variable in recent years. Alternatively, the league's point system, which changed before the 2005-06 season and encouraged teams to play more overtime games \citep{lopez2013 inefficiencies}, could be responsible. If teams were purposefully playing overtime contests more often, it could lead to different perceptions in how betting markets view team strenths, as overtime sessions and the resulting shootouts are, by and large, coin flips \citep{lopez2016predicting}. As one final point of clarification, the periods with straight lines of team strength estimates in the 2013 season (NHL) and 2012 season (NBA) reflect time lost due to lockouts. 
+In the NHL and only the NHL, there seems to be a peculiar convergence of team strength estimates towards 0 over time, perhaps implying that team talent is less variable in recent years. Alternatively, the league's point system, which changed before the 2005-06 season and encouraged teams to play more overtime games \citep{lopez2013inefficiencies}, could be responsible. If teams were purposefully playing overtime contests more often, it could lead to different perceptions in how betting markets view team strenths, as overtime sessions and the resulting shootouts are, by and large, coin flips \citep{lopez2016predicting}. As one final point of clarification, the periods with straight lines of team strength estimates in the 2013 season (NHL) and 2012 season (NBA) reflect time lost due to lockouts. 
 
 Contour plots using posterior draws of season-to-season $\sigma_{q,seas}$ and week-to-week $\sigma_{q,week}$ variability in team strength are shown in Figure WW using separate colors for each sport. There is the highest variability in team strength estimates in the NBA, followed in order by the NFL, NHL, and MLB. The importance of star players in the NBA is one potential driver of these findings \citep{berri2006road}; injuries or trades involving the league's best players perhaps have a larger influence in the NBA than in other leagues, causing immediate shifts in the estimates of team strength.
 
@@ -480,7 +482,7 @@ Next, let $\bar{\widehat{\theta}}_{q,s, |r|}$ be the $r^{th}$ ranked team streng
 \item Repeat 10,000 times for each $q$ and $s$, and for teams ranked third ($i_3$) through eight ($i_8$). 
 \end{enumerate}
 
-Figure XX shows a plot of the estimated probabilities that the top-ranked team beats opponents ranked No. 2 - No. 8 in each sport, averaged over $s$. 
+Figure~\ref{fig:sevenSeries} shows a plot of the estimated probabilities that the top-ranked team beats opponents ranked No. 2 - No. 8 in each sport, averaged over $s$. 
 
 
 <<sevenSeries, fig.cap="Probability top ranked team wins a postseason series by sport and opponent rank">>=
