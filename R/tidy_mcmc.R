@@ -79,7 +79,9 @@ library(teamcolors)
 colors <- teamcolors %>%
   filter(sport %in% sports) %>%
   #Our data has the St. Louis Rams.  The colors has LA Rams.  
-  mutate(name = ifelse(name == "Los Angeles Rams", "St. Louis Rams", name)) %>%
+  mutate(name = ifelse(name == "Los Angeles Rams", "St. Louis Rams", name),
+         name = ifelse(name == "Los Angeles Angels of Anaheim", "Los Angeles Angels", name),
+         name = ifelse(name == "St Louis Blues", "St. Louis Blues", name)) %>%
   arrange(sport, name) %>%
   group_by(sport) %>%
   mutate(team_id = 1:n())
@@ -102,4 +104,5 @@ tidy_betas <- tidy_betas %>%
 # save the results so we don't have to do this everytime. 
 save(tidy_betas, file = file.path(root, "data", "tidy_betas.rda"), compress = "xz")
 
-  
+### update with an alpha's output, and run the tidy_mcmc
+save(tidy_alphas, file = file.path(root, "data", "tidy_alphas.rda"), compress = "xz")  
