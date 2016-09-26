@@ -104,5 +104,45 @@ tidy_betas <- tidy_betas %>%
 # save the results so we don't have to do this everytime. 
 save(tidy_betas, file = file.path(root, "data", "tidy_betas.rda"), compress = "xz")
 
+
+### Alphas
+## Overall sport estimate
+sport.est <- params %>% group_by(sport) %>% summarise(alpha.sport = mean(alpha))
+
+makeAlphas <- function(sport){
+  teamnames <- sort(t(unique(bigfour[bigfour$sport==sport,"home_team"])))
+  if (sport == "nba"){teamnames[31] <- "Seattle Supersonics"}
+  if (sport == "nhl"){teamnames[31] <- "Atlanta Thrashers"}
+  out.med <- apply(alphaInds[[sport]],c(1),median)
+  out.lower <- apply(alphaInds[[sport]],c(1), quantile, probs = 0.025)
+  out.upper <- apply(alphaInds[[sport]],c(1), quantile, probs = 0.975)
+  dat.alphas <- data.frame(alpha.team = out.med, alpha.lower = out.lower, 
+                           alpha.upper = out.upper, team = teamnames, sport = sport)
+  return(dat.alphas)
+}
+
+dat.alphas <- lapply(sports[1:4], makeAlphas) 
+alphas.all <- lapply(dat.alphas,function(x){return(x[])}) %>%  
+  bind_rows() %>% 
+  left_join(sport.est) %>%
+  mutate(alpha.team.overall = alpha.team + alpha.sport, 
+         alpha.team.lower = alpha.lower + alpha.sport, 
+         alpha.team.upper = alpha.upper + alpha.sport)
+
+colors.new <- data.frame(name = c("Seattle Supersonics", "Atlanta Thrashers"), 
+                         primary = c("#025736", "#0A2351"),
+                         secondary = c("#FDBB2F", "#F58220"), 
+                         tertiary = c("<NA>", "<NA>"), 
+                         quaternary = c("<NA>", "<NA>"),
+                         sport = c("nba", "nhl"),
+                         team_id = c(nrow(colors)+1, nrow(colors) + 2))
+colors.hfa <- bind_rows(colors, colors.new)
+
+
+tidy_alphas <- alphas.all %>%
+  inner_join(colors.hfa, by = c("team" = "name", "sport" = "sport"))
+
+
+
 ### update with an alpha's output, and run the tidy_mcmc
 save(tidy_alphas, file = file.path(root, "data", "tidy_alphas.rda"), compress = "xz")  
