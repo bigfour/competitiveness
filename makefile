@@ -30,3 +30,4 @@ bigfour: Rmd/data_wrangling_results.Rmd
 
 mcmc: R/jagsFunction.R
 	Rscript R/jagsFunction.R
+	Rscript R/tidy_mcmc.R
