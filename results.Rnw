@@ -73,41 +73,44 @@ ggplot(data = params, aes(x = alpha, color = sport)) +
 
 <<>>=
 ## Home advantage plots
-load("data/bigfour.rda")
-sport.est <- alphas %>% group_by(sport) %>% summarise(alpha.sport = mean(alpha))
-makeAlphas <- function(sport){
-  teamnames <- sort(t(unique(bigfour[bigfour$sport==sport,"home_team"])))
-  if (sport == "nba"){teamnames[31] <- "Seattle Supersonics"}
-  if (sport == "nhl"){teamnames[31] <- "Atlanta Thrashers"}
-  out.med <- apply(alphaInds[[sport]],c(1),median)
-  out.lower <- apply(alphaInds[[sport]],c(1), quantile, probs = 0.025)
-  out.upper <- apply(alphaInds[[sport]],c(1), quantile, probs = 0.975)
-  dat.alphas <- data.frame(alpha.team = out.med, alpha.lower = out.lower, 
-                           alpha.upper = out.upper, team = teamnames, sport = sport)
-  return(dat.alphas)
+load(file.path(root, "data", "tidy_alphas.rda"))
+datbetas.null <- tidy_alphas %>%
+  group_by(sport) %>%
+  arrange(alpha.team.overall) %>%
+  mutate(rank.within = 1:n()) 
+datbetas.empty <- datbetas.null %>% ungroup() %>% select(-sport)
+
+gg <- ggplot(datbetas.null)  + ggtitle("Increased log-odds of winning at home") 
+gg1 <- gg + geom_point(data = datbetas.empty, colour = "grey", 
+                       aes(y=alpha.team.overall, x=rank.within, group = team)) + 
+  geom_errorbar(data = datbetas.empty, colour = "grey", 
+                aes(x=rank.within, ymax = alpha.team.upper, ymin=alpha.team.lower, group = team), width=0.2) 
+
+for (i in 1:nrow(datbetas.null)){
+  df.temp <- slice(ungroup(datbetas.null), i)
+  df.plot <- data.frame(x = rep(df.temp$rank.within, 2), y = c(df.temp$alpha.team.lower, df.temp$alpha.team.upper), 
+                        z = df.temp$alpha.team.overall, sport = df.temp$sport, lab = df.temp$team)
+  df.text <- data.frame(x = df.temp$rank.within, y = 0, team = df.temp$team, sport = df.temp$sport)
+  gg1 <- gg1 + geom_line(data = df.plot,
+                         aes(x = x, y = y), linetype=1, lwd=1.5, colour=df.temp$primary) 
+  gg1 <- gg1 + geom_line(data = df.plot,
+                         aes(x = x, y = y), linetype=2, lwd=1.5, colour=df.temp$secondary) 
+  gg1 <- gg1 + geom_point(data = df.plot,
+                          aes(x = x, y = z), colour=df.temp$secondary, size = 2.5) 
+  gg1 <- gg1 + geom_text(data = df.text, aes(x = x, y = y, label = team, hjust = "left"), 
+                         colour=df.temp$primary, size = 2.5)
 }
 
-dat.alphas <- lapply(sports[1:4], makeAlphas) 
-alphas.all <- lapply(dat.alphas,function(x){return(x[])}) %>%  
-        bind_rows() %>% 
-        left_join(sport.est) %>%
-        mutate(alpha.team.overall = alpha.team + alpha.sport, 
-               alpha.team.lower = alpha.lower + alpha.sport, 
-               alpha.team.upper = alpha.upper + alpha.sport, 
-               sport = factor(sport, levels = c("nba", "nfl", "nhl", "mlb")))
+gg2 <- gg1  + coord_flip() + facet_wrap(~sport)+ 
+  xlab("") + ylab("") +  theme(axis.line=element_blank(),
+                               axis.text.y=element_blank(),axis.ticks=element_blank(),
+                               axis.title.y=element_blank())
 
-limits <- aes(ymax = alpha.team.upper, ymin=alpha.team.lower)
-positions <- alphas.all[order(alphas.all$alpha.team.overall),]$team
-p <- ggplot(alphas.all, aes(y=alpha.team.overall, x=team, colour = sport))
-breaks <- c(log(seq(1.2, 1.8, by = 0.2)))
-p1 <- p + geom_point() + 
-  geom_errorbar(limits, width=0.2) + 
-  scale_x_discrete(limits = positions) + theme(text = element_text(size=6)) +
-  coord_flip()
+
 @
 
 <<alphaAll, fig.height = 10, fig.width = 6, fig.cap="Median posterior draw (with 2.5th, 97.5th quantiles) of each franchise's home advantage intercept, on log odds scale">>=
-p1
+gg2 
 @
 
 
