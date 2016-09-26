@@ -109,7 +109,7 @@ gg2 <- gg1  + coord_flip() + facet_wrap(~sport)+
 
 @
 
-<<alphaAll, fig.height = 6, fig.width = 10, fig.cap="Median posterior draw (with 2.5th, 97.5th quantiles) of each franchise's home advantage intercept, on log odds scale">>=
+<<alphaAll, fig.height = 9, fig.width = 10, fig.cap="Median posterior draw (with 2.5th, 97.5th quantiles) of each franchise's home advantage intercept, on log odds scale">>=
 gg2 
 @
 
