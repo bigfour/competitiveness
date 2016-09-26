@@ -4,7 +4,15 @@ if (Sys.info()["user"] == "bbaumer") {
   # For Ben
   root <- "~/Dropbox/lib/competitiveness"
   mcmc_dir <- "~/dumps/Posterior_Draws"
-} else {
+}
+
+if (Sys.info()["user"] == "mlopez1") {
+  # For Ben
+  root <- "~/Dropbox/Compete"
+  mcmc_dir <- "~/Dropbox/Posterior_Draws"
+}
+
+if (Sys.info()["user"] == "gregoryjmatthews") {
   # For Greg and Mike
   root <- "~/Dropbox/competitiveness"
   mcmc_dir <- "~/Dropbox/Posterior_Draws"
