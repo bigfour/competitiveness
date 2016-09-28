@@ -520,6 +520,8 @@ ggplot(probs.1, aes(second.seed, mean.win, group = sport, colour = sport))  +
   scale_y_continuous("", breaks = 11:16*5/100, labels = c("55%", "60%", "65%", "70%", "75%", "80%"))
 @
 
+% One extension - do this without the home advantage?  
+
 In general, the probability that the better team wins is highest in the NBA, ranging from roughly 60\% (No. 1 over No. 2) to 80\% (No. 1 over No. 8). Most often, the top NFL team expects to win between 60\% and 70\% of its postseason match-ups, while those numbers are closer to between 55\% and 65\% in the MLB and NHL. Across seeds No. 3 - No. 8, the MLB shows the most randomness; even in an average match-up between its top team and its eighth best team, the top team wins no more than 65\% of the time.
 
 A related question explores the number of games that other sports must play in order to match the frequency with which the best team in the NBA wins. To ensure an 80\% chance that the league's top team has defeated its eighth best team, the NFL (which would require a `Best of 9'), NHL (`Best of 39'), and MLB (`Best of 51') must each play a substantially larger number of games than current league standards allow. Likewise, to ensure a 72\% chance that the league's top team has defeated its fourth best team, as is the NBA average, simlar game thresholds must be reached (9 games the NFL, 41 in the NHL, and 55 in MLB). 
@@ -547,10 +549,11 @@ Our second finding relates to the relative equivalence of the home advantage in 
 
 Meaningful franchise-level distinctions in MLB are impossible to identify, with nearly all teams clustered around a home advantage of 0.16. Interestingly, the home advantages of a few NFL franchises are skewed (see Denver and Seattle, relative to Detroit and St. Louis). This could be a function of the smaller sample size of games. Alternatively, the home advantage may not be constant across our sample of games, with possible differences by season or the day of the game. Anecdotally, night games (Thursday, Sunday, or Monday) conceivably offer a larger home advantage than those played during the day.
 
+
 %Check - does this match Koopenmeiners paper? He plots the home advantage
 %Source on the night-time home advantage?
 
-
+As our final contribution, we use posterior draws from the posterior distribution of team strength and each league's home advantage parameter to estimate the relative equivalence of each team's postseason. Simulations identify that the best NBA team advantances slightly more often than the best NFL team, and that each league's postseason is less of a coin-flip than the MLB and NHL, where it is not uncommon for the best team to lose in a short series of contests. 
 Future possibilities: 
 
 \begin{itemize}
@@ -565,29 +568,6 @@ Future possibilities:
 
 
 
-\section{Assorted notes}
-
-
-
-Points from \citep{glickman2016estimating}: 
-
-Restriction of $\rho$ so that stochastic process on $\theta_{jt}$ is stationary. Considered to be a normal linear state space model and is also example of the Kalman filter (see paper for citations). 
-
-
-
-
-Suggestion for varying HFA in hockey: West coast teams more consistently awarded rest advantages (suggested by Mike's hockey people).  
-
-
-
-
-Notes on DIC \url{https://users.soe.ucsc.edu/~draper/rjags.pdf} The problem of determining what is a noteworthy difference in DIC (or other penalized deviance)
-between two models is currently unsolved. Following the results of Ripley (1996) on the Akaike
-Information Criterion, Plummer (2008) argues that there is no absolute scale for comparison of two
-penalized deviance statistics, and proposes that the difference should be calibrated with respect to
-the sample standard deviation of the individual contributions from each observed stochastic node.
-
-Gelman \url{http://andrewgelman.com/2011/06/22/deviance_dic_ai/} One of my practical problems with DIC is that it seems to take a lot of simulations to calculate it precisely. Long after we’ve achieved good mixing of the chains and good inference for parameters of interest and we’re ready to go on, it turns out that DIC is still unstable. In the example in our book we ran for a zillion iterations to make sure the DIC was ok.
 
 
 \section{Appendix}
@@ -609,6 +589,25 @@ Gini coefficient as one measure of within season inequality of league outcomes, 
 \cite{fort2007structural} identify that most break points in the four major sports, including expansion and team relocation, have corresponded with increased competitive balance. As a result, leagues tend to be more balanced than in the past.
 
 \citep{owen2010limitations, owen2015competitive} uses simulations to identify that RSD is sensitive to changes in season length when there are imbalances in team strength. Team strength parameters for the simulations are estimated using BTM. ASD (RSD without dividing by ISD) less sensitive to changes in season length, although it tends to overestimate imbalance in shorter seasons. Additionally, RSD has an upper bound that is a function of games played \citep{owen2010limitations}. 
+
+
+\subsection{Additional notes}
+
+Points from \citep{glickman2016estimating}: 
+
+Restriction of $\rho$ so that stochastic process on $\theta_{jt}$ is stationary. Considered to be a normal linear state space model and is also example of the Kalman filter (see paper for citations). 
+
+
+
+
+Suggestion for varying HFA in hockey: West coast teams more consistently awarded rest advantages (suggested by Mike's hockey people).  
+
+
+
+
+Notes on DIC \url{https://users.soe.ucsc.edu/~draper/rjags.pdf} The problem of determining what is a noteworthy difference in DIC (or other penalized deviance) between two models is currently unsolved. Following the results of Ripley (1996) on the Akaike Information Criterion, Plummer (2008) argues that there is no absolute scale for comparison of two penalized deviance statistics, and proposes that the difference should be calibrated with respect to the sample standard deviation of the individual contributions from each observed stochastic node.
+
+Gelman \url{http://andrewgelman.com/2011/06/22/deviance_dic_ai/} One of my practical problems with DIC is that it seems to take a lot of simulations to calculate it precisely. Long after we’ve achieved good mixing of the chains and good inference for parameters of interest and we’re ready to go on, it turns out that DIC is still unstable. In the example in our book we ran for a zillion iterations to make sure the DIC was ok.
 
 
 
