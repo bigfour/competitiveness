@@ -529,13 +529,26 @@ A related question explores the number of games that other sports must play in o
 
 Using a modified Bayesian state-space model, we estimate both time-varying team strength and league-level variance parameters in order to better explain the underlying randomness in the four major North American professional sporting leagues, the NBA, NFL, NHL, and MLB. 
 
-Our first finding relates to the relative equivalence of the four leagues. At a single point in time, team strength estimates diverge substantially more in the NBA and NFL than in the NHL and MLB. In the latter two leagues, this entails that contests between two randomly chosen teams are closer to to a coin-flip, with each team given a reasonable shot at winning. Within a season, estimates of $\gamma_w$, our autoregressive parameter, suggest that teams in each of the NBA (largest reversion), NFL, and NHL tend to revert towards the league average in the long term, while week-by-week trends of team strength in baseball are indistinguishable from a random walk. On a season-to-season basis, NHL teams exhibits the largest reversion towards the league average (nearly 50\%), with the other three leagues somewhere between roughly 25\% and 40\%. Each of these conclusions account for varying league-level traits, including schedule length and strength of schedule. 
+Our first finding relates to the relative equivalence of the four leagues. At a single point in time, team strength estimates diverge substantially more in the NBA and NFL than in the NHL and MLB. In the latter two leagues, this entails that contests between two randomly chosen teams are closer to to a coin-flip, with each team given a reasonable shot at winning. Within a season, estimates of $\gamma_w$, our autoregressive parameter, suggest that teams in each of the NBA (largest reversion), NFL, and NHL tend to revert towards the league average in the long term, while week-by-week trends of team strength in baseball are indistinguishable from a random walk. On a season-to-season basis, NHL teams exhibits the largest reversion towards the league average (nearly 50\%), with the other three leagues somewhere between roughly 25\% and 40\%. Our estimate of a 31\% reversion within the NFL falls in line with the 33\% shown by \cite{glickman1998state} using an earlier sample of games. Each of these conclusions account for varying league-level traits, including schedule length and strength of schedule. 
+
+%Note: check the season-to-season reversion in Glickmans.
 
 There are a couple of plausible explanations for our findings with respect to the weekly NBA variability shown in our team strength estimates. Injuries, the resting of starters, and in-season trades would seemingly have a larger impact in a sport where fewer players are participating at a single point in time. In particular, our model cannot accurately gauge team strength when star players, who could play, are rested in favor of lesser alternatives. Additionally, while there is the largest week-to-week reversion in the NBA, when considering the differences in teams to begin with, such differences are not as extreme. In other words, a 3\% reversion in the NBA does not neccessarily equate to a 3\$ reversion in MLB or the NHL.
 
 %We should probably expand on these results and tie them into current literature: 
 %Measurements of competitive balance: Competitive balance at a single point in time (independent of scheduling, compare to ???), Competitive balance between seasons (compare to Humphreys), competitiveness within a season (compare to )
 
+Our second finding relates to the relative equivalence of the home advantage in each league, with the NBA well ahead of the pack, showing, on average, a 0.52 increase on the log-odds of a home win. Interestingly, model fit statistics imply that the home advantage varies significantly between arenas in the NBA and NHL only. In the NBA, for example, the league's best team home advantage is shown in Denver (increased log-odds, 0.78), with the worst shown in Brooklyn (0.42). Such distinctions have plausible impacts on league standings. An NBA team with a typical home advantage can expect to win 62.7\% of home games against a like-caliber opponent; for Brooklyn, it's 60.3\%, and for Denver, it's 68.6\%. Across 41 games (the number each team plays at home), that's an extra 2.4 wins in a single season, on average, for Denver over a league average team that can attributed to the franchise's unique home advantage. Relative to Brooklyn, it's 3.4 wins a season, on average. As one important caveat, our models do not account for varying line-up and injury information. If opposing teams were to rest their star players at Denver, for example, our model would artificially inflate Denver's home advantage.
+
+%Check these numbers to get exact info
+%Econ source as to the value of a win in the NBA
+
+%Note: how does this compare to other results? See Koopenmeiners paper, for example.
+
+Meaningful franchise-level distinctions in MLB are impossible to identify, with nearly all teams clustered around a home advantage of 0.16. Interestingly, the home advantages of a few NFL franchises are skewed (see Denver and Seattle, relative to Detroit and St. Louis). This could be a function of the smaller sample size of games. Alternatively, the home advantage may not be constant across our sample of games, with possible differences by season or the day of the game. Anecdotally, night games (Thursday, Sunday, or Monday) conceivably offer a larger home advantage than those played during the day.
+
+%Check - does this match Koopenmeiners paper? He plots the home advantage
+%Source on the night-time home advantage?
 
 
 Future possibilities: 
@@ -545,9 +558,8 @@ Future possibilities:
 \item Explore the impact of unbalanced vs balanced schedules in each league. Start by fixing team strenght estimates using draws from our Gibbs sampler, and estimate the results on season standings relative to the current system. One could also explore how the current economic measures of team strength correspond to these changes. 
 \item Measure team strength on a daily basis in MLB, where there are often seven games in a single week. 
 \item Consider time-varying estimates of team strength in the presence of tanking, in which teams, in order to secure a better draft position, are better off losing games later in the season.
-
-\subsection{Summary}
-\subsection{Open Problems}
+\item Consider possibility that time-varying estimates of team strength follow something besides an auto-regressive structure. Alternative specification: stochastic volatility process \citep{glickman2001dynamic}.
+\end{itemize}
 
 
 
@@ -561,13 +573,8 @@ Points from \citep{glickman2016estimating}:
 
 Restriction of $\rho$ so that stochastic process on $\theta_{jt}$ is stationary. Considered to be a normal linear state space model and is also example of the Kalman filter (see paper for citations). 
 
-Alternative specification: stochastic volatility process (Kim 98 Jacquier 2002, \cite{glickman2001dynamic}. Assumes stochastic process on the $\tau_t$ such that $\tau_{t+1} \sim N(\text{log}\tau_t^2, \omega^2)$. `This model accounts for sudden changes in team ability that are not well captured by normal state space model`. Unknown question: which assumption is preferred?  Not addressed in \cite{glickman2001dynamic}. 
 
-Fitting process: Rjags process, 30k iterations, burn in 10k, every 5th sampled value beyond burn-in. Estimated $\rho$ = 0.67 for season to season reversion towards mean ability. 
 
-Interesting finding: adding in several seasons lessons the error on team strength within a single season. That is, the season prior and after linked to performance in a single season. 
-
-Neat visualization on shrinkage toward league average
 
 Suggestion for varying HFA in hockey: West coast teams more consistently awarded rest advantages (suggested by Mike's hockey people).  
 
