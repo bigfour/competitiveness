@@ -234,8 +234,25 @@ Paragraph setting up our goals
 
 \section{Validation of betting market data}
 
+We collected two types of data about games in the four major North American professional sports leagues (MLB, NBA, NFL, and NHL): games results and betting lines. The game result data were collected from the websites of \href{http://www.sports-reference.com/}{sports-reference.com} via scripts we wrote in \R\footnote{The data collection scripts, as well as all of our data wrangling operations, are included in our supplemental materials.}. Although these game results are not official, they are accurate and widely-used. Game result data from the 2005--2014 seasons were included in our models (see Table~\ref{tab:bigfour}).  
 
-A summary of our data set is shown in Table~\ref{tab:bigfour}.
+<<include=FALSE>>=
+load("data/bigfour.rda")
+head(bigfour)
+mosaic::favstats(~vig, data = bigfour)
+@
+
+We obtained betting market data from \ben{Mike, please fill in}. These data were more than 99.5\% complete, in the sense that we collected a valid betting line for nearly all games in these four sports across those 10 seasons\footnote{Only nine NHL seasons are included because the 2004-2005 season was lost to a lockout.}. 
+% https://en.wikipedia.org/wiki/2004%E2%80%9305_NHL_lockout
+In circumstances where more than one betting line was available for a particular game, we included only the line from before the game started. These betting lines are expressed as payouts, which we subsequently convert into implied probabilities. For example, in the first game in our data set, the Chicago Cubs were favored ($-127$) to beat the Arizona Diamondbacks ($117$) on April 4th, 2005, despite being on the road. In betting parlance, to win \$100 by betting on the Cubs, you would have to wager \$127. Conversely a \$117 wager on the Diamondbacks to win would return \$100. Mathematically, if the line is $\ell$, then the implied probability $p(\ell)$ of a win is given by:
+$$
+  p(\ell) = \begin{cases}
+        \frac{100}{100 + \ell} & \text{ if } x > 0 \\
+        \frac{|\ell|}{100 + |\ell|} & \text{ if } x < 0
+      \end{cases} \,.
+$$
+The win probabilities implied by the betting markets for the Cubs ($p(-127) = 0.559$) and the Diamondbacks ($p(117) = 0.461$) sum to greater than one by an amount collected by the sportsbook as profit (known colloquially as the ``vig" or ``vigorish"). The average vig in our data set is \Sexpr{round(100 * mean(bigfour$vig), 2)}\%, but is always positive, resulting in revenue for the sportsbook regardless of the game outcome. We need true probabilities for our model, and thus we eliminate the vig by normalizing the two values of $p(\ell)$ to sum to one. In our example, this results in implied win probabilities of \Sexpr{round(bigfour[1, "p_vis"], 3)} for the Cubs and \Sexpr{round(bigfour[1, "p_home"], 3)} for the Diamondbacks.
+
 
 <<message=FALSE, results='asis'>>=
 load("data/bigfour.rda")
@@ -245,7 +262,7 @@ n.games <- data.frame(sport = c("mlb","nba", "nfl", "nhl"), N_results = c(24299,
 bigfour %>%
   filter(season %in% 2005:2014, playoffs == 0) %>%
   group_by(sport) %>%
-  summarise(N = n(), 
+  summarise(games = n(), 
             earliest = as.character(min(gameDate)), 
             latest = as.character(max(gameDate)),
             num_teams = length(unique(setdiff(union(visitor_team, home_team), NA))), 
@@ -259,9 +276,10 @@ bigfour %>%
   print(include.rownames = FALSE)
 @
 
-As expected, the probabilities implied by the betting markets are unbiased and quite accurate. Were this not the case, there would be easy arbitrage opportunities. 
+A summary of our data is shown in Table~\ref{tab:bigfour}. 
+As expected, the probabilities implied by the betting markets are unbiased and quite accurate. Were this not the case, there would be easy arbitrage opportunities. In Figure~\ref{fig:betting}, we compare the observed probabilities of a home win to the corresponding probabilities implied by our betting market data. In each of the four sports, the efficient market hypothesis cannot be rejected for any range of implied home win probabilities, based on visual inspection of a LOESS regression model. Thus, we find no evidence to suggest that the probabilities implied by our betting market data are biased or inaccurate---a conclusion that is supported by~\cite{spann2009sports,gandar1988testing,lacey1990estimation}. \ben{please add more/better references if necessary.} We thus interpret these probabilities as ``true". 
 
-<<betting, fig.height=10, fig.cap="Accuracy of probabilities implied by betting markets. We note that across all four major sports, the observed winning percentage accord with those implied by the betting markets. ">>=
+<<betting, fig.height=10, fig.cap="Accuracy of probabilities implied by betting markets. Each dot represents a bin of implied probabilities rounded to the nearst hundredth. The size of each dot is proportional to the number of games that lie in that bin. We note that across all four major sports, the observed winning percentages accord with those implied by the betting markets. The dotted diagonal line indicates a completely fair market where probabilities from the betting markets correspond exactly to observed outcomes. In each sport, this diagonal line lies entirely within the standard error surrounding a LOESS regression line, suggesting that an efficient market hypothesis cannot be rejected.">>=
 bigfour_summary <- bigfour %>%
   filter(playoffs == 0) %>%
   group_by(sport) %>%
