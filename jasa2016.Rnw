@@ -527,44 +527,29 @@ A related question explores the number of games that other sports must play in o
 %One likely reason that the NFL falls short of the NBA in this chart is that the NBA's series length gives the better team more chances to win. 
 \section{Conclusion}
 
+Using a modified Bayesian state-space model, we estimate both time-varying team strength and league-level variance parameters in order to better explain the underlying randomness in the four major North American professional sporting leagues, the NBA, NFL, NHL, and MLB. 
 
-Measurements of competitive balance: Competitive balance at a single point in time (independent of scheduling, compare to ???), Competitive balance between seasons (compare to Humphreys), competitiveness within a season (compare to )
+Our first finding relates to the relative equivalence of the four leagues. At a single point in time, team strength estimates diverge substantially more in the NBA and NFL than in the NHL and MLB. In the latter two leagues, this entails that contests between two randomly chosen teams are closer to to a coin-flip, with each team given a reasonable shot at winning. Within a season, estimates of $\gamma_w$, our autoregressive parameter, suggest that teams in each of the NBA (largest reversion), NFL, and NHL tend to revert towards the league average in the long term, while week-by-week trends of team strength in baseball are indistinguishable from a random walk. On a season-to-season basis, NHL teams exhibits the largest reversion towards the league average (nearly 50\%), with the other three leagues somewhere between roughly 25\% and 40\%. Each of these conclusions account for varying league-level traits, including schedule length and strength of schedule. 
 
-Alternative idea: Fix point in time. Draw from posterior distribution of each team's beta at that time. Calculate standard deviation of those posterior draws. Repeat 10000 times to get a posterior distribution of the standard deviation of team strength (CBR at that time)
+There are a couple of plausible explanations for our findings with respect to the weekly NBA variability shown in our team strength estimates. Injuries, the resting of starters, and in-season trades would seemingly have a larger impact in a sport where fewer players are participating at a single point in time. In particular, our model cannot accurately gauge team strength when star players, who could play, are rested in favor of lesser alternatives. Additionally, while there is the largest week-to-week reversion in the NBA, when considering the differences in teams to begin with, such differences are not as extreme. In other words, a 3\% reversion in the NBA does not neccessarily equate to a 3\$ reversion in MLB or the NHL.
 
-Competitive balance between seasons
+%We should probably expand on these results and tie them into current literature: 
+%Measurements of competitive balance: Competitive balance at a single point in time (independent of scheduling, compare to ???), Competitive balance between seasons (compare to Humphreys), competitiveness within a season (compare to )
 
-Posterior distribution of gamma season
 
-Competitive balance within a season
 
-Posterior distribution of the gammaWeek
--Function of overall differences in team strength (2\% in NBA is not same as 2\% in MLB)
--Function of injuries and players resting, which aren't necessarily getting at team strength
+Future possibilities: 
+
+\begin{itemize}
+\item  Fix point in time. Draw from posterior distribution of each team's beta at that time. Calculate standard deviation of those posterior draws. Repeat 10000 times to get a posterior distribution of the standard deviation of team strength (CBR at that time).
+\item Explore the impact of unbalanced vs balanced schedules in each league. Start by fixing team strenght estimates using draws from our Gibbs sampler, and estimate the results on season standings relative to the current system. One could also explore how the current economic measures of team strength correspond to these changes. 
+\item Measure team strength on a daily basis in MLB, where there are often seven games in a single week. 
+\item Consider time-varying estimates of team strength in the presence of tanking, in which teams, in order to secure a better draft position, are better off losing games later in the season.
 
 \subsection{Summary}
 \subsection{Open Problems}
 
 
-value of unbalanced vs balanced schedule: fix team strengths, estimate results relative to current system. 
-
-Change to a day-by-day structure to account for MLB starting pitchers
-
-Different model specification: use stochastic variance terms which may more aptly account for sudden changes in team strength. Related: out of sample testing with respect to model fits.
-
-Simulate balanced versus unbalanced scheduling to understand how each league's schedule impacts winning percentages (and the resulting measurements of competitive balance in the econ literature)
-
-%\input{prelim}
-
-%Next
-%4.  Verify the validity of the betting data
-%5.  Describe fitting process + alternate models.  
-%6.  Results/Posterior Plots 
-
-%Extensions
-%7.  Seven game series stuff
-%8.  Comepetitive balance.  
-%9.  Tanking
 
 
 
