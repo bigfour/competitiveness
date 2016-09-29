@@ -419,7 +419,7 @@ Taken wholly, this suggests non-random differences in the home advantage between
 \subsection{Posterior estimates}
 
 A summary of of the posterior draws of the team strength coefficients is shown in Table~\ref{tab:betas}, which uses draws from Model (\ref{model.full}).
-Figure~\ref{fig:spaghetti} shows estimated team coefficients over time, approximated using posterior mean draws from Model (\ref{model.full}) for all weeks $k$ and seasons $s$. Teams in Figure~\ref{fig:spaghetti} are depicted using their two primary colors, scraped from \url{http://jim-nielsen.com/teamcolors/} via the \pkg{teamcolors} package (\url{https://github.com/beanumber/teamcolors}) in \R.
+Figure~\ref{fig:spaghetti} shows estimated team coefficients over time, approximated using posterior mean draws from Model (\ref{model.full}) for all weeks $k$ and seasons $s$ across all four sports. Figures~\ref{fig:spaghetti-mlb}, \ref{fig:spaghetti-nba}, \ref{fig:spaghetti-nfl}, and \ref{fig:spaghetti-nhl} provide individual plot for each sport. Teams in Figures~\ref{fig:spaghetti}, \ref{fig:spaghetti-mlb}, \ref{fig:spaghetti-nba}, \ref{fig:spaghetti-nfl}, and \ref{fig:spaghetti-nhl} are depicted using their two primary colors, scraped from \url{http://jim-nielsen.com/teamcolors/} via the \pkg{teamcolors} package (\url{https://github.com/beanumber/teamcolors}) in \R.
 
 <<echo=FALSE, results='asis'>>=
 load("data/tidy_betas.rda")
@@ -463,7 +463,7 @@ names(secondary) <- colors$name
 
 <<spaghetti, fig.height=15, fig.cap="Team strengths over time for all four sports.">>=
 library(ggplot2)
-ggplot(data = tidy_betas, 
+spag <- ggplot(data = tidy_betas, 
        aes(x = time_val, y = beta, 
            color = name, fill = name)) +
   geom_line(alpha = 0.5) + 
@@ -476,8 +476,24 @@ ggplot(data = tidy_betas,
   scale_y_continuous(name = "Value of beta coefficient") + 
   guides(color = FALSE, fill = FALSE)
   #  guides(color = guide_legend(ncol = 2))
+spag
 @
 
+<<spaghetti-mlb, out.extra='angle=90', out.width='\\textheight', fig.height=7, fig.cap="Team strength coefficients over time for Major League Baseball.">>=
+spag %+% filter(tidy_betas, sport == "mlb")
+@
+
+<<spaghetti-nba, out.extra='angle=90', out.width='\\textheight', fig.height=7, fig.cap="Team strength coefficients over time for the National Basketball Association.">>=
+spag %+% filter(tidy_betas, sport == "nba")
+@
+
+<<spaghetti-nfl, out.extra='angle=90', out.width='\\textheight', fig.height=7, fig.cap="Team strength coefficients over time for the National Football League.">>=
+spag %+% filter(tidy_betas, sport == "nfl")
+@
+
+<<spaghetti-nhl, out.extra='angle=90', out.width='\\textheight', fig.height=7, fig.cap="Team strength coefficients over time for the National Hockey League.">>=
+spag %+% filter(tidy_betas, sport == "nhl")
+@
 
 Overall, there tends to be larger amounts of variability in team strength parameters at any given point in time in both the NFL and NBA, with posterior team strength coefficients tending to vary between -1 and 1 (on the logit scale). Team-to-team level variability is substantially lower in MLB (roughly between -0.3 and 0.3) and the NHL (-0.4 to 0.4). \ben{note that I changed these figures to match the 95 percentile figures in the table.} Among other findings in the four figures, the New England Patriots' 2007 season (NFL) stands out as the top individual performance of the last decade. In that season, New England finished the regular season 16-0 before eventually losing in the Super Bowl. Additionally, it is interesting to notice that the team strength estimates of the bad teams in the NBA (e.g. the Miami Heat in 2007--08) lie further from 0 than the the estimates for the good teams. This possibly reveals the tendency for teams in this league to ``tank"---a strategy of fielding a weak team intentionally to improve the chances of having better positions in the upcoming player draft \citep{soebbing2013gamblers}.
 
