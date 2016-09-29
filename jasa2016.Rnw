@@ -447,10 +447,10 @@ load(file.path(root, "data", "tidy_betas.rda"))
 tidy_betas <- tidy_betas %>%
   mutate(annotation = "",
          annotation = ifelse(beta == max(beta), 
-                             paste0("Most dominant team (", name, ")"), 
+                             paste0("Strongest team (", name, ")"), 
                              annotation),
          annotation = ifelse(beta == min(beta), 
-                             paste0("Least dominant team (", name, ")"), 
+                             paste0("Weakest team (", name, ")"), 
                              annotation))
 colors <- tidy_betas %>%
   select(name, primary, secondary) %>%
