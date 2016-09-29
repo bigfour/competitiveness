@@ -22,14 +22,14 @@ mlb_res <- mlb_results %>%
   # remove all the "road games"
   filter(X. != "@") %>%
   # capture doubleheaders
-  mutate(dh = str_extract(str_extract(Date, "\\(.\\)"), "[0-9]+")) %>%
-  mutate(dateString = paste(gsub("\\(.\\)", "", Date), year, sep = ",")) %>%
-  mutate(gameDate = parse_date_time(dateString, orders = c("%b %d,%y"))) %>%
-  mutate(home_team_id = Tm) %>%
-  mutate(home_win = ifelse(as.numeric(R) > as.numeric(RA), TRUE, FALSE)) %>%
-  mutate(sport = "mlb") %>%
-  mutate(season = year) %>%
-  mutate(playoffs = 0) %>%
+  mutate(dh = str_extract(str_extract(Date, "\\(.\\)"), "[0-9]+"),
+         dateString = paste(gsub("\\(.\\)", "", Date), year, sep = ","),
+         gameDate = parse_date_time(dateString, orders = c("%b %d,%y")),
+         home_team_id = Tm,
+         home_win = ifelse(as.numeric(R) > as.numeric(RA), TRUE, FALSE),
+         sport = "mlb",
+         season = year,
+         playoffs = 0) %>%
   select(sport, season, gameDate, dh, home_team_id, home_win, playoffs)
 ```
 
@@ -38,7 +38,9 @@ Sanity check: should be $162 * 30 / 2 = 2430$ games per year
 ```{r}
 mlb_res %>%
   group_by(season) %>%
-  summarise(N = n(), numTeams = length(unique(home_team_id)), home_p = sum(home_win) / n()) %>%
+  summarise(N = n(), 
+            numTeams = length(unique(home_team_id)), 
+            home_p = sum(home_win) / n()) %>%
   print.data.frame()
 ```
 
@@ -48,12 +50,12 @@ mlb_res %>%
 ```{r}
 nba_results <- read.csv("data/NBA_results.csv")
 nba_res <- nba_results %>%
-  mutate(dh = NA) %>%
-  mutate(gameDate = parse_date_time(Date, orders = c("%b %d %Y"))) %>%
-  mutate(home_team = Home.Neutral) %>%
-  mutate(home_win = ifelse(as.numeric(PTS.1) > as.numeric(PTS), TRUE, FALSE)) %>%
-  mutate(sport = "nba") %>%
-  mutate(season = ifelse(month(gameDate) < 8, year(gameDate), year(gameDate) + 1)) %>%
+  mutate(dh = NA,
+         gameDate = parse_date_time(Date, orders = c("%b %d %Y")),
+         home_team = Home.Neutral,
+         home_win = ifelse(as.numeric(PTS.1) > as.numeric(PTS), TRUE, FALSE),
+         sport = "nba",
+         season = ifelse(month(gameDate) < 8, year(gameDate), year(gameDate) + 1)) %>%
   select(sport, season, gameDate, dh, home_team, home_win, playoffs)
 # did we get all the dates?
 nba_res %>%
@@ -66,13 +68,14 @@ nba_res %>%
 nfl_results <- read.csv("data/NFL_results.csv")
 nfl_res <- nfl_results %>%
   na.omit() %>%
-  mutate(dh = NA) %>%
-  mutate(gameDay = parse_date_time(Date, orders = c("%b %d"))) %>%
-  mutate(gameYear = ifelse(month(gameDay) < 6, season + 1, season)) %>%
-  mutate(gameDate = parse_date_time(paste(Date, gameYear), orders = c("%b %d %y"))) %>%
-  mutate(home_team = ifelse(Var.7 == "@", as.character(Loser.tie), as.character(Winner.tie))) %>%
-  mutate(home_win = ifelse(Winner.tie == home_team, TRUE, FALSE)) %>%
-  mutate(sport = "nfl") 
+  mutate(dh = NA,
+         gameDay = parse_date_time(Date, orders = c("%b %d")),
+         gameYear = ifelse(month(gameDay) < 6, season + 1, season),
+         gameDate = parse_date_time(paste(Date, gameYear), orders = c("%b %d %y")),
+         home_team = ifelse(Var.7 == "@", 
+                            as.character(Loser.tie), as.character(Winner.tie)),
+         home_win = ifelse(Winner.tie == home_team, TRUE, FALSE),
+         sport = "nfl") 
 
 ##Week of season
 min.day <- nfl_res %>%
@@ -81,7 +84,8 @@ min.day <- nfl_res %>%
 
 nfl_res <- nfl_res %>%
     left_join(min.day) %>%
-    mutate(day = as.Date(gameDate) - as.Date(min.day), week = as.numeric(floor(day/7)+1), 
+    mutate(day = as.Date(gameDate) - as.Date(min.day), 
+           week = as.numeric(floor(day/7) + 1), 
            playoffs = as.numeric(week > 17))
 head(nfl_res)
   
@@ -97,13 +101,13 @@ table(nfl_res$playoffs, nfl_res$season)
 ```{r}
 nhl_results <- read.csv("data/NHL_results.csv")
 nhl_res <- nhl_results %>%
-  mutate(dh = NA) %>%
-  mutate(gameDate = ymd(Date)) %>%
-  mutate(home_team = Home) %>%
+  mutate(dh = NA,
+         gameDate = ymd(Date),
+         home_team = Home) %>%
   # what to do about ties?
-  mutate(home_win = ifelse(G.1 >= G, TRUE, FALSE)) %>%
-  mutate(sport = "nhl") %>%
-  mutate(season = ifelse(month(gameDate) < 8, year(gameDate), year(gameDate) + 1)) %>%
+  mutate(home_win = ifelse(G.1 >= G, TRUE, FALSE),
+         sport = "nhl",
+         season = ifelse(month(gameDate) < 8, year(gameDate), year(gameDate) + 1)) %>%
   select(sport, season, gameDate, dh, home_team, home_win, playoffs)
 # did we get all the dates?
 nhl_res %>%
@@ -133,22 +137,22 @@ teamname_lkup <- Teams %>%
 teamname_lkup <- teamname_lkup[1:34,]
 teamname_lkup <- bind_rows(teamname_lkup, data.frame(teamID = "TBD", name = "Tampa Bay Rays"))
 teamname_lkup <- teamname_lkup %>%
-  mutate(teamID = ifelse(teamID == "CHA", "CHW", as.character(teamID))) %>%
-  mutate(teamID = ifelse(teamID == "NYA", "NYY", teamID)) %>%
-  mutate(teamID = ifelse(teamID == "SLN", "STL", teamID)) %>%
-  mutate(teamID = ifelse(teamID == "KCA", "KCR", teamID)) %>%
-  mutate(teamID = ifelse(teamID == "CHN", "CHC", teamID)) %>%
-  mutate(teamID = ifelse(teamID == "NYN", "NYM", teamID)) %>%
-  mutate(teamID = ifelse(teamID == "FLO", "FLA", teamID)) %>%
-  mutate(teamID = ifelse(teamID == "SFN", "SFG", teamID)) %>%
-  mutate(teamID = ifelse(teamID == "LAN", "LAD", teamID)) %>%
-  mutate(teamID = ifelse(teamID == "SDN", "SDP", teamID)) %>%
-  mutate(teamID = ifelse(teamID == "TBA", "TBR", teamID)) %>%
-  mutate(teamID = ifelse(teamID == "WAS", "WSN", teamID)) %>%
-  mutate(name = ifelse(teamID == "FLA", "Miami Marlins", name)) %>%
-  mutate(name = ifelse(teamID == "STL", "St Louis Cardinals", name)) %>%
-  mutate(name = ifelse(teamID == "LAA", "Los Angeles Angels", name)) %>%
-  mutate(name = ifelse(teamID == "TBR", "Tampa Bay Rays", name)) %>%
+  mutate(teamID = ifelse(teamID == "CHA", "CHW", as.character(teamID)),
+         teamID = ifelse(teamID == "NYA", "NYY", teamID),
+         teamID = ifelse(teamID == "SLN", "STL", teamID),
+         teamID = ifelse(teamID == "KCA", "KCR", teamID),
+         teamID = ifelse(teamID == "CHN", "CHC", teamID),
+         teamID = ifelse(teamID == "NYN", "NYM", teamID),
+         teamID = ifelse(teamID == "FLO", "FLA", teamID),
+         teamID = ifelse(teamID == "SFN", "SFG", teamID),
+         teamID = ifelse(teamID == "LAN", "LAD", teamID),
+         teamID = ifelse(teamID == "SDN", "SDP", teamID),
+         teamID = ifelse(teamID == "TBA", "TBR", teamID),
+         teamID = ifelse(teamID == "WAS", "WSN", teamID),
+         name = ifelse(teamID == "FLA", "Miami Marlins", name),
+         name = ifelse(teamID == "STL", "St Louis Cardinals", name),
+         name = ifelse(teamID == "LAA", "Los Angeles Angels", name),
+         name = ifelse(teamID == "TBR", "Tampa Bay Rays", name)) %>%
   rename(home_team = name) %>%
   unique()
 
@@ -165,9 +169,12 @@ nba_res %>%
   select(home_team) %>%
   unique()
 nba_res <- nba_res %>%
-  mutate(home_team = ifelse(grepl("Nets", home_team), "Brooklyn Nets", as.character(home_team))) %>%
-  mutate(home_team = ifelse(grepl("Bobcats", home_team), "Charlotte Hornets", as.character(home_team))) %>%
-  mutate(home_team = ifelse(grepl("New Orleans.+Hornets", home_team), "New Orleans Pelicans", as.character(home_team)))
+  mutate(home_team = ifelse(grepl("Nets", home_team), 
+                            "Brooklyn Nets", as.character(home_team)),
+         home_team = ifelse(grepl("Bobcats", home_team), 
+                            "Charlotte Hornets", as.character(home_team)),
+         home_team = ifelse(grepl("New Orleans.+Hornets", home_team), 
+                            "New Orleans Pelicans", as.character(home_team)))
 
 ```
 
@@ -202,7 +209,7 @@ Account for differences in team names between the two data sets
 
 
 Last minute addendums:
-- Seattle Supersonics should be merged with OKC Thunder (NBA). Supersonics spelt two ways
+- Seattle Supersonics should be merged with OKC Thunder (NBA). Supersonics spelled two ways
 - Atlanta Thrashers should be merged with Winnipeg Jets
 - Coyotes (NHL) are Arizona on the road and Phoenix at home
 - Ducks (NHL) also come in two forms

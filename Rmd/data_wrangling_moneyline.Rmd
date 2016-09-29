@@ -23,7 +23,10 @@ Combine them
 
 ```{r, message=FALSE}
 ds <- bind_rows(mlb, nba, nfl, nhl)
-ds <- mutate(ds, sport = c(rep("mlb", nrow(mlb)), rep("nba", nrow(nba)), rep("nfl", nrow(nfl)), rep("nhl", nrow(nhl))))
+ds <- mutate(ds, sport = c(rep("mlb", nrow(mlb)), 
+                           rep("nba", nrow(nba)), 
+                           rep("nfl", nrow(nfl)), 
+                           rep("nhl", nrow(nhl))))
 ```
 
 Remove any duplicate lines
@@ -59,7 +62,7 @@ ds <- ds %>%
 # but for NBA and NHL, have to adjust
 ds <- ds %>%
   mutate(season = ifelse(sport %in% c("nba", "nhl") & month(gameDate) > 7, 
-                year(gameDate) + 1, season))
+                         year(gameDate) + 1, season))
 # NFL too
 ds <- ds %>%
   mutate(season = ifelse(sport == "nfl" & month(gameDate) < 4, 
@@ -97,7 +100,8 @@ Remove multiple lines for each game
 games <- ds %>%
   group_by(home_team, gameTime) %>%
   summarise(min_visitor_nss = min(visitor_nss))
-ds <- semi_join(ds, games, by = c("home_team", "gameTime", "visitor_nss" = "min_visitor_nss"))
+ds <- semi_join(ds, games, 
+                by = c("home_team", "gameTime", "visitor_nss" = "min_visitor_nss"))
 ds <- filter(ds, visitor_nss < 1000)
 ```
 
@@ -126,7 +130,11 @@ ds <- ds %>%
 What to do about doubleheaders? 
 
 ```{r}
-filter(ds, sport == "mlb" & season == 2013 & home_team == "Colorado Rockies" & month(gameDate) == 4 & day(gameDate) == 16) %>% print.data.frame()
+filter(ds, sport == "mlb" & season == 2013 & 
+         home_team == "Colorado Rockies" & 
+         month(gameDate) == 4 & 
+         day(gameDate) == 16) %>% 
+  print.data.frame()
 dh <- ds %>%
   group_by(gameDate, home_team) %>%
   summarise(numGames = n()) %>%
@@ -172,8 +180,12 @@ Compute implied probabilities
 
 ```{r}
 ds <- ds %>%
-  mutate(prob_vis = ifelse(ml_vis > 0, 100 / (100 + ml_vis), abs(ml_vis) / (100 + abs(ml_vis)))) %>%
-  mutate(prob_home = ifelse(ml_home > 0, 100 / (100 + ml_home), abs(ml_home) / (100 + abs(ml_home)))) %>%
+  mutate(prob_vis = ifelse(ml_vis > 0, 
+                           100 / (100 + ml_vis), 
+                           abs(ml_vis) / (100 + abs(ml_vis)))) %>%
+  mutate(prob_home = ifelse(ml_home > 0, 
+                            100 / (100 + ml_home), 
+                            abs(ml_home) / (100 + abs(ml_home)))) %>%
   mutate(vig = (prob_vis + prob_home) - 1) %>%
   mutate(p_vis = prob_vis / (prob_vis + prob_home)) %>%
   mutate(p_home = prob_home / (prob_vis + prob_home))
