@@ -12,7 +12,7 @@ if (Sys.info()["user"] == "mlopez1") {
   mcmc_dir <- "~/Dropbox/Posterior_Draws"
 }
 
-if (Sys.info()["user"] == "gregoryjmatthews") {
+if (Sys.info()["user"] == "gregorymatthews") {
   # For Greg and Mike
   root <- "~/Dropbox/competitiveness"
   mcmc_dir <- "~/Dropbox/Posterior_Draws"
