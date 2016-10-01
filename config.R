@@ -14,7 +14,7 @@ if (Sys.info()["user"] == "mlopez1") {
 
 if (Sys.info()["user"] == "gregorymatthews") {
   # For Greg and Mike
-  root <- "~/Dropbox/competitiveness"
+  root <- "~/Dropbox/competitivenessGit"
   mcmc_dir <- "~/Dropbox/Posterior_Draws"
 }
 
