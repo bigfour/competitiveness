@@ -235,7 +235,8 @@ Given the varying within-sport metrics of judging team quality, as well as the f
 We collected two types of data about games in the four major North American professional sports leagues (MLB, NBA, NFL, and NHL): games results and betting lines. The game result data were collected from the websites of \href{http://www.sports-reference.com/}{sports-reference.com} via scripts we wrote in \R\footnote{The data collection scripts, as well as all of our data wrangling operations, are included in our supplemental materials.}. Although these game results are not official, they are accurate and widely-used. Game result data from the 2005--2014 seasons were included in our models (see Table~\ref{tab:bigfour}).  
 
 <<include=FALSE>>=
-load("data/bigfour.rda")
+load("data/bigfour.final.rda")
+bigfour <- bigfour.final
 head(bigfour)
 mosaic::favstats(~vig, data = bigfour)
 @
@@ -253,10 +254,13 @@ The win probabilities implied by the betting markets for the Cubs ($p(-127) = 0.
 %All set here
 
 <<message=FALSE, results='asis'>>=
-load("data/bigfour.rda")
+load("data/bigfour.final.rda")
+bigfour <- bigfour.final
 library(dplyr)
 library(xtable)
 n.games <- data.frame(sport = c("mlb","nba", "nfl", "nhl"), N_results = c(24299, 12059, 2560, 10564))
+#n.games <- data.frame(sport = c("mlb","nba", "nfl", "nhl"), N_results = c(24298, 13290, 2560, 12915))
+#Use updated n.games with newer bigfour.
 bigfour %>%
   filter(season %in% 2005:2014, playoffs == 0) %>%
   group_by(sport) %>%
@@ -465,7 +469,7 @@ spag <- ggplot(data = tidy_betas,
   geom_text(aes(label = annotation), color = "black", hjust = "left", nudge_x = 0.25) + 
   scale_color_manual(name = NULL, values = primary) + 
   scale_fill_manual(name = NULL, values = secondary) + 
-  scale_x_continuous(name = "Season", breaks = 2005:2015) +
+  scale_x_continuous(name = "Season", breaks = 2006:2016) +
   scale_y_continuous(name = "Value of beta coefficient") + 
   guides(color = FALSE, fill = FALSE)
   #  guides(color = guide_legend(ncol = 2))

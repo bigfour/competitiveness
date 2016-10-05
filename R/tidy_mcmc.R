@@ -6,7 +6,7 @@ sports <- c("mlb", "nba", "nfl", "nhl")
 
 get_sport <- function(sport) {
   message(paste("reading", sport, "data..."))
-  load(file.path(mcmc_dir, paste0(sport, "_8_23_teamHFA.RData")))
+  load(file.path(mcmc_dir, paste0(sport, "_9_23_teamHFA.RData")))
   out <- data.frame(
     sigma_w = 1/z$sigmab[,,1],
     sigma_s = 1/z$sigmabSeason[,,1],
@@ -87,7 +87,8 @@ colors <- teamcolors %>%
   mutate(team_id = 1:n())
 
 # check to make sure that names all match up
-load("data/bigfour.rda")
+load("data/bigfour.final.rda")
+bigfour <- bigfour.final
 teams <- bigfour %>%
   group_by(sport, home_team) %>%
   summarize(N = n()) %>%
@@ -102,7 +103,7 @@ tidy_betas <- tidy_betas %>%
   inner_join(colors, by = c("sport" = "sport", "team_id" = "team_id"))
 
 # save the results so we don't have to do this everytime. 
-save(tidy_betas, file = file.path(root, "data", "tidy_betas.rda"), compress = "xz")
+save(tidy_betas, file = file.path(root, "data", "tidy_betas.final.rda"), compress = "xz")
 
 
 ### Alphas
@@ -145,4 +146,4 @@ tidy_alphas <- alphas.all %>%
 
 
 ### update with an alpha's output, and run the tidy_mcmc
-save(tidy_alphas, file = file.path(root, "data", "tidy_alphas.rda"), compress = "xz")  
+save(tidy_alphas, file = file.path(root, "data", "tidy_alphas.final.rda"), compress = "xz")  

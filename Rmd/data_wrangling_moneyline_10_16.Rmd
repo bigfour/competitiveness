@@ -1,0 +1,354 @@
+---
+title: "Moneyline Data Wrangling"
+author: "Mike Lopez"
+date: "October 4, 2016"
+output: html_document
+---
+
+```{r, message=FALSE}
+library(dplyr)
+library(lubridate)
+library(readr)
+nhl <- read_csv("datanew/NHL.csv")
+nba <- read_csv("datanew/NBA.csv")
+nfl <- read_csv("datanew/NFL.csv")
+mlb <- read_csv("datanew/MLB.csv")
+
+vars <- c("Date", "Visitor Team", "Home Team", "Visitor ML", "Home ML", "Visitor Score", "Home Score")
+
+nhl <- nhl[,vars]
+nba <- nba[,vars]
+nfl <- nfl[,vars]
+mlb <- mlb[,vars]
+```
+
+
+Combine them
+
+```{r, message=FALSE}
+ds <- bind_rows(mlb, nba, nfl, nhl)
+ds <- mutate(ds, sport = c(rep("mlb", nrow(mlb)), 
+                           rep("nba", nrow(nba)), 
+                           rep("nfl", nrow(nfl)), 
+                           rep("nhl", nrow(nhl))))
+```
+
+Remove any duplicate lines
+
+```{r}
+ds <- unique(ds)
+```
+
+Clean up dates
+
+```{r, message=FALSE}
+ds <- ds %>%
+  mutate(gameDate = mdy_hm(Date), gameTime = mdy_hm(Date)) %>%
+# discard games with no times? For now???
+  filter(!is.na(gameTime))
+```
+
+Make the columns easier to use
+
+```{r}
+ds <- ds %>%
+  rename(ml_vis = `Visitor ML`, ml_home = `Home ML`, 
+         visitor_team = `Visitor Team`, home_team = `Home Team`, 
+         visitor_score = `Visitor Score`, home_score = `Home Score`)
+```
+
+Define the seasons
+
+```{r}
+# start with just using the year
+ds <- ds %>%
+  mutate(season = year(gameDate))
+# but for NBA and NHL, have to adjust
+ds <- ds %>%
+  mutate(season = ifelse(sport %in% c("nba", "nhl") & month(gameDate) > 7, 
+                         year(gameDate) + 1, season))
+# NFL too
+ds <- ds %>%
+  mutate(season = ifelse(sport == "nfl" & month(gameDate) < 4, 
+                season - 1, season))
+```
+
+Strip out all games where we don't have the line
+
+```{r}
+ds <- filter(ds, !is.na(ml_home))
+```
+
+Find all the real teams
+
+```{r}
+teams <- ds %>%
+  group_by(home_team) %>%
+  summarise(N = n()) %>%
+  filter(N > 100) %>%
+  arrange(desc(N)) %>%
+  filter(home_team!="Home Goals")
+
+teams1 <- ds %>%
+  group_by(visitor_team) %>%
+  summarise(N = n()) %>%
+  filter(N > 100) %>%
+  arrange(desc(N)) 
+```
+
+Restrict to only to those teams
+
+```{r}
+ds <- semi_join(ds, teams, by = c("home_team"))
+ds <- semi_join(ds, teams1, by = c("visitor_team"))
+```
+
+
+Still have multiple lines for some games!
+
+```{r}
+dupes <- ds %>%
+  group_by(home_team, gameTime) %>%
+  summarise(N = n()) %>%
+  filter(N > 1)
+dupes
+```
+
+Arbitrarily remove one of them
+
+```{r}
+dup.idx <- ds %>%
+  semi_join(dupes, by = c("gameTime", "home_team"))
+# just take the later ones
+dup.bad <- dup.idx[rep(c(TRUE, FALSE), nrow(dup.idx) / 2),]
+ds <- ds %>%
+  anti_join(dup.bad, by = c("gameTime", "home_team"))
+```
+
+
+What to do about doubleheaders? 
+
+```{r}
+filter(ds, sport == "mlb" & season == 2013 & 
+         home_team == "Colorado Rockies" & 
+         month(gameDate) == 4 & 
+         day(gameDate) == 16) %>% 
+  print.data.frame()
+dh <- ds %>%
+  group_by(gameDate, home_team) %>%
+  summarise(numGames = n()) %>%
+  filter(numGames > 1)
+dh.idx <- dh %>%
+  semi_join(x = ds, by = c("gameDate", "home_team")) %>%
+  mutate(dh = rep(c(1,2), nrow(dh)))
+
+ds <- ds %>%
+  left_join(select(dh.idx, gameTime, home_team, dh), by = c("gameTime", "home_team"))
+
+# no tripleheaders
+ds <- filter(ds, is.na(dh) == TRUE | dh < 2)
+
+ds %>%
+  group_by(gameDate, home_team) %>%
+  summarise(numGames = n()) %>%
+  filter(numGames > 2)
+```
+
+Note that there are some MLB regular season games in March
+
+```{r}
+ds %>% mutate(month = month(gameDate)) %>%
+  group_by(month, sport) %>%
+  summarise(N = n()) %>%
+  print.data.frame()
+
+ds <- ds %>%
+  filter(!(sport == "mlb" & month(gameDate) < 3)) %>%
+  filter(!(sport == "nba" & month(gameDate) < 10 & month(gameDate) > 6)) %>%
+  filter(!(sport == "nfl" & month(gameDate) > 2 & month(gameDate) < 9)) %>%
+  filter(!(sport == "nhl" & month(gameDate) < 9 & month(gameDate) > 6)) %>%
+  filter(season > 2005, season < 2017)
+```
+
+```{r}
+ds %>%
+  group_by(sport, season) %>%
+  summarise(N = n(), numTeams = length(unique(union(visitor_team, home_team)))) %>%
+  print.data.frame()
+```
+
+
+Compute implied probabilities
+
+```{r}
+ds <- ds %>%
+  mutate(prob_vis = ifelse(ml_vis > 0, 
+                           100 / (100 + ml_vis), 
+                           abs(ml_vis) / (100 + abs(ml_vis)))) %>%
+  mutate(prob_home = ifelse(ml_home > 0, 
+                            100 / (100 + ml_home), 
+                            abs(ml_home) / (100 + abs(ml_home)))) %>%
+  mutate(vig = (prob_vis + prob_home) - 1) %>%
+  mutate(p_vis = prob_vis / (prob_vis + prob_home)) %>%
+  mutate(p_home = prob_home / (prob_vis + prob_home))
+```
+
+# double-check for bad data
+
+```{r}
+test <- filter(ds, ml_vis > 0 & p_vis > 0.5)
+test
+test$ml_vis
+
+test <- filter(ds, vig > 0.1)
+test
+test$ml_vis
+test$ml_home
+```
+
+Get rid of these problematic money lines 
+
+```{r}
+ds <- filter(ds, !ml_vis==56, !ml_home ==65)
+```
+
+
+Save the resulting data frame
+
+```{r, eval=FALSE}
+mline <- ds
+#save(mline, file = "~/Dropbox/Competitiveness/SportsInsights/mline_final.rda", compress = "xz")
+```
+
+
+At this point, we have a near-final set of money line data, now we just have to figure out which games are RS. 
+
+We'll do this by using our results files, as well as some look-ups of recent seasons. 
+
+
+```{r}
+mlb_results <- read_csv("Data/MLB_results.csv")
+mlb.new <- data.frame(season = c(2015, 2016), 
+                      min.date = parse_date_time(c("2015-04-05", "2016-04-03"), "ymd"), 
+                      max.date = parse_date_time(c("2015-10-04", "2016-10-02"), "ymd"))
+mlb_dates <- mlb_results %>%
+  mutate(dateString = paste(gsub("\\(.\\)", "", Date), year, sep = ","),
+         gameDate = parse_date_time(dateString, orders = c("%b %d,%y")),
+         season = year) %>%
+  group_by(season) %>%
+  summarise(min.date = min(gameDate), max.date = max(gameDate)) %>%
+  bind_rows(mlb.new) %>%
+  mutate(sport = "mlb") 
+mlb_dates[mlb_dates$season == 2014,]$min.date <- 
+  parse_date_time("2014-03-31", "ymd")
+mlb_dates[mlb_dates$season == 2012,]$min.date <- 
+  parse_date_time("2014-04-04", "ymd")
+
+
+nhl_results <- read_csv("Data/NHL_results.csv")
+nhl.new <- data.frame(season = c(2015, 2016), 
+                      min.date = parse_date_time(c("2014-10-08", "2015-10-07"), "ymd"), 
+                      max.date = parse_date_time(c("2015-04-11", "2016-04-10"), "ymd"))
+nhl_dates <- nhl_results[,c(2, 11)] %>%
+  filter(playoffs == 0) %>%
+  mutate(gameDate = parse_date_time(Date, "ymd"),
+         season = ifelse(month(gameDate) < 8, year(gameDate), year(gameDate) + 1))  %>%
+  group_by(season) %>%
+  summarise(min.date = min(gameDate), max.date = max(gameDate)) %>%
+  bind_rows(nhl.new) %>%
+  mutate(sport = "nhl")
+
+
+nba_results <- read_csv("Data/NBA_results.csv")
+nba.new <- data.frame(season = c(2015, 2016), 
+                      min.date = parse_date_time(c("2014-10-28", "2015-10-27"), "ymd"), 
+                      max.date = parse_date_time(c("2015-04-15", "2016-04-16"), "ymd"))
+
+nba_dates <- nba_results[,c(2,11)] %>%
+  filter(playoffs == 0) %>%
+  mutate(gameDate = parse_date_time(Date, orders = c("%b %d %Y")),
+         season = ifelse(month(gameDate) < 8, year(gameDate), year(gameDate) + 1)) %>%
+  group_by(season) %>%
+  summarise(min.date = min(gameDate), max.date = max(gameDate)) %>%
+  bind_rows(nba.new) %>%
+  mutate(sport = "nba")
+
+
+nfl_results <- read_csv("~/Dropbox/Competitiveness/Data/NFL_results.csv")
+nfl.new <- data.frame(season = 2015, 
+                      min.date = parse_date_time("2015-09-10", "ymd"), 
+                      max.date = parse_date_time("2016-01-03", "ymd"))
+nfl_dates <- nfl_results %>%
+  na.omit() %>%
+  filter(Week!="Champ", Week!="ConfChamp", Week!="Division", Week!="SuperBowl", Week!="WildCard") %>%
+  mutate(gameDay = parse_date_time(Date, orders = c("%b %d")),
+         gameYear = ifelse(month(gameDay) < 6, season + 1, season),
+         gameDate = parse_date_time(paste(Date, gameYear), orders = c("%b %d %y"))) %>%
+  group_by(season) %>%
+  summarise(min.date = min(gameDate), max.date = max(gameDate)) %>%
+  bind_rows(nfl.new) %>%
+  mutate(sport = "nfl") 
+  
+all.dates <- bind_rows(nfl_dates, nhl_dates, mlb_dates, nba_dates)
+```
+
+Now merge
+
+```{r}
+mline.dates <- left_join(mline, all.dates)
+mline.dates <- mline.dates %>%
+  filter(gameDate %within% lubridate::interval(min.date, max.date + days(1)))
+```
+
+MLB plays 2430 games in a year, NHL & NBA 1230, NFL 240
+
+```{r}
+mline.dates %>%
+  group_by(sport, season) %>%
+  summarise(N = n()) %>% print.data.frame()
+
+mline.dates %>%
+  group_by(home_team, season) %>%
+  summarise(N = n()) %>% print.data.frame()
+```
+
+Two franchise switches
+
+```{r}
+mline.dates[mline.dates$visitor_team == "Atlanta Thrashers",]$visitor_team <- "Winnipeg Jets"
+mline.dates[mline.dates$home_team == "Atlanta Thrashers",]$home_team <- "Winnipeg Jets"
+
+mline.dates[mline.dates$visitor_team == "Seattle Supersonics",]$visitor_team <- "Oklahoma City Thunder"
+mline.dates[mline.dates$home_team == "Seattle Supersonics",]$home_team <- "Oklahoma City Thunder"
+```
+
+Looking at data
+
+```{r}
+bigfour <- mline.dates
+bigfour %>%
+  group_by(sport, season) %>%
+  mutate(home_win = home_score > visitor_score) %>%
+  summarise(N_results = n(), numTeams = length(unique(setdiff(union(visitor_team, home_team), NA))), 
+            G = sum(!is.na(home_win)), W = sum(home_win, na.rm = TRUE), L = sum(!home_win, na.rm = TRUE),
+            home_wp = sum(home_win, na.rm = TRUE) / sum(!is.na(home_win)),
+            N_mline = sum(!is.na(prob_home)), 
+            mean_home_p = mean(prob_home, na.rm = TRUE)) %>%
+  mutate(coverage = N_mline / N_results) %>%
+  print.data.frame()
+
+
+bigfour %>% 
+  group_by(sport, season) %>% 
+  summarise(min.date = min(gameDate), max.date = max(gameDate)) %>% 
+  print.data.frame()
+```
+
+Save it!
+
+```{r}
+bigfour.final <- bigfour %>%
+  mutate(home_win = home_score > visitor_score)
+
+save(bigfour.final, file = "data/bigfour.final.rda", compress = "xz")
+```
