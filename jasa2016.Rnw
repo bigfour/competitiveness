@@ -456,6 +456,7 @@ names(secondary) <- colors$name
 
 <<spaghetti, fig.height=15, fig.cap="Team strengths over time for all four sports.">>=
 library(ggplot2)
+tidy_betas <- mutate(tidy_betas, time_val = ifelse(sport == "nfl"|sport == "mlb", time_val + 1, time_val))
 spag <- ggplot(data = tidy_betas, 
        aes(x = time_val, y = beta, 
            color = name, fill = name)) +
@@ -547,7 +548,7 @@ Within each league, Figure \ref{alphaAll} also identifies substantial difference
 
 <<>>=
 ## Home advantage plots
-load(file.path(root, "data", "tidy_alphas.rda"))
+load(file.path(root, "data", "tidy_alphas.final.rda"))
 datbetas.null <- tidy_alphas %>%
   group_by(sport) %>%
   arrange(alpha.team.overall) %>%
