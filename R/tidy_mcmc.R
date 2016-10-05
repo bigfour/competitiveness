@@ -58,9 +58,10 @@ tidy.mcarray <- function(x, ...) {
 
 tidy_betas <- lapply(betas, tidy) %>%
   bind_rows() %>%
-  mutate(sport = rep(sports, times = n_sports)) %>%
+  mutate(sport = rep(sports, times = n_sports), 
+         max.week = ifelse(sport == "nfl", 17, ifelse(sport == "nba", 24, 28))) %>%
   group_by(season) %>%
-  mutate(time_val = 2005 + season + week / max(week)) %>%
+  mutate(time_val = 2004 + season + week / max.week) %>%
   ungroup()
 
 
