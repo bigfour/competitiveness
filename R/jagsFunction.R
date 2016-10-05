@@ -2,9 +2,10 @@ source("config.R")
 library(ggplot2)
 library(rjags)
 library(dplyr)
-load(file.path(root, "data", "bigfourGM.rda"))
+load(file.path(root, "data", "bigfour.final.rda"))
 
-bigfour <- filter(bigfour, playoffs == 0)
+bigfour <- bigfour.final
+
 
 logit <- function(p){out <- log(p/(1-p));return(out)}
 
@@ -20,7 +21,7 @@ jagsModel <- function(data,
                                          'sigmabSeason','gammaWeek','gammaSeason')){
   
   
-  test <- subset(bigfour, sport == league & (season >= 2005 & season <= 2014))
+  test <- subset(bigfour, sport == league)
   greg <- as.Date(gsub(" 0:00","",test$event_date),"%m/%d/%Y")
   min.day <- test %>%
     group_by(season) %>%
@@ -105,7 +106,7 @@ for (league in leagues) {
                posteriorDraws = posteriorDraws,
                n.adapt = num_adapt, n.update = num_update, 
                n.draws = num_draws, n.chains = 3, thin = 5)
-  filename <- paste0(mcmc_dir, "/", league, "_8_23_constantHFA.RData")
+  filename <- paste0(mcmc_dir, "/", league, "_9_23_constantHFA.RData")
   save(z, file = filename, compress = "xz")
 }  
 
@@ -120,7 +121,7 @@ for (league in leagues) {
                posteriorDraws = posteriorDraws,
                n.adapt = num_adapt, n.update = num_update, 
                n.draws = num_draws, n.chains = 3, thin = 5)
-  filename <- paste0(mcmc_dir, "/", league, "_8_23_teamHFA.RData")
+  filename <- paste0(mcmc_dir, "/", league, "_9_23_teamHFA.RData")
   save(z, file = filename, compress = "xz")
 }  
 
