@@ -415,7 +415,7 @@ A summary of of the posterior draws of the team strength coefficients is shown i
 Figure~\ref{fig:spaghetti} shows estimated team coefficients over time, approximated using posterior mean draws from Model (\ref{model.full}) for all weeks $k$ and seasons $s$ across all four sports. Figures~\ref{fig:spaghetti-mlb}, \ref{fig:spaghetti-nba}, \ref{fig:spaghetti-nfl}, and \ref{fig:spaghetti-nhl} provide individual plot for each sport. Teams in Figures~\ref{fig:spaghetti}, \ref{fig:spaghetti-mlb}, \ref{fig:spaghetti-nba}, \ref{fig:spaghetti-nfl}, and \ref{fig:spaghetti-nhl} are depicted using their two primary colors, scraped from \url{http://jim-nielsen.com/teamcolors/} via the \pkg{teamcolors} package (\url{https://github.com/beanumber/teamcolors}) in \R.
 
 <<echo=FALSE, results='asis'>>=
-load("data/tidy_betas.rda")
+load("~/data/tidy_betas.rda")
 library(xtable)
 tidy_betas %>%
   group_by(sport) %>%
