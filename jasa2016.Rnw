@@ -257,6 +257,8 @@ load("data/bigfour.rda")
 library(dplyr)
 library(xtable)
 n.games <- data.frame(sport = c("mlb","nba", "nfl", "nhl"), N_results = c(24299, 12059, 2560, 10564))
+#n.games <- data.frame(sport = c("mlb","nba", "nfl", "nhl"), N_results = c(24298, 13290, 2560, 12915))
+#Use updated n.games with newer bigfour.
 bigfour %>%
   filter(season %in% 2005:2014, playoffs == 0) %>%
   group_by(sport) %>%
