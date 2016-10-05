@@ -242,7 +242,7 @@ mlb_dates <- mlb_results %>%
 mlb_dates[mlb_dates$season == 2014,]$min.date <- 
   parse_date_time("2014-03-31", "ymd")
 mlb_dates[mlb_dates$season == 2012,]$min.date <- 
-  parse_date_time("2014-04-04", "ymd")
+  parse_date_time("2012-04-04", "ymd")
 
 
 nhl_results <- read_csv("Data/NHL_results.csv")
