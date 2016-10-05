@@ -58,10 +58,10 @@ tidy.mcarray <- function(x, ...) {
 
 tidy_betas <- lapply(betas, tidy) %>%
   bind_rows() %>%
-  mutate(sport = rep(sports, times = n_sports)) %>%
+  mutate(sport = rep(sports, times = n_sports), 
+         max.week = ifelse(sport == "nfl", 17, ifelse(sport == "nba", 24, 28))) %>%
   group_by(season) %>%
-  mutate(time_val = 2004 + season + week / max(week),
-         time_val = ifelse(sport == "nhl", time_val + 1, time_val)) %>%
+  mutate(time_val = 2004 + season + week / max.week) %>%
   ungroup()
 
 
@@ -79,8 +79,7 @@ library(teamcolors)
 colors <- teamcolors %>%
   filter(sport %in% sports) %>%
   #Our data has the St. Louis Rams.  The colors has LA Rams.  
-  mutate(name = ifelse(name == "Los Angeles Rams", "St. Louis Rams", name),
-         name = ifelse(name == "Los Angeles Angels of Anaheim", "Los Angeles Angels", name),
+  mutate(name = ifelse(name == "Los Angeles Angels of Anaheim", "Los Angeles Angels", name),
          name = ifelse(name == "St Louis Blues", "St. Louis Blues", name)) %>%
   arrange(sport, name) %>%
   group_by(sport) %>%
@@ -98,6 +97,8 @@ teams <- bigfour %>%
   bind_cols(colors)
 teams %>%
   filter(home_team != name)
+
+
 
 tidy_betas <- tidy_betas %>%
   inner_join(colors, by = c("sport" = "sport", "team_id" = "team_id"))
