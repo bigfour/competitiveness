@@ -246,9 +246,9 @@ mlb_dates[mlb_dates$season == 2012,]$min.date <-
 
 
 nhl_results <- read_csv("Data/NHL_results.csv")
-nhl.new <- data.frame(season = c(2015, 2016), 
-                      min.date = parse_date_time(c("2014-10-08", "2015-10-07"), "ymd"), 
-                      max.date = parse_date_time(c("2015-04-11", "2016-04-10"), "ymd"))
+nhl.new <- data.frame(season = c(2016), 
+                      min.date = parse_date_time(c("2015-10-07"), "ymd"), 
+                      max.date = parse_date_time(c("2016-04-10"), "ymd"))
 nhl_dates <- nhl_results[,c(2, 11)] %>%
   filter(playoffs == 0) %>%
   mutate(gameDate = parse_date_time(Date, "ymd"),
