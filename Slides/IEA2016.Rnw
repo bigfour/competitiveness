@@ -1,0 +1,188 @@
+\documentclass{beamer}
+
+
+% If you have a file called "university-logo-filename.xxx", where xxx
+% is a graphic format that can be processed by latex or pdflatex,
+% resp., then you can add a logo as follows:
+\title{How often does the best team win? A unified approach
+to understanding randomness in North American sport}
+% \subtitle
+% {for Graduate Students} % (optional)
+ 
+
+%\author[Ofer Harel] % (optional, use only with lots of authors)
+%{Ofer Harel\inst{1} and  Gregory Matthews\inst{2}}
+
+\author{Gregory Matthews $^{1}$, Ben Baumer $^{2}$, and Mike Lopez $^{3}$ }
+
+
+
+%  \inst{1}
+  %Department of Statistics\\
+  %University of Connecticut
+
+% - Use the \inst{?} command only if the authors have different
+%   affiliation.
+\institute [Loyola] % (optional, but mostly needed)
+{
+  $^{1}$Loyola University Chicago\\
+  
+  
+  $^{2}$Smith College\\
+  
+  
+  $^{3}$Skidmore College\\
+  
+}
+
+
+
+% - Use the \inst command only if there are several affiliations.
+% - Keep it simple, no one is interested in your street address.
+
+\date[October 2016] % (optional)
+{October, 2016} %Date / Occasion}
+
+
+
+\begin{document}
+%\SweaveOpts{concordance=TRUE}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}
+  \frametitle{Outline}
+  \tableofcontents
+  % You might wish to add the option
+  % [pausesections]
+\end{frame}
+
+
+\section{Introduction}
+%Opening R - some basics (getwd setwd)
+%Data Management
+
+\begin{frame}{}
+\begin{itemize}
+\item Basically everyone who is interested in sports is interested in the question ``Is team $i$ better than team $j$?  
+\item How do we measure team strength within a league?
+\item If we knew the relative team strengths we could view the outcome as a draw from a random variable with some win probability for team $i$. 
+\end{itemize}
+\end{frame}
+
+\begin{frame}{}
+\begin{itemize}
+\item When researchers try to compare sports across leagues, they often use winning percentages.  
+\item However, these are problematic.  
+\item More sophisiticated techniques have focused on a specific sports. 
+\item Hard to compare across sports because of sport specific nuances.  
+\item What are the inherent differences in the dispersion and evolution of team strength across sports? 
+\end{itemize}
+\end{frame}
+
+\begin{frame}{}
+\begin{itemize}
+\item Instead of estimating win probabilities we work backwards.  
+\item We assume that betting markets offer unbiased and low-variance estimates of true probabilities.  
+\end{itemize}
+\end{frame}
+
+
+%This manuscript aims to fill these voids. Instead of estimating team strengths within a single sport and using those estimates to generate estimated win probabilities, we work backwards. First, we suppose---and work to validate---that betting market probabilities provide unbiased and low-variance estimates of the true probabilities of wins and losses in each game. Second, using the logit transform of those probabilities, we propose a modified Bayesian state-space model that captures implied team strength and variability. An advantage of this model is that it can be applied uniformly across leagues. Finally, by looking at posterior estimates of within and between season variability, as well as the overall dispersion in team strength estimates, we present unique league-level contrasts which, to this point, have been difficult to capture. As examples, we find that season-to-season reversion to the average is highest in the NHL, and that the gaps in talent in the NBA and NFL overwhelm those of the NHL and MLB.  Additionally, we quantify the relative home advantage for each franchise, as well as between-league differences in the randomness in postseason play. All together, our results better inform an understanding of the dispersion of both talent and randomness in sport. 
+
+
+\begin{frame}[fragile]
+\tiny
+<<message=FALSE, results='asis',echo=FALSE,warning=FALSE>>=
+load("/Users/gregorymatthews/Dropbox/competitivenessGit/data/bigfour.final.rda")
+bigfour <- bigfour.final
+library(dplyr)
+library(xtable)
+n.games <- data.frame(sport = c("mlb","nba", "nfl", "nhl"), N_results = c(24299, 12059, 2560, 10564))
+#n.games <- data.frame(sport = c("mlb","nba", "nfl", "nhl"), N_results = c(24298, 13290, 2560, 12915))
+#Use updated n.games with newer bigfour.
+bigfour %>%
+  filter(season %in% 2005:2014) %>%
+  group_by(sport) %>%
+  summarise(games = n(), 
+#            earliest = as.character(min(gameDate)), 
+#            latest = as.character(max(gameDate)),
+            num_teams = length(unique(setdiff(union(visitor_team, home_team), NA))), 
+            home_wp = sum(home_win, na.rm = TRUE) / sum(!is.na(home_win)),
+            N_bets = sum(!is.na(prob_home)), 
+            mean_home_p = mean(prob_home, na.rm = TRUE)) %>%
+  left_join(n.games) %>%
+  mutate(coverage = N_bets / N_results) %>%
+  xtable(caption = "Summary of cross-sport data. Note that we have near total coverage (betting odds for every game) across all four major sports during the 2005--2014 regular seasons.", 
+         digits = 3, label = "tab:bigfour") %>%
+  print(include.rownames = FALSE)
+@
+\end{frame}
+
+%Each dot represents a bin of implied probabilities rounded to the nearst hundredth. The size of each dot is proportional to the number of games that lie in that bin. We note that across all four major sports, the observed winning percentages accord with those implied by the betting markets. The dotted diagonal line indicates a completely fair market where probabilities from the betting markets correspond exactly to observed outcomes. In each sport, this diagonal line lies entirely within the standard error surrounding a LOESS regression line, suggesting that an efficient market hypothesis cannot be rejected.
+\begin{frame}[fragile]
+<<betting, fig.height=5, warning= FALSE, echo=FALSE, fig.cap="Accuracy of probabilities implied by betting markets. ">>=
+bigfour_summary <- bigfour %>%
+  #filter(playoffs == 0) %>%
+  group_by(sport) %>%
+  summarize(N = n(), num_seasons = n_distinct(season), 
+            earliest = min(gameDate), latest = max(gameDate),
+            home_win_pct = sum(home_win) / n(), 
+            prob_missing = sum(is.na(p_home)), 
+            prob_pct = sum(!is.na(p_home)) / n(), 
+            home_win_prob = mean(p_home, na.rm = TRUE))
+bigfour_binned <- bigfour %>%
+  #filter(playoffs == 0) %>%
+  mutate(p_home_bin = round(p_home, 2)) %>%
+  group_by(sport, p_home_bin) %>%
+  summarize(N = n(), home_win_bin_pct = mean(home_win))
+library(ggplot2)
+markets_plot <- ggplot(data = bigfour, 
+                       aes(x = p_home, y = as.numeric(home_win), 
+                           color = sport)) + 
+  geom_point(alpha = 0.1) + 
+  geom_point(data = bigfour_binned, 
+             aes(x = p_home_bin, y = home_win_bin_pct, size = N), alpha = 0.5) + 
+  geom_smooth() +
+  geom_abline(slope = 1, intercept = 0, color = "black", lty = 2) + 
+  geom_hline(data = bigfour_summary, 
+             aes(yintercept = home_win_pct, color = sport), lty = 3) + 
+  geom_vline(data = bigfour_summary, 
+             aes(xintercept = home_win_prob, color = sport), lty = 3) + 
+  coord_equal() + 
+  scale_x_continuous("Betting Market Estimated Probability of Home Win", 
+                     labels = scales::percent, limits = c(0,1)) + 
+  scale_y_continuous("Observed Probability of Home Win", 
+                     labels = scales::percent, limits = c(0,1)) + 
+  facet_wrap(~sport)
+#  facet_grid(sport ~ season)
+markets_plot
+# ggsave(filename = "figure/betting_markets.pdf", plot = markets_plot, width = 10, height = 10)
+@
+\end{frame}
+
+
+\begin{frame}
+For sport $q$, in season $s$, in week $k$: 
+$$
+logit(p_{(q,s,k)}) \sim N(\mathbf{\theta_{(q,s,k)}}\mathbf{X}_{q,s,k} + \alpha_{q_0}\mathbf{J}_{g_{q,s,k}} + \mathbf{\alpha}_{q}\mathbf{Z}_{q,s,k}, \tau^{2}_{q,game}\mathbf{I}_{g_{(q,s,k)}}) \,, 
+$$
+
+$$
+\theta_{(q,s+1,1)} | \gamma_{q,seas}, \mathbf{\theta_{q,s,g_{q,s,.}}}, \tau^{2}_{q,seas},  \sim N (\gamma_{q,seas}\mathbf{\theta}_{(q,s,g_{q,s,.})},(\tau^{2}_{q,seas})I_{t_{q}})
+$$
+and 
+$$
+\theta_{(q,s,k+1)} | \gamma_{q,week}, \mathbf{\theta_{q,s,k}}, \tau^{2}_{q,week},  \sim N (\gamma_{q,week}\mathbf{\theta}_{(q,s,k)},(\tau^{2}_{q,week})I_{t_{q}})
+$$
+\end{frame}
+
+fff
+
+\end{document}
+
+
+
+
