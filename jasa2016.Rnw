@@ -258,11 +258,9 @@ load("data/bigfour.final.rda")
 bigfour <- bigfour.final
 library(dplyr)
 library(xtable)
-n.games <- data.frame(sport = c("mlb","nba", "nfl", "nhl"), N_results = c(24299, 12059, 2560, 10564))
-#n.games <- data.frame(sport = c("mlb","nba", "nfl", "nhl"), N_results = c(24298, 13290, 2560, 12915))
+n.games <- data.frame(sport = c("mlb","nba", "nfl", "nhl"), N_results = c(24298, 13290, 2560, 13020))
 #Use updated n.games with newer bigfour.
 bigfour %>%
-  filter(season %in% 2005:2014, playoffs == 0) %>%
   group_by(sport) %>%
   summarise(games = n(), 
 #            earliest = as.character(min(gameDate)), 
@@ -283,7 +281,6 @@ As expected, the probabilities implied by the betting markets are unbiased and q
 
 <<betting, fig.height=10, fig.cap="Accuracy of probabilities implied by betting markets. Each dot represents a bin of implied probabilities rounded to the nearst hundredth. The size of each dot is proportional to the number of games that lie in that bin. We note that across all four major sports, the observed winning percentages accord with those implied by the betting markets. The dotted diagonal line indicates a completely fair market where probabilities from the betting markets correspond exactly to observed outcomes. In each sport, this diagonal line lies entirely within the standard error surrounding a LOESS regression line, suggesting that an efficient market hypothesis cannot be rejected.">>=
 bigfour_summary <- bigfour %>%
-  filter(playoffs == 0) %>%
   group_by(sport) %>%
   summarize(N = n(), num_seasons = n_distinct(season), 
             earliest = min(gameDate), latest = max(gameDate),
@@ -292,7 +289,6 @@ bigfour_summary <- bigfour %>%
             prob_pct = sum(!is.na(p_home)) / n(), 
             home_win_prob = mean(p_home, na.rm = TRUE))
 bigfour_binned <- bigfour %>%
-  filter(playoffs == 0) %>%
   mutate(p_home_bin = round(p_home, 2)) %>%
   group_by(sport, p_home_bin) %>%
   summarize(N = n(), home_win_bin_pct = mean(home_win))
@@ -419,7 +415,11 @@ A summary of of the posterior draws of the team strength coefficients is shown i
 Figure~\ref{fig:spaghetti} shows estimated team coefficients over time, approximated using posterior mean draws from Model (\ref{model.full}) for all weeks $k$ and seasons $s$ across all four sports. Figures~\ref{fig:spaghetti-mlb}, \ref{fig:spaghetti-nba}, \ref{fig:spaghetti-nfl}, and \ref{fig:spaghetti-nhl} provide individual plot for each sport. Teams in Figures~\ref{fig:spaghetti}, \ref{fig:spaghetti-mlb}, \ref{fig:spaghetti-nba}, \ref{fig:spaghetti-nfl}, and \ref{fig:spaghetti-nhl} are depicted using their two primary colors, scraped from \url{http://jim-nielsen.com/teamcolors/} via the \pkg{teamcolors} package (\url{https://github.com/beanumber/teamcolors}) in \R.
 
 <<echo=FALSE, results='asis'>>=
+<<<<<<< HEAD
 load("~/data/tidy_betas.rda")
+=======
+load("data/tidy_betas.final.rda")
+>>>>>>> 0034caf1c5d24f1fccd2f5a1c52e8bda1cb3006a
 library(xtable)
 tidy_betas %>%
   group_by(sport) %>%
@@ -440,7 +440,7 @@ tidy_betas %>%
 
 <<echo=FALSE>>=
 library(dplyr)
-load(file.path(root, "data", "tidy_betas.rda"))
+load(file.path(root, "data", "tidy_betas.final.rda"))
 tidy_betas <- tidy_betas %>%
   mutate(annotation = "",
          annotation = ifelse(beta == max(beta), 
@@ -460,6 +460,7 @@ names(secondary) <- colors$name
 
 <<spaghetti, fig.height=15, fig.cap="Team strengths over time for all four sports.">>=
 library(ggplot2)
+tidy_betas <- mutate(tidy_betas, time_val = ifelse(sport == "nfl"|sport == "mlb", time_val + 1, time_val))
 spag <- ggplot(data = tidy_betas, 
        aes(x = time_val, y = beta, 
            color = name, fill = name)) +
@@ -469,7 +470,7 @@ spag <- ggplot(data = tidy_betas,
   geom_text(aes(label = annotation), color = "black", hjust = "left", nudge_x = 0.25) + 
   scale_color_manual(name = NULL, values = primary) + 
   scale_fill_manual(name = NULL, values = secondary) + 
-  scale_x_continuous(name = "Season", breaks = 2006:2016) +
+  scale_x_continuous(name = "Season", breaks = 2005:2016) +
   scale_y_continuous(name = "Value of beta coefficient") + 
   guides(color = FALSE, fill = FALSE)
   #  guides(color = guide_legend(ncol = 2))
@@ -551,7 +552,7 @@ Within each league, Figure \ref{alphaAll} also identifies substantial difference
 
 <<>>=
 ## Home advantage plots
-load(file.path(root, "data", "tidy_alphas.rda"))
+load(file.path(root, "data", "tidy_alphas.final.rda"))
 datbetas.null <- tidy_alphas %>%
   group_by(sport) %>%
   arrange(alpha.team.overall) %>%
