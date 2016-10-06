@@ -390,24 +390,24 @@ Visual inspection of trace plots within each league did not provide evidence of 
 
 %Note: Add these trace plots in.
 
-Model fit comparisons differed by league. Table~\ref{tab:DIC} shows the DIC for each fit in each league, along with the difference in DIC values and its standard error. In the NBA and NHL, fits with a team-specific HFA yielded significantly lower DIC's (lower is better), while in the NFL and MLB, DIC values were roughly similar between fits. 
+Model fit comparisons differed by league. Table~\ref{tab:DIC} shows the DIC for each fit in each league, along with the difference in DIC values and its standard error. In each of the leagues, fits with a team-specific HFA yielded significantly lower DIC's (lower is better), with the most noticeable differences in intercepts between teams in the NBA.
 
 \begin{table}[!ht]
 \makebox[\linewidth]{
 \begin{tabular}{l r r r}
 \hline
  & DIC (unique HFA) & DIC (constant HFA) & Difference (SE) \\ \hline
-MLB &  -7580 & -7569  & -10.9 (7.7) \\
-NBA & 5219 & 5547 & -327.9 (25.6) \\
-NFL & -1427  & -1427 & 0.8 (3.0) \\
-NHL & -14912  & -14739 & -172.2 (19.0)\\
+MLB &  -8548 & -8522  & -25.7 (10.8) \\
+NBA & 6886 & 7224 & -337.4 (26.6) \\
+NFL & -1230  & -1216 & -13.6 (3.3) \\
+NHL & -18335  & -18148 & -187.6 (20.7)\\
 \hline
 \end{tabular}
 }
 \caption{Deviance information criterion (DIC) by sport and model, along with difference in DIC (standard errors of the difference shown in parenthesis) ) \label{tab:DIC}}
 \end{table}
 
-Taken wholly, this suggests non-random differences in the home advantage between NBA and NHL arenas, while it cannot be ruled out that any differences in the home advantage between NFL and MLB stadia are due to chance.
+Taken wholly, this suggests that perceived differences in the home advantage between teams in each league are likely not accounted for due to chance alone.
 
 \subsection{Posterior estimates}
 
