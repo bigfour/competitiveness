@@ -626,20 +626,33 @@ Figure~\ref{fig:sevenSeries} shows a plot of the estimated probabilities that th
 
 
 <<sevenSeries, fig.cap="Probability top ranked team wins a postseason series by sport and opponent rank">>=
-probs <- read.csv("data/seven.simulations.csv")
+probs <- read.csv("data/seven.simulations.final.csv")
 library(dplyr)
 library(ggplot2)
-probs.1 <- probs %>%
+probs.hfa <- probs %>%
   group_by(sport, second.seed) %>%
-  summarise(mean.win = mean(better.winP)) %>% 
+  summarise(mean.win = mean(better.winP.hfa)) %>% 
   ungroup() %>%
-  mutate(sport = factor(sport, levels = c("nba", "nfl", "nhl", "mlb")))
-ggplot(probs.1, aes(second.seed, mean.win, group = sport, colour = sport))  + 
-  geom_point(aes(shape = sport)) + 
-  geom_line(size = 1.5) + 
-  ggtitle("Probability of No. 1 team winning in postseason") + 
+  mutate(sport = toupper(factor(sport, levels = c("nba", "nfl", "nhl", "mlb"))))
+
+probs.nohfa <- probs %>%
+  group_by(sport, second.seed) %>%
+  summarise(mean.win = mean(better.winP.nohfa)) %>% 
+  ungroup() %>%
+  mutate(sport = toupper(factor(sport, levels = c("nba", "nfl", "nhl", "mlb"))))
+
+
+ggplot(probs.hfa, aes(second.seed, mean.win, colour = sport))  + 
+  geom_point(aes(shape = sport), size = 2) + 
+  geom_line(size = 1) + 
+  #geom_point(data = probs.nohfa, aes(second.seed, mean.win, group = sport, colour = sport)) +
+  #geom_line(data = probs.nohfa, aes(second.seed, mean.win, group = sport, colour = sport)) +
+  ggtitle("Probability of No. 1 team winning in postseason") +
+  theme(legend.title = element_blank()) +
   scale_x_continuous("Opponent rank", breaks = 2:8) + 
-  scale_y_continuous("", breaks = 11:16*5/100, labels = c("55%", "60%", "65%", "70%", "75%", "80%"))
+  #scale_colour_grey(start = 0.1, end = .8) +
+  scale_y_continuous("", breaks = 11:16*5/100, labels = c("55%", "60%", "65%", "70%", "75%", "80%")) # + 
+  #facet_wrap(~sport)
 @
 
 % One extension - do this without the home advantage?  

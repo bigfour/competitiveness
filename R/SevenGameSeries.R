@@ -1,38 +1,35 @@
-library(dplyr) 
-library(ggplot2)
-
-sports <- c("mlb", "nba", "nfl", "nhl")
+# tidy the MCMC output
 source("config.R")
-load("data/bigfour.rda")
-library(knitr)
-
+library(dplyr)
+library(ggplot2)
+sports <- c("mlb", "nba", "nfl", "nhl")
 
 get_sport <- function(sport) {
   message(paste("reading", sport, "data..."))
-  load(file.path(mcmc_dir, paste0(sport, "_8_23_teamHFA.RData")))
+  load(file.path(mcmc_dir, paste0(sport, "_9_23_teamHFA.RData")))
   out <- data.frame(
-    sigma_w = 1/z$sigmab[,,1],
-    sigma_s = 1/z$sigmabSeason[,,1],
-    gamma_w = z$gammaWeek[,,1],
-    gamma_s = z$gammaSeason[,,1],
     alpha = z$alpha[,,1]
   ) %>%
     mutate(sport = sport)
   beta <- z$beta
-  alphaInd <- z$alphaInd
   rm(z)
-  return(list(out = out , beta = beta, alphaInd = alphaInd))
+  return(list(beta = beta, out = out))
 }
 
-dat <- lapply(sports[1:4], get_sport) 
-betas <- lapply(dat,function(x) {return(x[["beta"]])})  
-alphaInds <- lapply(dat, function(x) {return(x[["alphaInd"]])})
-sigmas <- lapply(dat,function(x){return(x[["out"]])})  %>% bind_rows()
-
-rm(dat)
+# Extract the values we will need
+dat <- lapply(sports[1:4], get_sport)
+betas <- lapply(dat,function(x){return(x[["beta"]])})  
 names(betas) <-  sports
-names(alphaInds) <- sports
 
+
+# to save memory!
+rm(dat)
+
+n_sports <- sapply(betas, length) / 12000
+
+
+load("data/bigfour.final.rda")
+bigfour <- bigfour.final
 teamnames <- bigfour %>% group_by(sport, home_team) %>% summarise(n.games = n())
 
 
@@ -58,19 +55,20 @@ dat.betas <- lapply(sports[1:4], makeBetas)
 betas.all <- lapply(dat.betas,function(x){return(x[])})  
 names(betas.all) <- sports
 betas.lastfour.all <- rbind(betas.all$nba, betas.all$mlb, betas.all$nhl, betas.all$nfl)
+
 betas.lastfour.all <- betas.lastfour.all %>%
-  mutate(season = ifelse(sport == "nhl", season + 2005, season + 2004)) %>%
-  filter(season != 2015)
+  mutate(season = season + 2005)
 
 
 #Extract HFA from each
-hfa <- select(sigmas, sport, alpha)
+load("data/params.rda")
+hfa <- select(params, sport, alpha)
 
 #Expand grid
 
-df.sim <- expand.grid(first.seed = 1:8, second.seed = 1:8, season = 2005:2014, sport = sports)
+df.sim <- expand.grid(first.seed = 1:8, second.seed = 1:8, season = 2006:2016, sport = sports)
 df.sim <- df.sim %>% 
-  filter(second.seed > first.seed, season > 2005|sport!="nhl") %>%
+  filter(second.seed > first.seed, season < 2016|sport!="nfl") %>%
   arrange(sport, first.seed)
 
 
@@ -106,7 +104,7 @@ n.sim <- 10000
 df.sim1$better.winP <- NULL
 for (i in 1:nrow(df.sim1)){
 temp <- df.sim1[i,]
-fave.win <- NULL
+fave.win.nohfa <- NULL; fave.win.hfa <- NULL
 top.team <- betas.lastfour.all %>% 
   filter(season == temp$season, team == temp$first.team) %>%
   select(betas)
@@ -116,23 +114,27 @@ lower.team <- betas.lastfour.all %>%
 hfa.all <- hfa %>%
   filter(sport == temp$sport) %>%
   select(alpha)
-n.games <- ifelse(temp$sport == "nfl", 1, 7)
+n.games <- ifelse(temp$sport == "nfl", 1, ifelse(temp$sport == "mlb", 5, 7))
 for (j in 1:n.sim){
     top.draws <- top.team %>% do(sample_n(., n.games)) 
     lower.draws <- lower.team %>% do(sample_n(., n.games)) 
     hfa.draws <- hfa.all %>% do(sample_n(., n.games))
     hfa.switch <- c(rep(1, ceiling(n.games/2)), rep(-1, floor(n.games/2)))
-    logit.probs <- top.draws - lower.draws + hfa.draws*hfa.switch
+    logit.probs.nohfa <- top.draws - lower.draws
+    logit.probs.hfa <- top.draws - lower.draws + hfa.draws*hfa.switch
     ### Note: want to add in sport-specific variability in draws (e.g., residuals)
-    probs <- exp(logit.probs)/(1+exp(logit.probs))
-    fave.win[j] <- sum(rbinom(n.games, 1, probs$betas)) >= ceiling(n.games/2)  
+    probs.nohfa <- exp(logit.probs.nohfa)/(1+exp(logit.probs.nohfa))
+    probs.hfa <- exp(logit.probs.hfa)/(1+exp(logit.probs.hfa))
+    fave.win.nohfa[j] <- sum(rbinom(n.games, 1, probs.nohfa$betas)) >= ceiling(n.games/2)  
+    fave.win.hfa[j] <- sum(rbinom(n.games, 1, probs.hfa$betas)) >= ceiling(n.games/2)  
   }
-df.sim1$better.winP[i] <- mean(fave.win)
+df.sim1$better.winP.nohfa[i] <- mean(fave.win.nohfa)
+df.sim1$better.winP.hfa[i] <- mean(fave.win.hfa)
 print(i)
 }
 
 
-#write.csv(df.sim1, "seven.simulations.csv")
+write.csv(df.sim1, "seven.simulations.final.csv")
 
 
 ##################################################
