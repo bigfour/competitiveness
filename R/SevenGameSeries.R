@@ -134,7 +134,7 @@ print(i)
 }
 
 
-write.csv(df.sim1, "seven.simulations.final.csv")
+write.csv(df.sim1, "data/seven.simulations.final.csv")
 
 
 ##################################################
@@ -144,7 +144,7 @@ write.csv(df.sim1, "seven.simulations.final.csv")
  
 
 
-## 2005 MLB: transitivity?
+## 2005 MLB: transitivity?  Can't do with new data
 probs %>% filter(sport=="mlb", season==2005)
 
 teams <- c("New York Yankees", "St Louis Cardinals", "Cleveland Indians")
@@ -159,9 +159,9 @@ p + geom_density(alpha = 0.25) + ggtitle("2005 MLB team strengths")
 ##### How many games to match the NBA's 80% (eighth seed) and 72% (fourth seed)
 ##########################################
 
-first.eighth <- filter(df.sim1, second.seed ==4, sport =="mlb"|sport=="nhl")
+first.eighth <- filter(df.sim1, second.seed == 8, sport =="mlb"|sport=="nhl"|sport =="nba"|sport == "nfl")
 n.sim <- 1000
-n.games <- 59
+n.games <- 7
 first.eighth$better.winP <- NULL
 for (i in 1:nrow(first.eighth)){
   temp <- first.eighth[i,]
