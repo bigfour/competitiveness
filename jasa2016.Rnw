@@ -657,9 +657,12 @@ ggplot(probs.hfa, aes(second.seed, mean.win, colour = sport))  +
 
 % One extension - do this without the home advantage?  
 
-In general, the probability that the better team wins is highest in the NBA, ranging from roughly 60\% (No. 1 over No. 2) to 80\% (No. 1 over No. 8). Most often, the top NFL team expects to win between 60\% and 70\% of its postseason match-ups, while those numbers are closer to between 55\% and 65\% in the MLB and NHL. Across seeds No. 3--No. 8, the MLB shows the most randomness; even in an average match-up between its top team and its eighth best team, the top team wins no more than 65\% of the time.
+In general, the probability that the better team wins is highest in the NBA, ranging from roughly 60\% (No. 1 over No. 2) to 80\% (No. 1 over No. 8). Most often, the top NFL team expects to win between 62\% and 72\% of its postseason match-ups, while those numbers are closer to between 55\% and 65\% in the MLB and NHL. Across seeds No. 3--No. 8, the MLB shows the most randomness; even in an average match-up between its top team and its eighth best team, the top team wins no more than 65\% of the time.
 
-A related question explores the number of games that other sports must play in order to match the frequency with which the best team in the NBA wins. To ensure an 80\% chance that the league's top team has defeated its eighth best team, the NFL would require a ``Best of 9'", the NHL a ``Best of 39", and MLB a ``Best of 51". Thus, each league must each play a substantially larger number of games than current league standards allow. Likewise, to ensure a 72\% chance that the league's top team has defeated its fourth best team, as is the NBA average, simlar game thresholds must be reached (9 games in the NFL, 41 in the NHL, and 55 in MLB). 
+A related question explores the number of games that other sports must play in order to match the frequency with which the best team in the NBA wins. To ensure an 81\% chance that the league's top team has defeated its eighth best team, as in the NBA, the NFL would require a ``Best of 9'", the NHL a ``Best of 51", and MLB a ``Best of 61". Thus, each league must each play a substantially larger number of games than current league standards allow in order to match the NBA's consistency of the best team advancing. 
+
+
+%Similar game thresholds must be reached when comparn to ensure a 72\% chance of Likewise, to ensure a 72\% chance that the league's top team has defeated its fourth best team, as is the NBA average, simlar game thresholds must be reached (9 games in the NFL, 41 in the NHL, and 55 in MLB). 
 
 %One likely reason that the NFL falls short of the NBA in this chart is that the NBA's series length gives the better team more chances to win. 
 
