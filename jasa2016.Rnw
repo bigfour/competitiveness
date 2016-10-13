@@ -394,24 +394,24 @@ Visual inspection of trace plots within each league did not provide evidence of 
 
 %Note: Add these trace plots in.
 
-Model fit comparisons differed by league. Table~\ref{tab:DIC} shows the DIC for each fit in each league, along with the difference in DIC values and its standard error. In the NBA and NHL, fits with a team-specific HFA yielded significantly lower DIC's (lower is better), while in the NFL and MLB, DIC values were roughly similar between fits. 
+Model fit comparisons differed by league. Table~\ref{tab:DIC} shows the DIC for each fit in each league, along with the difference in DIC values and its standard error. In each of the leagues, fits with a team-specific HFA yielded significantly lower DIC's (lower is better), with the most noticeable differences in intercepts between teams in the NBA.
 
 \begin{table}[!ht]
 \makebox[\linewidth]{
 \begin{tabular}{l r r r}
 \hline
  & DIC (unique HFA) & DIC (constant HFA) & Difference (SE) \\ \hline
-MLB &  -7580 & -7569  & -10.9 (7.7) \\
-NBA & 5219 & 5547 & -327.9 (25.6) \\
-NFL & -1427  & -1427 & 0.8 (3.0) \\
-NHL & -14912  & -14739 & -172.2 (19.0)\\
+MLB &  -8548 & -8522  & -25.7 (10.8) \\
+NBA & 6886 & 7224 & -337.4 (26.6) \\
+NFL & -1230  & -1216 & -13.6 (3.3) \\
+NHL & -18335  & -18148 & -187.6 (20.7)\\
 \hline
 \end{tabular}
 }
 \caption{Deviance information criterion (DIC) by sport and model, along with difference in DIC (standard errors of the difference shown in parenthesis) ) \label{tab:DIC}}
 \end{table}
 
-Taken wholly, this suggests non-random differences in the home advantage between NBA and NHL arenas, while it cannot be ruled out that any differences in the home advantage between NFL and MLB stadia are due to chance.
+Taken wholly, this suggests that perceived differences in the home advantage between teams in each league are likely not accounted for due to chance alone.
 
 \subsection{Posterior estimates}
 
@@ -550,9 +550,11 @@ On a season-to-season basis, team strengths in each of the leagues tend to rever
 
 \subsection{Visualizing the home advantage}
 
-Figure \ref{alphaAll} shows the 2.5th, median, and 97.5th draws of each team's estimated home advantage parameter, shown on the log-odds scale and using our model with team-level estimates. League's are overlaid to provide a sense of the magnitude of differences between, in order, the home advantage provided in the MLB (increased log-odds of a home win around 0.15), NHL (0.23), NFL (0.36), and NBA (0.52).  The two franchises that have relocated in the last decade, the Atlanta Thrashers (NHL) and Seattle Supersonics (NBA), are also included for the games played in those respective cities. 
+Figure \ref{alphaAll} shows the 2.5th, median, and 97.5th draws of each team's estimated home advantage parameter, shown on the log-odds scale and using our model with team-level estimates. League's are overlaid to provide a sense of the magnitude of differences between, in order, the home advantage provided in the MLB (increased log-odds of a home win around 0.16), NHL (0.22), NFL (0.36), and NBA (0.50).  The two franchises that have relocated in the last decade, the Atlanta Thrashers (NHL) and Seattle Supersonics (NBA), are also included for the games played in those respective cities. 
 
-Within each league, Figure \ref{alphaAll} also identifies substantial differences by franchise with respect to a home advantage in both the NBA and NHL, whereas estimates within the NFL and MLB are, by and large, consistent across franchises. Interestingly, the home advantages of a few NFL franchises are skewed (see Denver and Seattle, relative to Detroit and St. Louis). This could be a function of the smaller sample of games. Alternatively, the home advantage may not be constant across our sample of games, with possible differences by season or the day of the game. Anecdotally, night games (Thursday, Sunday, or Monday) conceivably offer a larger home advantage than those played during the day. Informally, team-level home advantage coefficients are similar in effect size, both in magnitude and with respect to team ranking, to those depicted by \cite{koopmeiners2012comparison} in the NFL.
+Within each league, Figure \ref{alphaAll} also identifies substantial differences by franchise with respect to a home advantage in both the NBA and NHL, whereas estimates within the NFL and MLB are, by and large, more consistent across franchises. Interestingly, the home advantages of a few NFL franchises are skewed (see Denver and Seattle, relative to Detroit and St. Louis). This could be a function of the smaller sample of games. Alternatively, the home advantage may not be constant across our sample of games, with possible differences by season or the day of the game. Anecdotally, night games (Thursday, Sunday, or Monday) conceivably offer a larger home advantage than those played during the day. Informally, team-level home advantage coefficients are similar in effect size, both in magnitude and with respect to team ranking, to those depicted by \cite{koopmeiners2012comparison} in the NFL.
+
+In MLB, the Colorado Rockies stand out for having a home advantage larger than the other 29 teams, which boast overlapping credible intervals. 
 %Check - does this match Koopenmeiners paper? He plots the home advantage
 %Source on the night-time home advantage?
 %Add in a link to the article about the Utah Jazz, as this matches other findings.
@@ -636,27 +638,43 @@ Figure~\ref{fig:sevenSeries} shows a plot of the estimated probabilities that th
 
 
 <<sevenSeries, fig.cap="Probability top ranked team wins a postseason series by sport and opponent rank">>=
-probs <- read.csv("data/seven.simulations.csv")
+probs <- read.csv("data/seven.simulations.final.csv")
 library(dplyr)
 library(ggplot2)
-probs.1 <- probs %>%
+probs.hfa <- probs %>%
   group_by(sport, second.seed) %>%
-  summarise(mean.win = mean(better.winP)) %>% 
+  summarise(mean.win = mean(better.winP.hfa)) %>% 
   ungroup() %>%
-  mutate(sport = factor(sport, levels = c("nba", "nfl", "nhl", "mlb")))
-ggplot(probs.1, aes(second.seed, mean.win, group = sport, colour = sport))  + 
-  geom_point(aes(shape = sport)) + 
-  geom_line(size = 1.5) + 
-  ggtitle("Probability of No. 1 team winning in postseason") + 
+  mutate(sport = toupper(factor(sport, levels = c("nba", "nfl", "nhl", "mlb"))))
+
+probs.nohfa <- probs %>%
+  group_by(sport, second.seed) %>%
+  summarise(mean.win = mean(better.winP.nohfa)) %>% 
+  ungroup() %>%
+  mutate(sport = toupper(factor(sport, levels = c("nba", "nfl", "nhl", "mlb"))))
+
+
+ggplot(probs.hfa, aes(second.seed, mean.win, colour = sport))  + 
+  geom_point(aes(shape = sport), size = 2) + 
+  geom_line(size = 1) + 
+  #geom_point(data = probs.nohfa, aes(second.seed, mean.win, group = sport, colour = sport)) +
+  #geom_line(data = probs.nohfa, aes(second.seed, mean.win, group = sport, colour = sport)) +
+  ggtitle("Probability of No. 1 team winning in postseason") +
+  theme(legend.title = element_blank()) +
   scale_x_continuous("Opponent rank", breaks = 2:8) + 
-  scale_y_continuous("", breaks = 11:16*5/100, labels = c("55%", "60%", "65%", "70%", "75%", "80%"))
+  #scale_colour_grey(start = 0.1, end = .8) +
+  scale_y_continuous("", breaks = 11:16*5/100, labels = c("55%", "60%", "65%", "70%", "75%", "80%")) # + 
+  #facet_wrap(~sport)
 @
 
 % One extension - do this without the home advantage?  
 
-In general, the probability that the better team wins is highest in the NBA, ranging from roughly 60\% (No. 1 over No. 2) to 80\% (No. 1 over No. 8). Most often, the top NFL team expects to win between 60\% and 70\% of its postseason match-ups, while those numbers are closer to between 55\% and 65\% in the MLB and NHL. Across seeds No. 3--No. 8, the MLB shows the most randomness; even in an average match-up between its top team and its eighth best team, the top team wins no more than 65\% of the time.
+In general, the probability that the better team wins is highest in the NBA, ranging from roughly 60\% (No. 1 over No. 2) to 80\% (No. 1 over No. 8). Most often, the top NFL team expects to win between 62\% and 72\% of its postseason match-ups, while those numbers are closer to between 55\% and 65\% in the MLB and NHL. Across seeds No. 3--No. 8, the MLB shows the most randomness; even in an average match-up between its top team and its eighth best team, the top team wins no more than 65\% of the time.
 
-A related question explores the number of games that other sports must play in order to match the frequency with which the best team in the NBA wins. To ensure an 80\% chance that the league's top team has defeated its eighth best team, the NFL would require a ``Best of 9'", the NHL a ``Best of 39", and MLB a ``Best of 51". Thus, each league must each play a substantially larger number of games than current league standards allow. Likewise, to ensure a 72\% chance that the league's top team has defeated its fourth best team, as is the NBA average, simlar game thresholds must be reached (9 games in the NFL, 41 in the NHL, and 55 in MLB). 
+A related question explores the number of games that other sports must play in order to match the frequency with which the best team in the NBA wins. To ensure an 81\% chance that the league's top team has defeated its eighth best team, as in the NBA, the NFL would require a ``Best of 9'", the NHL a ``Best of 51", and MLB a ``Best of 61". Thus, each league must each play a substantially larger number of games than current league standards allow in order to match the NBA's consistency of the best team advancing. 
+
+
+%Similar game thresholds must be reached when comparn to ensure a 72\% chance of Likewise, to ensure a 72\% chance that the league's top team has defeated its fourth best team, as is the NBA average, simlar game thresholds must be reached (9 games in the NFL, 41 in the NHL, and 55 in MLB). 
 
 %One likely reason that the NFL falls short of the NBA in this chart is that the NBA's series length gives the better team more chances to win. 
 
