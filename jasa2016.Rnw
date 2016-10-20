@@ -512,7 +512,7 @@ Figure \ref{alphaAll} shows the 2.5th, median, and 97.5th draws of each team's e
 
 Within each league, Figure \ref{alphaAll} also identifies substantial differences by franchise with respect to a home advantage in both the NBA and NHL, whereas estimates within the NFL and MLB are, by and large, more consistent across franchises. Interestingly, the home advantages of a few NFL franchises are skewed (see Denver and Seattle, relative to Detroit and St. Louis). This could be a function of the smaller sample of games. Alternatively, the home advantage may not be constant across our sample of games, with possible differences by season or the day of the game. Anecdotally, night games (Thursday, Sunday, or Monday) conceivably offer a larger home advantage than those played during the day \citep{Seahawks}. Informally, team-level home advantage coefficients are similar in effect size, both in magnitude and with respect to team ranking, to those depicted by \cite{koopmeiners2012comparison} in the NFL.
 
-In the NBA, the extreme home advantages provided to Denver and Utah matches the work of \cite{Jazz}, who looked at differences in points per game between teams playing at home and on the road. In MLB, the Colorado Rockies stand out for having a home advantage, as the remaining 29 teams boast overlapping credible intervals. 
+In the NBA, the extreme home advantages provided to Denver and Utah matches the work of \cite{Jazz}, who found significantly better performances when comparing those two teams to the rest of the league with respect to home and road differences in point differential per game. In MLB, the Colorado Rockies stand out for having a home advantage, as the remaining 29 teams boast overlapping credible intervals. 
 %Check - does this match Koopenmeiners paper? He plots the home advantage
 
 %Add in a link to the article about the Utah Jazz, as this matches other findings.
@@ -625,7 +625,7 @@ ggplot(probs.hfa, aes(second.seed, mean.win, colour = sport))  +
   #facet_wrap(~sport)
 @
 
-% One extension - do this without the home advantage?  
+% One extension - do this without the home advantage?  This was done, but not sure I love the plots
 
 In general, the probability that the better team wins is highest in the NBA, ranging from roughly 60\% (No. 1 over No. 2) to 80\% (No. 1 over No. 8). Most often, the top NFL team expects to win between 62\% and 72\% of its postseason match-ups, while those numbers are closer to between 55\% and 65\% in the MLB and NHL. Across seeds No. 3--No. 8, the MLB shows the most randomness; even in an average match-up between its top team and its eighth best team, the top team wins no more than 65\% of the time.
 
