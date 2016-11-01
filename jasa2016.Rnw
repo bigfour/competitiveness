@@ -292,18 +292,19 @@ markets_plot
 
 \section{Bayesian state-space model}
 
-%$T_q$ is the number of teams in the $q$-th sports league?  This notation is getting crazy.  
-%s season, k week, home team i, away team j, t_q number of teams in league, n_(s,k) number of games in week k of season s.
-Whereas many previous articles focus on one particular league or sport, we examine all four of the major North American sports together.  Thus, the model described below was fit for each sport indexed by $q \in \{MLB, NBA, NFL, NHL\}$.
 
-Let $p_{(q,s,k)ij}$ be the probability that team $i$ will beat team $j$ in season $s$ during week $k$ of sports league $q$.  Further, let ${\bf p}_{(q,s,k)}$ represent the vector of length $g_{(q,s,k)}$ (the number of games in week $k$ of season $s$ in league $q$) containing all the probabilities that team $i$ will beat team $j$ in league $q$ in week $k$ of season $s$. These probabilities are assumed to be known and are equal to the implied probabilities derived from the betting market data described above.
+%$T_q$ is the number of teams in the $q$-th sports league?  This notation is getting crazy.  
+%s season, k week, home team i, away team j, t_q number of teams in league, n_(s,k) number of games in week k of 
+We examine the four major North American sports leagues, indexed by $q$ where $q \in \{MLB, NBA, NFL, NHL\}$, using the model below.
+
+Let $p_{(q,s,k)ij}$ be the probability that team $i$ will beat team $j$ in season $s$ during week $k$ of sports league $q$.  Further, let ${\bf p}_{(q,s,k)}$ represent the vector of length $g_{(q,s,k)}$ (the number of games in week $k$ of season $s$ in league $q$) containing all of league $q$'s probabilities in week $k$ of season $s$. These probabilities are assumed to be known, equal to the implied probabilities derived from the betting market data described above.
 
 We then fit the model:
 \begin{eqnarray}
 logit(p_{(q,s,k)}) \sim N(\mathbf{\theta_{(q,s,k)}}\mathbf{X}_{q,s,k} + \alpha_{q_0}\mathbf{J}_{g_{q,s,k}} + \mathbf{\alpha}_{q}\mathbf{Z}_{q,s,k}, \tau^{2}_{q,game}\mathbf{I}_{g_{(q,s,k)}}) \,, \label{model.full}
 \end{eqnarray}
 
-where $\mathbf{\theta_{(q,s,k)}}$ is a vector of length $t_{q}$ (the number of teams in league $q$) containing the team strength parameters in season $s$ during week $k$, $\alpha_{q_0}$ is the overall home field advantage parameter for sports league $q$, and $\balpha_{q}$ is a vector of length $t^{\star}_{q}$ containing \textit{arena}-specific home field advantage parameters for league $q$ that do not vary over time (i.e. HFA is assumed to be constant for a team over weeks and seasons). Note that $t^{\star}_{q}$---the number of home venues in league $q$---is greater than $t_{q}$---the number of teams in league $q$---due to franchise relocation. $\mathbf{X}_{q,s,k}$ and $\mathbf{Z}_{q,s,k}$ contain $g_{(q,s,k)}$---the number of games in league $q$ during week $k$ of season $s$---rows and $t_{q}$ and $t^{\star}_{q}$ columns, respectively.   The matrix $\mathbf{X}_{q,s,k}$ contains the values $\{1, 0, -1\}$ where for a given row (i.e. one game) the value of $i^{th}$ column in that row is a 1/-1 if the $i^{th}$ team played at home/away in the given game and 0 otherwise.  $\mathbf{Z}_{q,s,k}$ is a matrix containing a 1 in the $i^{th}$ column if the $i^{th}$ team played the game corresponding to that row at home and 0 otherwise. Finally, $\tau^{2}_{q,game} = 1 / \sigma^{2}_{q,game}$ is the precision, $\mathbf{J}_{g_{q,s,k}}$ is a column vector of length $g_{q,s,k}$ containing all 1's, and $\mathbf{I}_{g_{(q,s,k)}}$ is an identity matrix with dimension ${g_{(q,s,k)}} \times {g_{(q,s,k)}}$.
+where $\mathbf{\theta_{(q,s,k)}}$ is a vector of length $t_{q}$ (the number of teams in league $q$) containing the team strength parameters in season $s$ during week $k$, $\alpha_{q_0}$ is the overall home field advantage parameter for sports league $q$, and $\balpha_{q}$ is a vector of length $t^{\star}_{q}$ containing \textit{franchise}-specific home field advantage parameters for league $q$ that do not vary over time (i.e. HFA is assumed to be constant for a team over weeks and seasons). Note that $t^{\star}_{q}$, the number of home venues in league $q$, is greater than $t_{q}$, the number of teams in league $q$, due to franchise relocation.\footnote{There were two franchise relocations in our data, Seattle to Oklahoma City (NBA) and Atlanta to Winnipeg (NHL).} $\mathbf{X}_{q,s,k}$ and $\mathbf{Z}_{q,s,k}$ contain $g_{(q,s,k)}$---the number of games in league $q$ during week $k$ of season $s$---rows and $t_{q}$ and $t^{\star}_{q}$ columns, respectively.   The matrix $\mathbf{X}_{q,s,k}$ contains the values $\{1, 0, -1\}$ where for a given row (i.e. one game) the value of $i^{th}$ column in that row is a 1/-1 if the $i^{th}$ team played at home/away in the given game and 0 otherwise.  $\mathbf{Z}_{q,s,k}$ is a matrix containing a 1 in the $i^{th}$ column if the $i^{th}$ team played the game corresponding to that row at home and 0 otherwise. Finally, $\tau^{2}_{q,game} = 1 / \sigma^{2}_{q,game}$ is the precision, $\mathbf{J}_{g_{q,s,k}}$ is a column vector of length $g_{q,s,k}$ containing all 1's, and $\mathbf{I}_{g_{(q,s,k)}}$ is an identity matrix with dimension ${g_{(q,s,k)}} \times {g_{(q,s,k)}}$.
 
 Similar to \cite{glickman1998state}, we allow the strength parameters of the teams to vary from week-to-week and from season-to-season.  
 
@@ -348,7 +349,7 @@ In addition, we propose a simplified version of Model (\ref{model.full}) that as
 logit(p_{(q,s,k)}) \sim N(\mathbf{\theta_{(q,s,k)}}\mathbf{X}_{q,s,k} + \alpha_{q_0}\mathbf{J}_{g_{q,s,k}}, \tau^{2}_{q,game}\mathbf{I}_{g_{(q,s,k)}}) \label{model.red}
 \end{eqnarray}
 
-Posterior distributions of each parameter are estimated using Markov Chian Monte Carlo (MCMC) methods. We used Gibbs sampling via the \pkg{rjags} package \citep{rjags} in the \R statistical computing environment to obtain the posterior distributions, which were obtained separately for each league $q$. Three chains, using 40,000 iterations after a burn-in of 2,000 draws, fit with a thin of 5 to reduce the autocorrelation within chains, yielded 8,000 posterior samples in each $q$. Visual inspection of trace plots with parallel chains were used to confirm convergence. Comparisons of Models (\ref{model.full}) and (\ref{model.red}) are made using the Deviance Information Criterion (DIC, \cite{spiegelhalter2002bayesian}), as implemented with a Bayesian state-space model by \cite{koopmeiners2012comparison}. 
+Posterior distributions of each parameter are estimated using Markov Chian Monte Carlo (MCMC) methods. We used Gibbs sampling via the \pkg{rjags} package \citep{rjags} in the \R statistical computing environment to obtain posterior distributions, done separately for each $q$. Three chains, using 40,000 iterations after a burn-in of 2,000 draws, fit with a thin of 5 to reduce the autocorrelation within chains, yielded 8,000 posterior samples in each $q$. Visual inspection of trace plots with parallel chains were used to confirm convergence. Comparisons of Models (\ref{model.full}) and (\ref{model.red}) are made using the Deviance Information Criterion (DIC, \cite{spiegelhalter2002bayesian}), as implemented by \cite{koopmeiners2012comparison}. 
 
 While we are unable to share our betting market data due to licensing restrictions, the data wrangling code, Gibbs sampling code, posterior draws, game results, and the code used to obtain posterior estimates and figures are all posted to a Github repository, available at \url{https://github.com/bigfour/competitiveness}.
 
@@ -384,6 +385,7 @@ Taken wholly, this suggests that perceived differences in the home advantage bet
 \subsection{Posterior estimates}
 
 A summary of of the posterior draws of the team strength coefficients is shown in Table~\ref{tab:betas}, which uses draws from Model (\ref{model.full}).
+
 Figure~\ref{fig:spaghetti} shows estimated team coefficients over time, approximated using posterior mean draws from Model (\ref{model.full}) for all weeks $k$ and seasons $s$ across all four sports. Figures~\ref{fig:spaghetti-mlb}, \ref{fig:spaghetti-nba}, \ref{fig:spaghetti-nfl}, and \ref{fig:spaghetti-nhl} provide individual plot for each sport. Teams in Figures~\ref{fig:spaghetti}, \ref{fig:spaghetti-mlb}, \ref{fig:spaghetti-nba}, \ref{fig:spaghetti-nfl}, and \ref{fig:spaghetti-nhl} are depicted using their two primary colors, scraped from \url{http://jim-nielsen.com/teamcolors/} via the \pkg{teamcolors} package (\url{https://github.com/beanumber/teamcolors}) in \R.
 
 <<echo=FALSE, results='asis'>>=
@@ -499,7 +501,7 @@ ggplot(params, aes(x = sigma_w, y = sigma_s, color = sport)) +
 <<contourGamma, fig.cap="Contour plot of the season-to-season and week-to-week auto-regressive parameter across all four major sports.">>=
 ggplot(params, aes(x = gamma_w, y = gamma_s, color = sport)) + 
   geom_vline(xintercept = 1, color = "darkgray", linetype = 2) + 
-  annotate("text", x = 1.001, y = 0.85, label = "random\nwalk", hjust = "left") + 
+  annotate("text", x = 1.001, y = 0.85, label = "Random\nWalk", hjust = "left") + 
   geom_density_2d() + geom_point(alpha = 0.1)
 @
 
@@ -512,7 +514,7 @@ ggplot(data = params, aes(x = alpha, color = sport)) +
 %Note: while our gamma'a are similar to Glickman's (0.99 week-to-week, 0.80 season-to-season), our 
 %sigma's are much different. His sigma's are several orders of magnitude bigger than ours.
 
-Figure~\ref{contourGamma} displays the joint posterior distribution of $\gamma_{q,seas}$ and $\gamma_{q,week}$ via contour plots for each sport. For each of the NHL, NBA, and NFL, the posterior estimates of $ \gamma_{q,week}$ (and 95\% credible intervals) do not cross 1, implying some auto-regressive nature to team caliber within each season. In MLB, however, team strength estimates quite possibly follow a random walk (as in $\gamma_{q, week} = 1$). 
+Figure~\ref{contourGamma} displays the joint posterior distribution of $\gamma_{q,seas}$ and $\gamma_{q,week}$ via contour plots for each sport. For each of the NHL, NBA, and NFL, the posterior estimates of $ \gamma_{q,week}$ (and 95\% credible intervals) do not cross 1, implying an auto-regressive nature to team caliber within each season. In MLB, however, team strength estimates quite possibly follow a random walk (as in $\gamma_{q, week} = 1$). 
 
 On a season-to-season basis, team strengths in each of the leagues tend to revert towards the league average (0). Reversion towards the mean is largest in the NHL (posterior mean $\gamma_{q,seas} = 0.55$, implying 45\% reversion), followed by MLB (38\% reversion), NBA (36\%), and the NFL (30\%). However, there is enough uncertainty in the posterior distribution of $\gamma_{q, seas}$ that we are unable to say for certain if the differences in the season-to-season autocorrelation between MLB, the NBA, and the NBA are significant. In the NFL, the slight inverse association between the two autoregressive parameters, as shown in Figure~\ref{contourGamma}, matches that obseved in \cite{glickman1998state}.
 
@@ -520,12 +522,9 @@ On a season-to-season basis, team strengths in each of the leagues tend to rever
 
 Figure \ref{alphaAll} shows the 2.5th, median, and 97.5th draws of each team's estimated home advantage parameter, shown on the log-odds scale and using our model with team-level estimates. League's are overlaid to provide a sense of the magnitude of differences between, in order, the home advantage provided in the MLB (increased log-odds of a home win around 0.16), NHL (0.22), NFL (0.36), and NBA (0.50).  The two franchises that have relocated in the last decade, the Atlanta Thrashers (NHL) and Seattle Supersonics (NBA), are also included for the games played in those respective cities. 
 
-Within each league, Figure \ref{alphaAll} also identifies substantial differences by franchise with respect to a home advantage in both the NBA and NHL, whereas estimates within the NFL and MLB are, by and large, more consistent across franchises. Interestingly, the home advantages of a few NFL franchises are skewed (see Denver and Seattle, relative to Detroit and St. Louis). This could be a function of the smaller sample of games. Alternatively, the home advantage may not be constant across our sample of games, with possible differences by season or the day of the game. Anecdotally, night games (Thursday, Sunday, or Monday) conceivably offer a larger home advantage than those played during the day \citep{Seahawks}. Informally, team-level home advantage coefficients are similar in effect size, both in magnitude and with respect to team ranking, to those depicted by \cite{koopmeiners2012comparison} in the NFL.
+Figure \ref{alphaAll} also depicts substantial between-franchise differences in both the NBA and NHL. Conversely, home advantage estimates within the NFL and MLB are, by and large, more consistent across franchises. Interestingly, the home advantages of a few NFL franchises are skewed (see Denver and Seattle, relative to Detroit and St. Louis), potentially the result of a smaller sample of games. Alternatively, the home advantage may vary by season, game time, or the day of the game. Anecdotally, night games (Thursday, Sunday, or Monday) conceivably offer a larger home advantage than those played during the day \citep{Seahawks}. Informally, team-level home advantage coefficients are similar in effect size, both in magnitude and with respect to team ranking, to those depicted by \cite{koopmeiners2012comparison} in the NFL.
 
-In the NBA, the extreme home advantages provided to Denver and Utah matches the work of \cite{Jazz}, who found significantly better performances when comparing those two teams to the rest of the league with respect to home and road differences in point differential per game. In MLB, the Colorado Rockies stand out for having a home advantage, as the remaining 29 teams boast overlapping credible intervals. 
-%Check - does this match Koopenmeiners paper? He plots the home advantage
-
-%Add in a link to the article about the Utah Jazz, as this matches other findings.
+In the NBA, extreme home advantages provided to Denver and Utah matches the work of \cite{Jazz}, who found significantly better performances when comparing those two teams to the rest of the league with respect to home and road differences in point differential per game. In MLB, the Colorado Rockies stand out for having a home advantage, as the remaining 29 teams boast overlapping credible intervals. 
 
 
 <<>>=
