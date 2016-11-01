@@ -652,23 +652,35 @@ This lends some credence to the expression that ``Billy Beane's stuff doesn't wo
 
 Using a modified Bayesian state-space model, we estimate both time-varying team strength and league-level variance parameters in order to better explain the underlying randomness in the four major North American professional sporting leagues, the NBA, NFL, NHL, and MLB. 
 
-Our first finding relates to the relative equivalence of the four leagues. At a single point in time, team strength estimates diverge substantially more in the NBA and NFL than in the NHL and MLB. In the latter two leagues, this entails that contests between two randomly chosen teams are closer to to a coin-flip, with each team given a reasonable shot at winning. Within a season, estimates of $\gamma_w$, our autoregressive parameter, suggest that teams in each of the NBA (largest reversion), NFL, and NHL tend to revert towards the league average in the long term, while week-by-week trends of team strength in MLB are indistinguishable from a random walk. On a season-to-season basis, NHL teams exhibits the largest reversion towards the league average (nearly 50\%), with the other three leagues fall somewhere between roughly 25\% and 40\%. Our estimate of a 31\% reversion within the NFL falls in line with the 33\% shown by \cite{glickman1998state} using an earlier sample of games. Each of these conclusions account for varying league-level traits, including schedule length and strength of schedule. 
-
-%Note: check the season-to-season reversion in Glickmans.
+Our first finding relates to the relative equivalence of the four leagues. At a single point in time, team strength estimates diverge substantially more in the NBA and NFL than in the NHL and MLB. In the latter two leagues, this entails that contests between two randomly chosen teams are closer to to a coin-flip, with each team given a reasonable shot at winning. Within a season, estimates of $\gamma_w$, our autoregressive parameter, suggest that teams in each of the NBA (largest reversion), NFL, and NHL tend to revert towards the league average in the long term, while week-by-week trends of team strength in MLB are indistinguishable from a random walk. On a season-to-season basis, NHL teams exhibits the largest reversion towards the league average (nearly 50\%), with the other three leagues fall somewhere between roughly 25\% and 40\%. Our estimate of a 31\% reversion within the NFL falls in line with the 33\% shown by \cite{glickman1998state}, which used a similar model on an earlier sample of games. Each of these conclusions account for varying league-level traits, including schedule length and strength of schedule. 
 
 There are a couple of plausible explanations for our findings with respect to the weekly NBA variability shown in our team strength estimates. Injuries, the resting of starters, and in-season trades would seemingly have a larger impact in a sport where fewer players are participating at a single point in time. In particular, our model cannot accurately gauge team strength when star players, who could play, are rested in favor of lesser alternatives. Additionally, while there is the largest week-to-week reversion in the NBA, when considering the differences in teams to begin with, such differences are not as extreme. In other words, a 3\% reversion in the NBA does not neccessarily equate to a 3\% reversion in MLB or the NHL.
 
 %We should probably expand on these results and tie them into current literature: 
 %Measurements of competitive balance: Competitive balance at a single point in time (independent of scheduling, compare to ???), Competitive balance between seasons (compare to Humphreys), competitiveness within a season (compare to )
 
-Our second finding relates to the relative equivalence of the home advantage in each league, with the NBA well ahead of the pack, showing, on average, a 0.52 increase on the log-odds of a home win. Model fit statistics imply that the home advantage varies significantly between arenas in the NBA and NHL only. In the NBA, for example, the league's best team home advantage is shown in Denver (increased log-odds, 0.78), with the worst shown in Brooklyn (0.42). Such distinctions have plausible impacts on league standings. An NBA team with a typical home advantage can expect to win 62.7\% of home games against a like-caliber opponent; for Brooklyn, the corresponding figure is 60.3\%, while for Denver, 68.6\%. Across 41 games (the number each team plays at home), this implies an extra 2.4 wins in a single season, on average, for Denver over a league average team and 3.4 wins over Brooklyn, simply due to the arena's unique home advantage. Relative to Brooklyn, it's 3.4 wins a season, on average. As one important caveat, our models do not account for varying line-up and injury information. If opposing teams were to rest their star players at Denver, for example, our model would artificially inflate Denver's home advantage.
+% Make next section reproducible
 
-%Check these numbers to get exact info
+<<include=FALSE>>=
+leagues <- tidy_alphas %>% group_by(sport) %>%
+   summarize(mean.sport  = mean(alpha.sport))
+
+teams <- tidy_alphas %>% filter(sport == "nba") %>% group_by(team) %>% summarise(mean.post = mean(alpha.team.overall)) %>% arrange(mean.post) %>% slice(c(1,30))
+
+league.ave <- round(exp(leagues$mean.sport[2])/(1+exp(leagues$mean.sport[2])), 3)
+league.high <- round(exp(teams$mean.post[2])/(1+exp(teams$mean.post[2])), 3)
+league.low <- round(exp(teams$mean.post[1])/(1+exp(teams$mean.post[1])), 3)
+@
+
+Our second finding relates to the relative equivalence of the home advantage in each league, with the NBA well ahead of the pack, showing, on average, a \Sexpr{round(teams$mean.post[2], 3)}\% increase on the log-odds of a home win. Model fit statistics imply that the home advantage varies most significantly between arenas in the NBA and NHL. In the NBA, for example, the league's best team home advantage is shown in Denver (increased log-odds, \Sexpr{round(teams$mean.post[2], 3)}), with the worst shown in Brooklyn (\Sexpr{round(teams$mean.post[1], 3)}\%). Such distinctions have plausible impacts on league standings. 
+
+An NBA team with a typical home advantage can expect to win \Sexpr{100*league.ave}\% of home games against a like-caliber opponent; for Brooklyn, the corresponding figure is \Sexpr{100*league.low}\%, while for Denver, \Sexpr{100*league.high}\%. Across 41 games (the number each team plays at home), this implies that Denver's home advantage is worth an extra \Sexpr{round(41*(league.high-league.ave), 2)} wins in a single season, relative to a league average team. Compared to Brooklyn, Denver's home advantage has been worth an estimated \Sexpr{round(41*(league.high-league.low), 2)} wins per year. As one important caveat, our models do not account for varying line-up and injury information. If opposing teams were to rest their star players at Denver, for example, our model would artificially inflate Denver's home advantage. Meaningful franchise-level distinctions in MLB and NFL less extreme, with most teams clustered around a home advantage of  \Sexpr{round(leagues$mean.sport[1], 3)} and  \Sexpr{round(leagues$mean.sport[3], 3)}, respectively, on the log-odds scale. 
+
 %Econ source as to the value of a win in the NBA
 
 %Note: how does this compare to other results? See Koopenmeiners paper, for example.
 
-Meaningful franchise-level distinctions in MLB and NFL are impossible to identify, with nearly all teams clustered around a home advantage of 0.16 and 0.36, respectively. 
+
 
 As our final contribution, we use posterior draws from the posterior distribution of team strength and each league's home advantage parameter to estimate the relative equivalence of each team's postseason. Simulations identify that the best NBA team advantances slightly more often than the best NFL team, and that both leagues' postseason is substantially less random than MLB and the NHL, where it is not uncommon for the best team to lose in a short series of contests.
 
