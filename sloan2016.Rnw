@@ -43,14 +43,15 @@
 \evensidemargin = +0.3in
 
 \parindent 0pt
-
 \parskip 10pt
 
-\topmargin = -1.5cm
+\usepackage[bottom=2.0in,top=1.5in]{geometry}
 
-
+\usepackage[noae]{Sweave}
+\usepackage[light,math]{anttor} % Obvious and ugly roman font. 
+\usepackage[T1]{fontenc} 
+\usepackage{wallpaper}
 \begin{document}
-
 
 \begin{center}
 
@@ -64,6 +65,8 @@ All sport track
 \normalsize
 
 
+\ULCornerWallPaper{1}{Top.png}
+\LLCornerWallPaper{1}{Bottom.png}
 
 <<echo=FALSE>>=
 source("config.R")
@@ -147,7 +150,8 @@ The motivation for our model begins by confirming the accuracy of betting market
 
 <<include=FALSE>>=
 load("data/bigfour.final.rda"); library(dplyr)
-bigfour <- bigfour.final %>% arrange(sport, Date)
+bigfour <- bigfour.final %>% mutate(sport = toupper(sport)) %>% 
+  arrange(sport, Date)
 head(bigfour)
 mosaic::favstats(~vig, data = bigfour)
 @
@@ -157,14 +161,11 @@ These data were more than 99.5\% complete in each league, in the sense that ther
 
 <<message=FALSE, results='asis'>>=
 load("data/bigfour.final.rda")
-bigfour <- bigfour.final
+bigfour <- bigfour.final %>% mutate(sport = toupper(sport))
 library(dplyr)
 library(xtable)
-<<<<<<< HEAD
-n.games <- data.frame(sport = c("mlb","nba", "nfl", "nhl"), N_results = c(24298, 13290, 2560, 13020))
-=======
-n.games <- data.frame(sport = c("mlb","nba", "nfl", "nhl"), N_results = c(26728, 13290, 2560, 13020))
->>>>>>> 09ede5a5770955591a57849803033f660186141b
+n.games <- data.frame(sport = c("MLB","NBA", "NFL", "NHL"), N_results = c(26728, 13290, 2560, 13020))
+>>>>>>> 
 #Use updated n.games with newer bigfour.
 bigfour %>%
   group_by(sport) %>%
@@ -299,6 +300,7 @@ load("data/tidy_betas.final.rda")
 >>>>>>> 09ede5a5770955591a57849803033f660186141b
 library(xtable)
 tidy_betas %>%
+  mutate(sport = toupper(sport)) %>%
   group_by(sport) %>%
   summarize(N = n(), 
             min = min(beta),
@@ -319,7 +321,8 @@ tidy_betas %>%
 library(dplyr)
 load(file.path(root, "data", "tidy_betas.final.rda"))
 tidy_betas <- tidy_betas %>%
-  mutate(annotation = "",
+  mutate(sport = toupper(sport),
+         annotation = "",
          annotation = ifelse(beta == max(beta), 
                              paste0("Strongest team (", name, ")"), 
                              annotation),
@@ -337,7 +340,7 @@ names(secondary) <- colors$name
 
 <<spaghetti, fig.height=15, fig.cap="Team strengths over time for all four sports.">>=
 library(ggplot2)
-tidy_betas <- mutate(tidy_betas, time_val = ifelse(sport == "nfl"|sport == "mlb", time_val + 1, time_val))
+tidy_betas <- mutate(tidy_betas, time_val = ifelse(sport == "NFL"|sport == "MLB", time_val + 1, time_val))
 spag <- ggplot(data = tidy_betas, 
        aes(x = time_val, y = beta, 
            color = name, fill = name)) +
@@ -355,19 +358,19 @@ spag
 @
 
 <<spaghetti-mlb, out.extra='angle=90', out.width='\\textheight', fig.height=7, fig.cap="Team strength coefficients over time for Major League Baseball.">>=
-spag %+% filter(tidy_betas, sport == "mlb")
+spag %+% filter(tidy_betas, sport == "MLB")
 @
 
 <<spaghetti-nba, out.extra='angle=90', out.width='\\textheight', fig.height=7, fig.cap="Team strength coefficients over time for the National Basketball Association.">>=
-spag %+% filter(tidy_betas, sport == "nba")
+spag %+% filter(tidy_betas, sport == "NBA")
 @
 
 <<spaghetti-nfl, out.extra='angle=90', out.width='\\textheight', fig.height=7, fig.cap="Team strength coefficients over time for the National Football League.">>=
-spag %+% filter(tidy_betas, sport == "nfl")
+spag %+% filter(tidy_betas, sport == "NFL")
 @
 
 <<spaghetti-nhl, out.extra='angle=90', out.width='\\textheight', fig.height=7, fig.cap="Team strength coefficients over time for the National Hockey League.">>=
-spag %+% filter(tidy_betas, sport == "nhl")
+spag %+% filter(tidy_betas, sport == "NHL")
 @
 
 Overall, there tends to be larger amounts of variability in team strength parameters at any given point in time in both the NFL and NBA, with posterior team strength coefficients tending to vary between -1 and 1 (on the logit scale). Team-to-team level variability is substantially lower in MLB (roughly between -0.3 and 0.3) and the NHL (-0.4 to 0.4). The New England Patriots' 2007 season (NFL) stands out as the top individual performance of the last decade. In that season, New England finished the regular season 16-0 before eventually losing in the Super Bowl. Additionally, it is interesting to notice that the team strength estimates of the bad teams in the NBA (e.g. the Miami Heat in 2007--08) lie further from 0 than the the estimates for the good teams. This possibly reveals the tendency for teams in this league to ``tank"---a strategy of fielding a weak team intentionally to improve the chances of having better positions in the upcoming player draft \citep{soebbing2013gamblers}.
@@ -378,6 +381,7 @@ In the NHL (and only the NHL), there seems to be a peculiar convergence of team 
 load("data/params.rda")
 library(xtable)
 params %>%
+  mutate(sport = toupper(sport)) %>%
   select(gamma_w:sport, -alpha) %>%
   tidyr::gather(key = "param", value = "val", -sport) %>%
   group_by(sport, param) %>%
@@ -409,6 +413,7 @@ In the NBA, extreme home advantages provided to Denver and Utah matches the work
 load("data/tidy_alphas.final.rda")
 library(ggplot2)
 datbetas.null <- tidy_alphas %>%
+  mutate(sport = toupper(sport)) %>%
   group_by(sport) %>%
   arrange(alpha.team.overall) %>%
   mutate(rank.within = 1:n()) 
@@ -540,10 +545,10 @@ There are a couple of plausible explanations for our findings with respect to th
 % Make next section reproducible
 
 <<include=FALSE>>=
-leagues <- tidy_alphas %>% group_by(sport) %>%
+leagues <- tidy_alphas %>% mutate(sport = toupper(sport)) %>% group_by(sport) %>%
    summarize(mean.sport  = mean(alpha.sport))
 
-teams <- tidy_alphas %>% filter(sport == "nba") %>% group_by(team) %>% summarise(mean.post = mean(alpha.team.overall)) %>% arrange(mean.post) %>% slice(c(1,30))
+teams <- tidy_alphas %>% filter(sport == "NBA") %>% group_by(team) %>% summarise(mean.post = mean(alpha.team.overall)) %>% arrange(mean.post) %>% slice(c(1,30))
 
 league.ave <- round(exp(leagues$mean.sport[2])/(1+exp(leagues$mean.sport[2])), 3)
 league.high <- round(exp(teams$mean.post[2])/(1+exp(teams$mean.post[2])), 3)
@@ -574,63 +579,9 @@ Finally, one could use time-varying estimates of team strength to consider the e
 
 
 
-\section{Appendix}
-
-
-\citep{humphreys2002alternative} derives the `Competitive Balance Ratio' to assess between season changes in standings.  CBR is a function of within team variation (over time) and between team variation (within a season), measured using win percentage. It can account for varying season lengths, and potentially boasts positive links to attendance. 
-
-\cite{lenten2015measurement} proposed measurements of competitive balance to account for conference and division-based unbalanced scheduling. Implementing on the NFL, it is suggested that teams with high win ratios have generally played easier schedules, and teams with low win ratios have tended to play more difficult schedules. `The Seahawks effectively had an advantage of more than 8.6 wins over 10 seasons distributed to them via mere virtue of the schedule.'
-
-Hirfindahl-Hirschman Indexes (HHI) measure of competitive balance looks at the concentration of championships or other related outcomes (such as finishing in first place in a division).
-
-Noll-Scully most common metric of assessing competitive balance \citep{noll1988professional, scully1989business}. N-S is the ratio of the observed standard deviation of number of wins and the idealized standard deviation, that which would have been observed under binomial distribution (Ex: ISD in NFL = 8/sqrt(16)). N-S is influence by season length (fluctuation of observed SD, and influence of ISD). In general, N-S increasing in terms of number of games played. 
-
-
-Gini coefficient as one measure of within season inequality of league outcomes, comparing proportion of the total wins of the population which has been cumulatively earned by the bottom proportion of teams, relative to idealized value. Issues with Gini given unbalanced schedule, inter-league play \citep{utt2002pitfalls}. 
-
-\cite{lee2009competitive} contrasts parity in the NFL before and after the 1993 collective bargaining agreement, finding interseasonal parity, as measured by looking at winning percentages, increased as a result. The author finds first-order autoregressive nature to winning percentages; with coefficients suggesting team win percentages will revert towards league average about 70\%. 
-
-\cite{fort2007structural} identify that most break points in the four major sports, including expansion and team relocation, have corresponded with increased competitive balance. As a result, leagues tend to be more balanced than in the past.
-
-\citep{owen2010limitations, owen2015competitive} uses simulations to identify that RSD is sensitive to changes in season length when there are imbalances in team strength. Team strength parameters for the simulations are estimated using BTM. ASD (RSD without dividing by ISD) less sensitive to changes in season length, although it tends to overestimate imbalance in shorter seasons. Additionally, RSD has an upper bound that is a function of games played \citep{owen2010limitations}. 
-
-
-\subsection{Additional notes}
-
-Points from \citep{glickman2016estimating}: 
-
-Restriction of $\rho$ so that stochastic process on $\theta_{jt}$ is stationary. Considered to be a normal linear state space model and is also example of the Kalman filter (see paper for citations). 
-
-
-
-
-Suggestion for varying HFA in hockey: West coast teams more consistently awarded rest advantages (suggested by Mike's hockey people).  
-
-
-
-
-Notes on DIC \url{https://users.soe.ucsc.edu/~draper/rjags.pdf} The problem of determining what is a noteworthy difference in DIC (or other penalized deviance) between two models is currently unsolved. Following the results of Ripley (1996) on the Akaike Information Criterion, Plummer (2008) argues that there is no absolute scale for comparison of two penalized deviance statistics, and proposes that the difference should be calibrated with respect to the sample standard deviation of the individual contributions from each observed stochastic node.
-
-Gelman \url{http://andrewgelman.com/2011/06/22/deviance_dic_ai/} One of my practical problems with DIC is that it seems to take a lot of simulations to calculate it precisely. Long after we’ve achieved good mixing of the chains and good inference for parameters of interest and we’re ready to go on, it turns out that DIC is still unstable. In the example in our book we ran for a zillion iterations to make sure the DIC was ok.
-
-
-
 \bibliographystyle{asa}
 \bibliography{refs}
 
-\newpage
-
-\phantom{xxxx}
-
-\vspace{3cm}
-
-\begin{center}
-{\Large  {\bf Supplementary Materials for \\ 
-
-\vspace{2cm}
-
-``A unified approach to understanding randomness in sport"}}
-\end{center}
 
 \newpage
 
