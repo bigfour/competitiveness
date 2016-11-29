@@ -8,6 +8,8 @@
 
 \usepackage{xspace,soul}
 \usepackage{graphicx}
+\singlespacing
+
 
 
 \newcommand{\Ex}{\mathbb{E}}
@@ -48,35 +50,24 @@
 
 
 \begin{document}
-%\SweaveOpts{concordance=TRUE}
-%\SweaveOpts{concordance=TRUE}
 
-\title{How often does the best team win? A unified approach
-to understanding randomness in North American sport}
-%
-\author{
-Benjamin S. Baumer \\
-%Department of Mathematics \& Statistics \\
-Smith College \\
-%Northampton, MA 01063, USA \\
-\texttt{bbaumer@smith.edu}
-\and
-Michael Lopez\\
-%Department of Statistics \\ 
-Skidmore College\\
-\texttt{mlopez1@skidmore.edu}
-\and
-Gregory J. Matthews\\
-Loyola University Chicago\\
-\texttt{gmatthews1@luc.edu}
-}
+
+\begin{center}
+
+\LARGE
+\textbf{How often does the best team win? A unified approach
+to understanding randomness in North American sport} \\
+\vspace{0.8 cm}
+\Large
+All sport track
+\end{center}
+\normalsize
+
+
 
 <<echo=FALSE>>=
 source("config.R")
 @
-
-
-\maketitle
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -398,9 +389,9 @@ params %>%
   print(include.rownames = FALSE, sanitize.text.function = identity)
 @
 
-Table \ref{tab:params} shows the average season-to-season and week-to-week autocorrelation within the four leagues. On a season-to-season basis, team strengths in each of the leagues tend to revert towards the league average (0). Reversion towards the mean is largest in the NHL (posterior mean 0.54$, implying 46\% reversion), followed by the NBA (38\%), MLB (38\% reversion), and the NFL (31\%). However, there is enough uncertainty in the posterior distribution of these estimates that we are unable to say for certain if the differences in the season-to-season autocorrelation between MLB, the NBA, and the NBA are significant. 
+Table \ref{tab:params} shows the average season-to-season and week-to-week autocorrelation within the four leagues. On a season-to-season basis, team strengths in each of the leagues tend to revert towards the league average (0). Reversion towards the mean is largest in the NHL (posterior mean 0.54, implying 46\% reversion), followed by the NBA (38\%), MLB (38\% reversion), and the NFL (31\%). However, there is enough uncertainty in the posterior distribution of these estimates that we are unable to say for certain if the differences in the season-to-season autocorrelation between MLB, the NBA, and the NBA are significant. 
 
-For each of the NHL, NBA, and NFL, the posterior estimates of weekly reversion towards the mean (and the 95\% credible intervals) imply an auto-regressive nature to team caliber within each season. In MLB, however, team strength estimates quite possibly follow a random walk (as in a week-to-week autoregressive parameter of 1$). 
+For each of the NHL, NBA, and NFL, the posterior estimates of weekly reversion towards the mean (and the 95\% credible intervals) imply an auto-regressive nature to team caliber within each season. In MLB, however, team strength estimates quite possibly follow a random walk (as in a week-to-week autoregressive parameter of 1). 
 
 %Note: Add in 95% intervals to the table? 
 
