@@ -387,46 +387,24 @@ In the NHL (and only the NHL), there seems to be a peculiar convergence of team 
 load("data/params.rda")
 library(xtable)
 params %>%
+  select(gamma_w:sport, -alpha) %>%
   tidyr::gather(key = "param", value = "val", -sport) %>%
   group_by(sport, param) %>%
-  summarize(N = n(), mean = mean(val)) %>%
+  summarize(mean = mean(val)) %>%
   tidyr::spread(param, mean) %>%
-  rename(`$\\alpha$` = alpha, 
-         `$\\gamma_s$` = gamma_s, `$\\gamma_w$` = gamma_w, 
-         `$\\sigma_s$` = sigma_s, `$\\sigma_w$` = sigma_w) %>%
+  rename(`Seasonal autocorrelation` = gamma_s, `Weekly autocorrelation` = gamma_w) %>%
   xtable(caption = "Summary of means from posterior draws for parameters.", 
          digits = 3, label = "tab:params") %>%
   print(include.rownames = FALSE, sanitize.text.function = identity)
 @
 
-Contour plots of posterior draws of season-to-season and week-to-week $\sigma_{q,week}$ variability in team strength are shown in Figure~\ref{contourSigma} using separate colors for each sport. The highest variability in team strength occurs in the NBA, followed in order by the NFL, NHL, and MLB. The importance of star players in the NBA is one potential driver of these findings \citep{berri2006road}; injuries or trades involving the league's best players perhaps have a larger influence in the NBA than in other leagues, causing immediate shifts in the estimates of team strength.
+Table \ref{tab:params} shows the average season-to-season and week-to-week autocorrelation within the four leagues. On a season-to-season basis, team strengths in each of the leagues tend to revert towards the league average (0). Reversion towards the mean is largest in the NHL (posterior mean 0.54$, implying 46\% reversion), followed by the NBA (38\%), MLB (38\% reversion), and the NFL (31\%). However, there is enough uncertainty in the posterior distribution of these estimates that we are unable to say for certain if the differences in the season-to-season autocorrelation between MLB, the NBA, and the NBA are significant. 
 
-<<contourSigma, fig.cap="Contour plot of the season-to-season and week-to-week variability across all four major sports.">>=
-ggplot(params, aes(x = sigma_w, y = sigma_s, color = sport)) + 
-  geom_density_2d() + geom_point(alpha = 0.1)
-@
+For each of the NHL, NBA, and NFL, the posterior estimates of weekly reversion towards the mean (and the 95\% credible intervals) imply an auto-regressive nature to team caliber within each season. In MLB, however, team strength estimates quite possibly follow a random walk (as in a week-to-week autoregressive parameter of 1$). 
 
-<<contourGamma, fig.cap="Contour plot of the season-to-season and week-to-week auto-regressive parameter across all four major sports.">>=
-ggplot(params, aes(x = gamma_w, y = gamma_s, color = sport)) + 
-  geom_vline(xintercept = 1, color = "darkgray", linetype = 2) + 
-  annotate("text", x = 1.001, y = 0.85, label = "Random\nWalk", hjust = "left") + 
-  geom_density_2d() + geom_point(alpha = 0.1)
-@
+%Note: Add in 95% intervals to the table? 
 
-<<include=FALSE>>=
-summary(params$alpha)
-ggplot(data = params, aes(x = alpha, color = sport)) +
-  geom_density()
-@
-
-%Note: while our gamma'a are similar to Glickman's (0.99 week-to-week, 0.80 season-to-season), our 
-%sigma's are much different. His sigma's are several orders of magnitude bigger than ours.
-
-Figure~\ref{contourGamma} displays the joint posterior distribution of $\gamma_{q,seas}$ and $\gamma_{q,week}$ via contour plots for each sport. For each of the NHL, NBA, and NFL, the posterior estimates of $ \gamma_{q,week}$ (and 95\% credible intervals) do not cross 1, implying an auto-regressive nature to team caliber within each season. In MLB, however, team strength estimates quite possibly follow a random walk (as in $\gamma_{q, week} = 1$). 
-
-On a season-to-season basis, team strengths in each of the leagues tend to revert towards the league average (0). Reversion towards the mean is largest in the NHL (posterior mean $\gamma_{q,seas} = 0.55$, implying 45\% reversion), followed by MLB (38\% reversion), NBA (36\%), and the NFL (30\%). However, there is enough uncertainty in the posterior distribution of $\gamma_{q, seas}$ that we are unable to say for certain if the differences in the season-to-season autocorrelation between MLB, the NBA, and the NBA are significant. In the NFL, the slight inverse association between the two autoregressive parameters, as shown in Figure~\ref{contourGamma}, matches that obseved in \cite{glickman1998state}.
-
-\subsection{Visualizing the home advantage}
+\subsection{The home advantage}
 
 Figure \ref{alphaAll} shows the 2.5th, median, and 97.5th draws of each team's estimated home advantage parameter, shown on the log-odds scale and using our model with team-level estimates. League's are overlaid to provide a sense of the magnitude of differences between, in order, the home advantage provided in the MLB (increased log-odds of a home win around 0.16), NHL (0.22), NFL (0.36), and NBA (0.50).  The two franchises that have relocated in the last decade, the Atlanta Thrashers (NHL) and Seattle Supersonics (NBA), are also included for the games played in those respective cities. 
 
