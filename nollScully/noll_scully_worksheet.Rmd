@@ -1,0 +1,37 @@
+---
+title: "Noll-Scully"
+author: "Ben Baumer"
+date: "November 30, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(Lahman)
+```
+
+Compare to (http://wagesofwins.com/noll-scully/)
+
+```{r}
+ns <- Teams %>%
+  filter(yearID >= 1920) %>%
+  mutate(wpct = W / (W + L)) %>%
+  group_by(yearID) %>%
+  summarize(N = n(), 
+            season_length = sum(G) / (n()), 
+            mean_wins = mean(W), sd_wins = sd(W), 
+            mean_wpct = mean(wpct), sd_wpct = sd(wpct)) %>%
+  mutate(sd_star = sqrt(1 / (4 * season_length)), 
+         noll_scully_wpct = sd_wins / (mean_wins / sqrt(season_length)),
+         noll_scully = sd_wpct / sd_star)
+ns %>%
+  filter(yearID %in% 2010:2011)
+```
+
+```{r}
+ggplot(data = ns, aes(x = yearID, y = noll_scully)) + 
+  geom_point() + geom_line() + 
+  geom_smooth()
+```
+
