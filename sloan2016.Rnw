@@ -362,7 +362,7 @@ spag <- ggplot(data = tidy_betas,
   scale_color_manual(name = NULL, values = primary) + 
   scale_fill_manual(name = NULL, values = secondary) + 
   scale_x_continuous(name = "Season", breaks = 2005:2016) +
-  scale_y_continuous(name = "Value of beta coefficient") + 
+  scale_y_continuous(name = "Value of theta coefficient") + 
   guides(color = FALSE, fill = FALSE)
   #  guides(color = guide_legend(ncol = 2))
 spag
