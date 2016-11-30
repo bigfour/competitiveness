@@ -8,11 +8,11 @@ jasa2016.pdf: jasa2016.tex refs.bib
 	pdflatex jasa2016
 
 sloan2016.pdf: sloan2016.tex refs.bib
-	pdflatex sloan2016
+	xelatex sloan2016
 	bibtex sloan2016
-	pdflatex sloan2016
+	xelatex sloan2016
 	bibtex sloan2016
-	pdflatex sloan2016
+	xelatex sloan2016
 
 clean: 
 	rm *.idx *.ilg *.ind

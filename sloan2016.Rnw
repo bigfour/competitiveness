@@ -1,5 +1,4 @@
 \documentclass[letterpaper,titlepage]{article}
-\pdfminorversion=4
 \usepackage{setspace}
 \doublespacing
 \usepackage{ dsfont }
@@ -47,9 +46,25 @@
 
 \usepackage[bottom=2.0in,top=1.5in]{geometry}
 
-\usepackage[noae]{Sweave}
-\usepackage[light,math]{anttor} % Obvious and ugly roman font. 
-\usepackage[T1]{fontenc} 
+%\usepackage[noae]{Sweave}
+\usepackage{unicode-math}
+
+% Fonts
+\usepackage{ifxetex}
+
+\ifxetex
+  \usepackage{fontspec}
+  \defaultfontfeatures{Ligatures=TeX} % To support LaTeX quoting style
+%  \setromanfont{Hoefler Text}
+  \setmainfont{Cambria}
+  \setmathfont{Cambria Math}
+\else
+  \pdfminorversion=4
+  \usepackage[light,math]{anttor} % Obvious and ugly roman font. 
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\fi
+
 \usepackage{wallpaper}
 \begin{document}
 
