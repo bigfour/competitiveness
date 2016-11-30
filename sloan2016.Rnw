@@ -164,23 +164,27 @@ load("data/bigfour.final.rda")
 bigfour <- bigfour.final %>% mutate(sport = toupper(sport))
 library(dplyr)
 library(xtable)
-n.games <- data.frame(sport = c("MLB","NBA", "NFL", "NHL"), N_results = c(26728, 13290, 2560, 13020))
->>>>>>> 
+n.games <- data_frame(sport = c("MLB","NBA", "NFL", "NHL"), N_results = as.integer(c(26728, 13290, 2560, 13020)))
 #Use updated n.games with newer bigfour.
 bigfour %>%
   group_by(sport) %>%
-  summarise(games = n(), 
+  summarise(
+    # games = n(), 
 #            earliest = as.character(min(gameDate)), 
 #            latest = as.character(max(gameDate)),
             num_teams = length(unique(setdiff(union(visitor_team, home_team), NA))), 
-            home_wp = sum(home_win, na.rm = TRUE) / sum(!is.na(home_win)),
-            N_bets = sum(!is.na(prob_home)), 
-            mean_home_p = mean(prob_home, na.rm = TRUE)) %>%
+            mean_home_wp_actual = sum(home_win, na.rm = TRUE) / sum(!is.na(home_win)),
+            n_bets = sum(!is.na(prob_home)), 
+            mean_home_prob = mean(prob_home, na.rm = TRUE)) %>%
   left_join(n.games) %>%
-  mutate(coverage = N_bets / N_results) %>%
-  xtable(caption = "Summary of cross-sport data. Note that we have near total coverage (betting odds for every game) across all four major sports during the 2005--2014 regular seasons.", 
-         digits = 3, label = "tab:bigfour") %>%
-  print(include.rownames = FALSE)
+  mutate(Coverage = n_bets / N_results) %>%
+  select(sport, num_teams, N_results, mean_home_wp_actual, n_bets, mean_home_prob, Coverage) %>%
+  rename(`Sport ($q$)` = sport, `$I_q$` = num_teams, 
+         `$n_{games}$` = N_results, `$\\bar{p}_{games}$` = mean_home_wp_actual,
+         `$n_{bets}$` = n_bets, `$\\bar{p}_{bets}$` = mean_home_prob) %>%
+  xtable(caption = "Summary of cross-sport data. $I_q$ is the number of unique teams in each sport $q$. $n_{games}$ records the number of actual games played, while $n_{bets}$ records the number of those games for which we have a betting line. $\\bar{p}_{games}$ is the mean observed probability of a win for the home team, while $\\bar{p}_{bets}$ is the mean implied probability of a home win based on the betting line. Note that we have near total coverage (betting odds for almost every game) across all four major sports during the 2005--2014 regular seasons.", 
+         digits = 3, label = "tab:bigfour", align = "llr|rr|rr|r") %>%
+  print(include.rownames = FALSE, sanitize.colnames.function = function(x) x)
 @
 
 A summary of our data is shown in Table~\ref{tab:bigfour}. 
