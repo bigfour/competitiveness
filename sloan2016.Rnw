@@ -12,6 +12,7 @@
 
 
 
+
 \newcommand{\Ex}{\mathbb{E}}
 \newcommand{\Var}{\text{Var}}
 \newcommand{\bp}{\mathbf{p}}
