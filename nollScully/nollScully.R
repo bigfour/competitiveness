@@ -31,7 +31,7 @@ for (i in 1:length(beta)){
 
 
 #"Observed" standard deviation
-observedSD<-sd(100*(apply(mat,1,sum)-0.5)/(dim(mat)[1]-1))
+observedSD<-sd(apply(mat,1,sum)-0.5)
 #Idealized standard deviation
 idealizedSD<-mean(apply(mat,1,sum)-0.5)/sqrt(dim(mat)[1]-1)
 
@@ -43,7 +43,7 @@ for (nnn in 1:length(games)){
 sim<-matrix(rbinom(dim(mat)[1]*dim(mat)[2],games[nnn],c(mat)),nrow=dim(mat)[1])
 diag(sim)<-0
 #"Observed" standard deviation
-observedSDsim<-sd(100*(apply(sim,1,sum))/(games[nnn]*(dim(sim)[1]-1)))
+observedSDsim<-sd(apply(sim,1,sum))
 #Idealized standard deviation
 idealizedSDsim<-mean(apply(sim,1,sum))/sqrt(games[nnn]*(dim(sim)[1]-1))
 outSim[nnn]<-observedSDsim/idealizedSDsim
@@ -58,14 +58,14 @@ nollScully[[sport]][[season]][[week]][r,]<-c(theory = observedSD/idealizedSD,sim
   save(nollScully,file="/Users/gregorymatthews/Dropbox/competitiveness/nollScullySimultions_20161123.RData")
 }
 }
-load("/Users/gregorymatthews/Dropbox/competitiveness/nollScully20161125.RData")
+load("/Users/gregorymatthews/Dropbox/competitiveness/nollScullySimultions_20161123.RData")
 
 
 #Make the plots
 png("/Users/gregorymatthews/Dropbox/competitiveness/NollScullyDistributions.png",res=300,units="in",w=20,h=10)
 par(mfrow=c(2,2))
 for (sport in c("mlb","nhl","nba","nfl")){
-plot(0,0,type="l",xlim=c(-1,13),ylim=c(0,8),ylab="Noll - Scully",main = sport,xaxt='n',xlab="Year")
+plot(0,0,type="l",xlim=c(-1,13),ylim=c(0,5),ylab="Noll - Scully",main = sport,xaxt='n',xlab="Year")
 axis(1,c(1:11),c(2006:2016))
   abline(h=c(0:10),col=rgb(0.5,0.5,0.5,0.5))
 for (season in 1:length(nollScully[[sport]])){
@@ -80,15 +80,15 @@ points((season)+week/length(nollScully[[sport]][[season]]),means[4],col="green",
 points((season)+week/length(nollScully[[sport]][[season]]),means[6],col="blue",pch=16,cex=0.5)
 means<-apply(nollScully[[sport]][[season]][[week]],2,quantile,c(0.025,0.975))
 #points(rep((season)+week/28,2),means[,1],col="red",type="l")
-points(rep((season)+week/length(nollScully[[sport]][[season]]),2),means[,2],col="red",type="l")
+points(rep((season)+week/length(nollScully[[sport]][[season]]),2),means[,2],col=rgb(1,0,0,0.5),type="l")
 #points(rep((season)+week/28,2),means[,3],col="green",type="l")
-points(rep((season)+week/length(nollScully[[sport]][[season]]),2),means[,4],col="green",type="l")
+points(rep((season)+week/length(nollScully[[sport]][[season]]),2),means[,4],col=rgb(0,1,0,0.5),type="l")
 #points(rep((season)+week/28,2),means[,5],col="black",type="l")
-points(rep((season)+week/length(nollScully[[sport]][[season]]),2),means[,6],col="blue",type="l")
+points(rep((season)+week/length(nollScully[[sport]][[season]]),2),means[,6],col=rgb(0,0,1,0.5),type="l")
 
   }
 }
-legend(-1,6,c("1 game", "3 games", "5 games"),c("red","green","blue"))
+legend(-1,4,c("1 game", "3 games", "5 games"),c("red","green","blue"))
 
 }
 
