@@ -95,7 +95,9 @@ source("config.R")
 
 \section{Introduction}
 
-With easily accessible data, worldwide interest, and continuously recurring games, sports provides an excellent framework for testing predictive accuracy and understanding randomness. Although most observers can agree that part of game outcomes are due to chance, because randomness manifests differently in different sports and leagues, cross-sport measurements can be particularly challenging. Most often, researchers analyze wins and losses alone, thereby ignoring the game's final score, or apply technical approaches within a single sport that cannot be extended due to differences in the way games and leagues are structured. We aim to do better.
+Most observers of sport can agree that game outcomes are to some extent subject to chance. The line drive that miraculously finds the fielder's glove, the fumble that bounces harmlessly out-of-bounds, the puck that ricochets into the net off of an opponent's skate, or the referee's whistle on a clean block can all mean the difference between winning and losing. Yet game outcomes are not \emph{completely} random---there are teams that consistently play better and worse. To what extent does luck influence our perceptions of team strength over weeks and/or seasons?
+ 
+Because randomness manifests differently in different sports and leagues, analysts and fans have never quite been able to quantify its relative influence in one sport versus another. Most often, researchers analyze wins and losses alone, thereby losing information such as the game’s final score or which team played at home, or apply technical approaches within a single sport that cannot be extended due to differences in the way games and leagues are structured. We aim to do better.
 
 In this manuscript, we provide a novel approach for estimating team ability that can account for league scheduling quirks, measure each team's home advantage, and uncover inherent differences in the dispersion and evolution of team strengths within North American sport. First, we validate an assumption that betting market probabilities provide unbiased and low-variance estimates of the true probabilities of wins and losses in each professional contest. Second, we present a modified Bayesian state-space model that uses these probabilities to capture implied team strength and variability. Finally, by looking at posterior estimates of within and between season variability, as well as the overall dispersion in team strength estimates, we present unique league-level contrasts that, to this point, have been difficult to capture. We find that the NBA demonstrates both the largest dispersion in talent and the largest home advantage among the four leagues, while the NHL and MLB stand out for the relatively large role played by randomness.
 
@@ -210,7 +212,7 @@ bigfour_summary <- bigfour %>%
   group_by(sport) %>%
   summarize(N = n(), num_seasons = n_distinct(season), 
             earliest = min(gameDate), latest = max(gameDate),
-            home_win_pct = sum(home_win) / n(), 
+            home_win_pct = sum(home_win, na.rm = TRUE) / n(), 
             prob_missing = sum(is.na(p_home)), 
             prob_pct = sum(!is.na(p_home)) / n(), 
             home_win_prob = mean(p_home, na.rm = TRUE))
