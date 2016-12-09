@@ -538,9 +538,9 @@ datbetas.null <- tidy_alphas %>%
 datbetas.empty <- datbetas.null %>% ungroup() %>% select(-sport)
 
 gg <- ggplot(datbetas.null)  + ggtitle("Increased log-odds of winning at home") 
-gg1 <- gg + geom_point(data = datbetas.empty, colour = "grey", 
+gg1 <- gg + geom_point(data = datbetas.empty, colour = "grey", alpha = .2,  
                        aes(y=alpha.team.overall, x=rank.within, group = team)) + 
-  geom_errorbar(data = datbetas.empty, colour = "grey", 
+  geom_errorbar(data = datbetas.empty, colour = "grey", alpha = 0.2,
                 aes(x=rank.within, ymax = alpha.team.upper, ymin=alpha.team.lower, group = team), width=0.2) 
 
 for (i in 1:nrow(datbetas.null)){
@@ -563,7 +563,39 @@ gg2 <- gg1  + coord_flip() + facet_wrap(~sport)+
                                axis.text.y=element_blank(),axis.ticks=element_blank(),
                                axis.title.y=element_blank())
 
+load("data/tidy_alphas.final.rda")
 
+#### Note: add in the grey background
+
+
+tidy_alphas <- tidy_alphas %>%
+  mutate(sport = toupper(sport)) 
+
+tidy_alphas$sport <- factor(tidy_alphas$sport,
+    levels = c("MLB", "NHL", "NFL", "NBA"), ordered = TRUE)
+
+
+tidy_alphas.limits <- tidy_alphas %>%
+  mutate(team.name = word(team, -1)) %>%
+   group_by(sport) %>%
+  arrange(alpha.team) %>%
+   filter(row_number()==1 | row_number()==n()|
+            alpha.team.overall > 0.6)
+
+exp.fun <- function(x){log(x/(1-x))}
+breaks <- c(exp.fun(0.5), exp.fun(0.55), exp.fun(0.6), exp.fun(0.65),
+            exp.fun(0.7))
+labels <- paste0(seq(50, 70, by = 5), "%")
+
+gg3 <- ggplot(tidy_alphas, aes(sport, alpha.team.overall)) + 
+  geom_point() + coord_flip() + 
+  geom_text(data = tidy_alphas.limits, 
+                  aes(sport, alpha.team.overall, label = team.name), 
+            angle = 45, hjust = 1, vjust = 1) +
+  scale_y_continuous(lim = c(0, 0.7), breaks = breaks, 
+                     labels = labels, "") + 
+  xlab("") +
+  labs(title = "Probability of beating an equal caliber opponent at home")
 @
 
 <<alphaAll, fig.height = 15, fig.width = 10, fig.cap="Median posterior draw (with 2.5th, 97.5th quantiles) of each franchise's home advantage intercept, on log odds scale">>=
