@@ -574,13 +574,12 @@ tidy_alphas <- tidy_alphas %>%
 tidy_alphas$sport <- factor(tidy_alphas$sport,
     levels = c("MLB", "NHL", "NFL", "NBA"), ordered = TRUE)
 
-
+library(stringr)
 tidy_alphas.limits <- tidy_alphas %>%
   mutate(team.name = word(team, -1)) %>%
    group_by(sport) %>%
   arrange(alpha.team) %>%
-   filter(row_number()==1 | row_number()==n()|
-            alpha.team.overall > 0.6)
+   filter(alpha.team.overall > 0.6|team.name == "Rockies")
 
 exp.fun <- function(x){log(x/(1-x))}
 breaks <- c(exp.fun(0.5), exp.fun(0.55), exp.fun(0.6), exp.fun(0.65),
@@ -588,14 +587,17 @@ breaks <- c(exp.fun(0.5), exp.fun(0.55), exp.fun(0.6), exp.fun(0.65),
 labels <- paste0(seq(50, 70, by = 5), "%")
 
 gg3 <- ggplot(tidy_alphas, aes(sport, alpha.team.overall)) + 
-  geom_point() + coord_flip() + 
+  geom_boxplot() + coord_flip() + 
+  geom_point(data = tidy_alphas.limits, 
+                  aes(sport, alpha.team.overall)) +
   geom_text(data = tidy_alphas.limits, 
                   aes(sport, alpha.team.overall, label = team.name), 
-            angle = 45, hjust = 1, vjust = 1) +
+            angle = 45, hjust = 1, vjust = 1, size = 3) +
   scale_y_continuous(lim = c(0, 0.7), breaks = breaks, 
                      labels = labels, "") + 
   xlab("") +
   labs(title = "Probability of beating an equal caliber opponent at home")
+gg3
 @
 
 <<alphaAll, fig.height = 15, fig.width = 10, fig.cap="Median posterior draw (with 2.5th, 97.5th quantiles) of each franchise's home advantage intercept, on log odds scale">>=
