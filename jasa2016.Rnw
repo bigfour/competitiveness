@@ -587,9 +587,8 @@ breaks <- c(exp.fun(0.5), exp.fun(0.55), exp.fun(0.6), exp.fun(0.65),
 labels <- paste0(seq(50, 70, by = 5), "%")
 
 gg3 <- ggplot(tidy_alphas, aes(sport, alpha.team.overall)) + 
-  geom_boxplot() + coord_flip() + 
-  geom_point(data = tidy_alphas.limits, 
-                  aes(sport, alpha.team.overall)) +
+  geom_dotplot(binaxis = "y", stackdir = "center", binwidth = 0.005) + coord_flip() + geom_point(data = tidy_alphas.limits, 
+                  aes(sport, alpha.team.overall), size = 0.5) +
   geom_text(data = tidy_alphas.limits, 
                   aes(sport, alpha.team.overall, label = team.name), 
             angle = 45, hjust = 1, vjust = 1, size = 3) +
