@@ -573,6 +573,9 @@ Contour plots of posterior draws of season-to-season $\sigma_{q,seas}$ and week-
 
 <<contourSigma, fig.cap="Contour plot of the season-to-season and week-to-week variability across all four major sports.">>=
 load("data/params.rda")
+nfl.sum <- params %>% filter(sport == "nfl") %>% summarise(mean.week = round(mean(gamma_w), 2), mean.season = round(mean(gamma_s), 2), low.bound = round(quantile(gamma_s, 0.025), 2), upp.bound = round(quantile(gamma_s, 0.975), 2))
+
+
 ggplot(params, aes(x = sigma_w, y = sigma_s, color = sport)) + 
   geom_density_2d() + geom_point(alpha = 0.1)
 @
@@ -587,12 +590,13 @@ ggplot(params, aes(x = gamma_w, y = gamma_s, color = sport)) +
 @
 
 
-Figure~\ref{contourGamma} displays the joint posterior distribution of $\gamma_{q,seas}$ and $\gamma_{q,week}$ via contour plots for each sport. On a season-to-season basis, team strengths in each of the leagues tend to revert towards the league average (0). Reversion towards the mean is largest in the NHL (posterior mean 0.54, implying 46\% reversion), followed by the NBA (38\%), MLB (38\% reversion), and the NFL (31\%). However, there is enough uncertainty in the posterior distribution of these estimates that we are unable to say for certain if the differences in the season-to-season estimates between MLB, the NBA, and the NBA are significant. Our two autoregressive parameters shown in Figure~\ref{contourGamma} for the NFL roughly match the estimates observed in \cite{glickman1998state} (0.99 and 0.80 for $\gamma_{q,week}$ and $\gamma_{q,seas}$, respectively).
+Figure~\ref{contourGamma} displays the joint posterior distribution of $\gamma_{q,seas}$ and $\gamma_{q,week}$ via contour plots for each sport. On a season-to-season basis, team strengths in each of the leagues tend to revert towards the league average (0). Reversion towards the mean is largest in the NHL (posterior mean 0.54, implying 46\% reversion), followed by the NBA (38\%), MLB (38\% reversion), and the NFL (31\%). However, there is enough uncertainty in the posterior distribution of these estimates that we are unable to say for certain if the differences in the season-to-season estimates between MLB, the NBA, and the NBA are significant. 
 
 For each of the NHL, NBA, and NFL, posterior estimates of $\gamma_{q,week}$ (and the 95\% credible intervals) imply an auto-regressive nature to team caliber within each season. Interestingly, the NBA and NFL are the least consistent leagues on a week-to-week basis. In MLB, meanwhile, team strength estimates quite possibly follow a random walk (as in $\gamma_{q, week} = 1$), in which the succession of team strength estimates over time follows no identifiable pattern. 
 
-\subsection{Visualizing the home advantage}
+Finally, the posterior estimates of two autoregressive parameters for the NFL roughly, (\Sexpr{nfl.sum$mean.week} and \Sexpr{nfl.sum$mean.season} for $\gamma_{q,week}$ and $\gamma_{q,seas}$, respectively) do not noticeably diverge from the estimates observed in \cite{glickman1998state} (0.99 and 0.82). Additionally, our estimates of 0.98 and 0.80 are noticeably more precise. For example, our credible interval for $\gamma_{q,seas}$ is (\Sexpr{nfl.sum$low.bound}, \Sexpr{nfl.sum$upp.bound}); in \cite{glickman1998state}, it was (0.52, 1.28).  As in \cite{glickman1998state}, we also observe an inverse link in posterior draws of $\gamma_{q,week}$ and $\gamma_{q,seas}$. Given that total shrinkage across time is the composite of within and between-season shrinkage, such an association is not surprising \citep{glickman1998state}. If one source of reversion towards the average were to increase, the other would likely compensate by decreasing. 
 
+\subsection{Visualizing the home advantage}
 
 Figure \ref{fig:alphaAll} shows the 2.5th, median, and 97.5th draws of each team's estimated home advantage parameter, presented on the log-odds scale. The leagues are overlaid (in order) to provide a sense of the magnitude of differences between the home advantage provided in the MLB (increased log-odds of a home win around 0.16, or about $e^{0.16} - 1 = 17$\% higher), NHL (0.22, or 25\%), NFL (0.36, or 43\%), and NBA (0.50, or 62\%).  The two franchises that have relocated in the last decade, the Atlanta Thrashers (NHL) and Seattle Supersonics (NBA), are also included for the games played in those respective cities. 
 
@@ -824,39 +828,24 @@ Across each sport, our estimates of team strength consistently outperform past t
 
 \section{Conclusion}
 
+
 Using a modified Bayesian state-space model, we estimate both time-varying team strength and league-level variance parameters in order to better explain the underlying randomness in the four major North American professional sporting leagues, the NBA, NFL, NHL, and MLB. 
 
-Our first finding relates to the relative equivalence of the four leagues. At a single point in time, team strength estimates diverge substantially more in the NBA and NFL than in the NHL and MLB. In the latter two leagues, this entails that contests between two randomly chosen teams are closer to to a coin-flip, with each team given a reasonable shot at winning. Within a season, estimates of $\gamma_w$, our autoregressive parameter, suggest that teams in each of the NBA (largest reversion), NFL, and NHL tend to revert towards the league average in the long term, while week-by-week trends of team strength in MLB are indistinguishable from a random walk. On a season-to-season basis, NHL teams exhibits the largest reversion towards the league average (nearly 50\%), with the other three leagues fall somewhere between roughly 25\% and 40\%. Our estimate of a 31\% reversion within the NFL falls in line with the 33\% shown by \cite{glickman1998state}, which used a similar model on an earlier sample of games. Each of these conclusions account for varying league-level traits, including schedule length and strength of schedule. 
+Our first finding relates to the relative equivalence of the four leagues. At a single point in time, team strength estimates diverge substantially more in the NBA and NFL than in the NHL and MLB. In the latter two leagues, this entails that contests between two randomly chosen teams are closer to to a coin-flip, with each team given a reasonable shot at winning. Within a season, estimates of $\gamma_w$, our autoregressive parameter, suggest that teams in each of the NBA (largest reversion), NFL, and NHL tend to revert towards the league average in the long term, while week-by-week trends of team strength in MLB are indistinguishable from a random walk. On a season-to-season basis, NHL teams exhibit the largest reversion (nearly 50\%) towards the league average, with the other three leagues fall somewhere between roughly 25\% and 40\%. Our estimates of week-to-week and season-to-season shrinkage are similar to those found by \cite{glickman1998state}, who used a similar model on an earlier and smaller sample of games. Additionally, our estimates of shrinkage are more precise than those found by \cite{glickman1998state}, although it is unclear is this is a function of our model or that we used a larger sample of seasons (10, compared to 5). Each of these conclusions account for varying league-level traits, including schedule length and strength of schedule. 
 
 There are a couple of plausible explanations for our findings with respect to the weekly NBA variability shown in our team strength estimates. Injuries, the resting of starters, and in-season trades would seemingly have a larger impact in a sport where fewer players are participating at a single point in time. In particular, our model cannot accurately gauge team strength when star players, who could play, are rested in favor of lesser alternatives. Additionally, while there is the largest week-to-week reversion in the NBA, when considering the differences in teams to begin with, such differences are not as extreme. In other words, a 3\% reversion in the NBA does not neccessarily equate to a 3\% reversion in MLB or the NHL.
+
 
 %We should probably expand on these results and tie them into current literature: 
 %Measurements of competitive balance: Competitive balance at a single point in time (independent of scheduling, compare to ???), Competitive balance between seasons (compare to Humphreys), competitiveness within a season (compare to )
 
-% Make next section reproducible
 
-<<include=FALSE>>=
-leagues <- tidy_alphas %>% group_by(sport) %>%
-   summarize(mean.sport  = mean(alpha.sport))
-
-teams <- tidy_alphas %>% filter(sport == "nba") %>% group_by(team) %>% summarise(mean.post = mean(alpha.team.overall)) %>% arrange(mean.post) %>% slice(c(1,30))
-
-league.ave <- round(exp(leagues$mean.sport[2])/(1+exp(leagues$mean.sport[2])), 3)
-league.high <- round(exp(teams$mean.post[2])/(1+exp(teams$mean.post[2])), 3)
-league.low <- round(exp(teams$mean.post[1])/(1+exp(teams$mean.post[1])), 3)
-@
-
-Our second finding relates to the relative equivalence of the home advantage in each league, with the NBA well ahead of the pack, showing, on average, a \Sexpr{round(teams$mean.post[2], 3)}\% increase on the log-odds of a home win. Model fit statistics imply that the home advantage varies most significantly between arenas in the NBA and NHL. In the NBA, for example, the league's best team home advantage is shown in Denver (increased log-odds, \Sexpr{round(teams$mean.post[2], 3)}), with the worst shown in Brooklyn (\Sexpr{round(teams$mean.post[1], 3)}\%). Such distinctions have plausible impacts on league standings. 
-
-An NBA team with a typical home advantage can expect to win \Sexpr{100*league.ave}\% of home games against a like-caliber opponent; for Brooklyn, the corresponding figure is \Sexpr{100*league.low}\%, while for Denver, \Sexpr{100*league.high}\%. Across 41 games (the number each team plays at home), this implies that Denver's home advantage is worth an extra \Sexpr{round(41*(league.high-league.ave), 2)} wins in a single season, relative to a league average team. Compared to Brooklyn, Denver's home advantage has been worth an estimated \Sexpr{round(41*(league.high-league.low), 2)} wins per year. As one important caveat, our models do not account for varying line-up and injury information. If opposing teams were to rest their star players at Denver, for example, our model would artificially inflate Denver's home advantage. Meaningful franchise-level distinctions in MLB and NFL less extreme, with most teams clustered around a home advantage of  \Sexpr{round(leagues$mean.sport[1], 3)} and  \Sexpr{round(leagues$mean.sport[3], 3)}, respectively, on the log-odds scale. 
-
-%Econ source as to the value of a win in the NBA
+Our second finding relates to the relative equivalence of the home advantage in each league, with the NBA well ahead of the pack, showing, on average, a \Sexpr{round(leagues$mean.sport[2], 3)} increase on the log-odds of a home win (which corresponds to a win probability of \Sexpr{100*round(exp(leagues$mean.sport[2])/(1+exp(leagues$mean.sport[2])), 3)}\% against a like-caliber opponent). We also show that the home advantage varies most significantly between arenas within each of the NBA and the NHL. In the NBA, for example, the league's best team home advantage is worth a few wins per year, in expectation, over the league's worst home advantage. As one important caveat, our models do not account for varying line-up and injury information. If opposing teams were to rest their star players at Denver, for example, our model would artificially inflate Denver's home advantage. Between-franchise differences within each of MLB and the NFL are less evident, although Colorado stands out as an outlier in MLB. 
 
 %Note: how does this compare to other results? See Koopenmeiners paper, for example.
 
 
 
-As our final contribution, we use posterior draws from the posterior distribution of team strength and each league's home advantage parameter to estimate the relative equivalence of each team's postseason. Simulations identify that the best NBA team advantances slightly more often than the best NFL team, and that both leagues' postseason is substantially less random than MLB and the NHL, where it is not uncommon for the best team to lose in a short series of contests.
 
 Future possibilities that build on this model are limitless. One approach would use our team strength estimates to estimate how each league's scheduling quirks impact resulting won-loss standings. As an example, what is the impact of the NFL using an unbalanced schedule? One could also explore how the current measures of team strength that are used in the economics literature correspond to these changes. 
 
