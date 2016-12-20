@@ -695,7 +695,7 @@ Such distinctions have plausible impacts on league standings. An NBA team with a
 
 It is worth clarifying that our team strength estimates are more accurate than the most traditional way in which teams are evaluated, won-loss percentage. To do so, we...
 
-
+The lockout-shortened seasons in the NBA (2012) and NHL (2013) were dropped.
 
 <<>>=
 load("data/tidy_betas.final.rda")
@@ -817,7 +817,7 @@ gg.r2 <- ggplot(all.sport.both, aes(day.season, corr.day, lty = Type)) +
   guides(colour=guide_legend(title=NULL)) + facet_wrap(~sport, scales = "free")
 @
 
-<<fig:R2, fig.height = 4, fig.width = 6, fig.cap="Coefficient of determination with future in-season win percentage. The lockout-shortened seasons in the NBA (2012) and NHL (2013) were dropped.">>=
+<<fig:R2, fig.height = 4, fig.width = 6, fig.cap="Coefficient of determination with future in-season win percentage.">>=
 gg.r2
 @
 
