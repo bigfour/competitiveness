@@ -400,22 +400,13 @@ Taken wholly, this suggests that perceived differences in the home advantage bet
 
 \subsection{Posterior estimates}
 
-A summary of of the posterior draws of the team strength coefficients is shown in Table~\ref{tab:betas}, which uses draws from Model (\ref{model.full}).
-
-Figure~\ref{fig:spaghetti} shows estimated team coefficients over time, approximated using posterior mean draws from Model (\ref{model.full}) for all weeks $k$ and seasons $s$ across all four sports. Figures~\ref{fig:spaghetti-mlb}, \ref{fig:spaghetti-nba}, \ref{fig:spaghetti-nfl}, and \ref{fig:spaghetti-nhl} provide individual plot for each sport. Teams in Figures~\ref{fig:spaghetti}, \ref{fig:spaghetti-mlb}, \ref{fig:spaghetti-nba}, \ref{fig:spaghetti-nfl}, and \ref{fig:spaghetti-nhl} are depicted using their two primary colors, scraped from \url{http://jim-nielsen.com/teamcolors/} via the \pkg{teamcolors} package (\url{https://github.com/beanumber/teamcolors}) in \R.
+Figure~\ref{fig:spaghetti} shows estimated team coefficients over time, approximated using posterior mean draws for all weeks $k$ and seasons $s$ across all four sports. Figures~\ref{fig:spaghetti-mlb}, \ref{fig:spaghetti-nba}, \ref{fig:spaghetti-nfl}, and \ref{fig:spaghetti-nhl} (shown in the Appendix) provide an individual plot for each sport, which include divisional facets to allow easier identification of individual teams. Teams in Figures~\ref{fig:spaghetti}, \ref{fig:spaghetti-mlb}, \ref{fig:spaghetti-nba}, \ref{fig:spaghetti-nfl}, and \ref{fig:spaghetti-nhl} are depicted using their two primary colors, scraped from \url{http://jim-nielsen.com/teamcolors/} via the \pkg{teamcolors} package (\url{https://github.com/beanumber/teamcolors}) in \R.
 
 <<echo=FALSE, results='asis'>>=
-<<<<<<< HEAD
-<<<<<<< HEAD
-load("~/data/tidy_betas.rda")
-=======
 load("data/tidy_betas.final.rda")
->>>>>>> 0034caf1c5d24f1fccd2f5a1c52e8bda1cb3006a
-=======
-load("data/tidy_betas.final.rda")
->>>>>>> 09ede5a5770955591a57849803033f660186141b
 library(xtable)
 tidy_betas %>%
+  mutate(sport = toupper(sport)) %>%
   group_by(sport) %>%
   summarize(N = n(), 
             min = min(beta),
@@ -436,7 +427,8 @@ tidy_betas %>%
 library(dplyr)
 load(file.path(root, "data", "tidy_betas.final.rda"))
 tidy_betas <- tidy_betas %>%
-  mutate(annotation = "",
+  mutate(sport = toupper(sport),
+         annotation = "",
          annotation = ifelse(beta == max(beta), 
                              paste0("Strongest team (", name, ")"), 
                              annotation),
@@ -452,9 +444,10 @@ names(primary) <- colors$name
 names(secondary) <- colors$name
 @
 
-<<spaghetti, fig.height=15, fig.cap="Team strengths over time for all four sports.">>=
+<<spaghetti, fig.height=13.5, fig.cap="Team strengths over time for all four sports.">>=
 library(ggplot2)
-tidy_betas <- mutate(tidy_betas, time_val = ifelse(sport == "nfl"|sport == "mlb", time_val + 1, time_val))
+tidy_betas <- mutate(tidy_betas, time_val = 
+        ifelse(sport == "NFL"|sport == "MLB", time_val + 1, time_val))
 spag <- ggplot(data = tidy_betas, 
        aes(x = time_val, y = beta, 
            color = name, fill = name)) +
@@ -465,54 +458,126 @@ spag <- ggplot(data = tidy_betas,
   scale_color_manual(name = NULL, values = primary) + 
   scale_fill_manual(name = NULL, values = secondary) + 
   scale_x_continuous(name = "Season", breaks = 2005:2016) +
-  scale_y_continuous(name = "Value of beta coefficient") + 
+  scale_y_continuous(name = "Team Strength (log odds scale)") + 
   guides(color = FALSE, fill = FALSE)
   #  guides(color = guide_legend(ncol = 2))
-spag
+spag + theme_grey(base_size = 18) 
+
+
+
+###### Football only
+div <- c("AFC East", "AFC West", "AFC North", "AFC South", 
+         "NFC East", "NFC West", "NFC North", "NFC South")
+div.teams.NFL <- c(div[6], div[8], div[3], div[1], div[8], 
+               div[7], div[3], div[3], div[5], div[2],
+               div[7], div[7], div[4], div[4], div[4],
+               div[2], div[6], div[1], div[7], div[1], div[8],
+               div[5], div[1], div[2], div[5], div[3], 
+               div[2], div[6], div[6],  div[8], 
+               div[4], div[5])
+
+###### MLB only
+div <- c("AL East", "AL Central", "AL West",
+         "NL East", "NL Central", "NL West")
+div.teams.MLB <- c(div[6], div[4], div[1], 
+               div[1], div[5], div[2],
+               div[5], div[2], div[6], 
+               div[2], div[3], div[2], 
+               div[3], div[6], div[4],
+               div[5], div[2], div[4], 
+               div[1], div[3], div[4],
+               div[5], div[6], div[6], 
+               div[3], div[5], div[1], 
+               div[3], div[1], div[4])
+
+
+###### NBA only
+div <- c("Atlantic", "Central", "Southeast",
+         "Pacific", "Southwest", "Northwest")
+div.teams.NBA <- c(div[3], div[1], div[1], 
+               div[3], div[2], div[2],
+               div[5], div[6], div[2], 
+               div[4], div[5], div[2], 
+               div[4], div[4], div[5],
+               div[3], div[2], div[6], 
+               div[5], div[1], div[6],
+               div[3], div[1], div[4], 
+               div[6], div[4], div[5], 
+               div[1], div[6], div[3])
+
+
+
+###### Hockey only
+div <- c("Metro", "Atlantic", "Central", "Pacific")
+div.teams.NHL <- c(div[4], div[4], div[2], div[2], div[4], 
+               div[1], div[3], div[3], div[1], div[3],
+               div[2], div[4], div[2], div[4], div[3], 
+               div[2], div[3], div[1], div[1], div[1],
+               div[2], div[1], div[1], div[4], div[3], 
+               div[2], div[2], div[4], div[1], div[3])
+
+
+
+graph.sport <- function(sport){
+
+year.max <- 2016
+if (sport == "NFL"){year.max = 2015}
+
+sport1 <- eval(sport)
+sportcolors <- subset(tidy_betas, sport == sport1)
+sportcolors <- sportcolors %>%
+  select(name, primary, secondary) %>%
+  unique()
+
+if (sport == "NFL"){sportcolors$division <- div.teams.NFL}
+if (sport == "NHL"){sportcolors$division <- div.teams.NHL}
+if (sport == "NBA"){sportcolors$division <- div.teams.NBA}
+if (sport == "MLB"){sportcolors$division <- div.teams.MLB}
+datbetas3 <- inner_join(tidy_betas, sportcolors, by = c("name" = "name"))
+datbetas.null <- select(datbetas3, -division)
+datbetas.null <- arrange(datbetas.null, time_val)
+
+
+##### Generate plots
+lim <- max(abs(datbetas.null$beta))
+gg <- ggplot()  + ggtitle(paste("Team strengths over time,", sport)) + xlab("Year")  + 
+                            ylab("Log-odds of a win")
+gg <- gg + geom_path(data = datbetas.null, colour = "grey", 
+                     aes(x = time_val, y = beta, group = name)) +
+  scale_y_continuous(lim = c(-lim, lim)) +
+  scale_x_continuous(breaks = c(2005:2016), labels = c(2005:2016)) 
+
+
+for (i in 1:nrow(sportcolors)){
+    gg <- gg + geom_line(data = filter(datbetas3,name==sportcolors$name[i]),aes(x = time_val, y = beta),linetype=1,lwd=1.5,colour=sportcolors$primary[i]) 
+    gg <- gg + geom_line(data = filter(datbetas3,name==sportcolors$name[i]),aes(x = time_val, y = beta),linetype=2,lwd=1.5,colour=sportcolors$secondary[i]) 
+  }
+gg1 <- gg +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+gg2 <- gg1 + facet_wrap(~division, nrow = 2)
+return(gg2)
+}
+
+#NFL: 2006:2015
+#NBA, NHL: 2005:2016
 @
 
-<<spaghetti-mlb, out.extra='angle=90', out.width='\\textheight', fig.height=7, fig.cap="Team strength coefficients over time for Major League Baseball.">>=
-spag %+% filter(tidy_betas, sport == "mlb")
-@
 
-<<spaghetti-nba, out.extra='angle=90', out.width='\\textheight', fig.height=7, fig.cap="Team strength coefficients over time for the National Basketball Association.">>=
-spag %+% filter(tidy_betas, sport == "nba")
-@
+Table \ref{tab:betas} shows summary statistics of the team strength estimates from the posterior draws, using draws from Model (\ref{model.full}). Overall, there tends to be larger variability in team strength parameters at any given point in time in both the NFL and NBA, with posterior team strength coefficients tending to vary between -1 and 1 (on the logit scale). For reference, a team-strength of 1.0 on the log-odds scale implies an $\frac{e^{1.0}}{1+e^{1.0}} = 73.1$\% chance of beating a league average team in a game played at a neutral site. Team-to-team level variability is substantially lower in MLB (roughly between -0.3 and 0.3) and the NHL (-0.4 to 0.4). The New England Patriots' 2007 season (NFL) stands out as the top individual performance of the last decade. In that season, New England finished the regular season 16-0 before eventually losing in the Super Bowl. Additionally, it is interesting to notice that the team strength estimates of the bad teams in the NBA (e.g. the Miami Heat in 2007--08) lie further from 0 than the the estimates for the good teams. This possibly reveals the tendency for teams in this league to ``tank"---a strategy of fielding a weak team intentionally to improve the chances of having better selection preference in the upcoming player draft \citep{soebbing2013gamblers}.
 
-<<spaghetti-nfl, out.extra='angle=90', out.width='\\textheight', fig.height=7, fig.cap="Team strength coefficients over time for the National Football League.">>=
-spag %+% filter(tidy_betas, sport == "nfl")
-@
+In the NHL (and only the NHL), there seems to be a possible convergence of team strength estimates towards 0 over time, perhaps implying that team talent is less variable in recent years. Alternatively, the league's point system, which changed before the 2005-06 season and encouraged teams to play more overtime games \citep{lopez2013inefficiencies}, could be responsible. If teams were playing overtime contests more often, it could lead to different perceptions in how betting markets view team strenths, as overtime sessions and the resulting shootouts are, by and large, coin flips \citep{lopez2016predicting}. As a final point of clarification in Figures \ref{fig:spaghetti}, \ref{fig:spaghetti-nba}, and \ref{fig:spaghetti-nhl}, the periods with straight lines of team strength estimates in the 2013 season (NHL) and 2012 season (NBA) reflect games lost due to lockouts. 
 
-<<spaghetti-nhl, out.extra='angle=90', out.width='\\textheight', fig.height=7, fig.cap="Team strength coefficients over time for the National Hockey League.">>=
-spag %+% filter(tidy_betas, sport == "nhl")
-@
+\mike{I took out the parameter table for the autoregressive and error parameters. All of the information relative to these models is encapsulated in the contour plots.}
 
-Overall, there tends to be larger amounts of variability in team strength parameters at any given point in time in both the NFL and NBA, with posterior team strength coefficients tending to vary between -1 and 1 (on the logit scale). Team-to-team level variability is substantially lower in MLB (roughly between -0.3 and 0.3) and the NHL (-0.4 to 0.4). The New England Patriots' 2007 season (NFL) stands out as the top individual performance of the last decade. In that season, New England finished the regular season 16-0 before eventually losing in the Super Bowl. Additionally, it is interesting to notice that the team strength estimates of the bad teams in the NBA (e.g. the Miami Heat in 2007--08) lie further from 0 than the the estimates for the good teams. This possibly reveals the tendency for teams in this league to ``tank"---a strategy of fielding a weak team intentionally to improve the chances of having better positions in the upcoming player draft \citep{soebbing2013gamblers}.
-
-In the NHL (and only the NHL), there seems to be a peculiar convergence of team strength estimates towards 0 over time, perhaps implying that team talent is less variable in recent years. Alternatively, the league's point system, which changed before the 2005-06 season and encouraged teams to play more overtime games \citep{lopez2013inefficiencies}, could be responsible. If teams were purposefully playing overtime contests more often, it could lead to different perceptions in how betting markets view team strenths, as overtime sessions and the resulting shootouts are, by and large, coin flips \citep{lopez2016predicting}. As a final point of clarification, the periods with straight lines of team strength estimates in the 2013 season (NHL) and 2012 season (NBA) reflect games lost due to lockouts. 
-
-<<echo=FALSE, results='asis'>>=
-load("data/params.rda")
-library(xtable)
-params %>%
-  tidyr::gather(key = "param", value = "val", -sport) %>%
-  group_by(sport, param) %>%
-  summarize(N = n(), mean = mean(val)) %>%
-  tidyr::spread(param, mean) %>%
-  rename(`$\\alpha$` = alpha, 
-         `$\\gamma_s$` = gamma_s, `$\\gamma_w$` = gamma_w, 
-         `$\\sigma_s$` = sigma_s, `$\\sigma_w$` = sigma_w) %>%
-  xtable(caption = "Summary of means from posterior draws for parameters.", 
-         digits = 3, label = "tab:params") %>%
-  print(include.rownames = FALSE, sanitize.text.function = identity)
-@
-
-Contour plots of posterior draws of season-to-season $\sigma_{q,seas}$ and week-to-week $\sigma_{q,week}$ variability in team strength are shown in Figure~\ref{contourSigma} using separate colors for each sport. The highest variability in team strength occurs in the NBA, followed in order by the NFL, NHL, and MLB. The importance of star players in the NBA is one potential driver of these findings \citep{berri2006road}; injuries or trades involving the league's best players perhaps have a larger influence in the NBA than in other leagues, causing immediate shifts in the estimates of team strength.
+Contour plots of posterior draws of season-to-season $\sigma_{q,seas}$ and week-to-week $\sigma_{q,week}$ variability in team strength are shown in Figure~\ref{contourSigma} using separate colors for each sport. The highest variability in team strength occurs in the NBA, followed in order by the NFL, NHL, and MLB. The importance of star players in the NBA is one potential driver of these findings \citep{berri2006road}; injuries involving the league's best players perhaps have a larger influence in the NBA than in other leagues, causing immediate shifts in the estimates of team strength.
 
 <<contourSigma, fig.cap="Contour plot of the season-to-season and week-to-week variability across all four major sports.">>=
+load("data/params.rda")
 ggplot(params, aes(x = sigma_w, y = sigma_s, color = sport)) + 
   geom_density_2d() + geom_point(alpha = 0.1)
 @
+
+\mike{To do: Edit the contour plots for better axis labels and titles}
 
 <<contourGamma, fig.cap="Contour plot of the season-to-season and week-to-week auto-regressive parameter across all four major sports.">>=
 ggplot(params, aes(x = gamma_w, y = gamma_s, color = sport)) + 
@@ -521,27 +586,17 @@ ggplot(params, aes(x = gamma_w, y = gamma_s, color = sport)) +
   geom_density_2d() + geom_point(alpha = 0.1)
 @
 
-<<include=FALSE>>=
-summary(params$alpha)
-ggplot(data = params, aes(x = alpha, color = sport)) +
-  geom_density()
-@
 
-%Note: while our gamma'a are similar to Glickman's (0.99 week-to-week, 0.80 season-to-season), our 
-%sigma's are much different. His sigma's are several orders of magnitude bigger than ours.
+Figure~\ref{contourGamma} displays the joint posterior distribution of $\gamma_{q,seas}$ and $\gamma_{q,week}$ via contour plots for each sport. On a season-to-season basis, team strengths in each of the leagues tend to revert towards the league average (0). Reversion towards the mean is largest in the NHL (posterior mean 0.54, implying 46\% reversion), followed by the NBA (38\%), MLB (38\% reversion), and the NFL (31\%). However, there is enough uncertainty in the posterior distribution of these estimates that we are unable to say for certain if the differences in the season-to-season estimates between MLB, the NBA, and the NBA are significant. Our two autoregressive parameters shown in Figure~\ref{contourGamma} for the NFL roughly match the estimates observed in \cite{glickman1998state} (0.99 for $\gamma_{q,week}$ and 0.80 for $\gamma_{q,seas}$).
 
-Figure~\ref{contourGamma} displays the joint posterior distribution of $\gamma_{q,seas}$ and $\gamma_{q,week}$ via contour plots for each sport. For each of the NHL, NBA, and NFL, the posterior estimates of $ \gamma_{q,week}$ (and 95\% credible intervals) do not cross 1, implying an auto-regressive nature to team caliber within each season. In MLB, however, team strength estimates quite possibly follow a random walk (as in $\gamma_{q, week} = 1$). 
+For each of the NHL, NBA, and NFL, the posterior estimates of weekly reversion towards the mean (and the 95\% credible intervals) imply an auto-regressive nature to team caliber within each season. Interestingly, the NBA and NFL are the least consistent leagues on a week-to-week basis. In MLB, meanwhile, team strength estimates quite possibly follow a random walk (as in $\gamma_{q, week} = 1$), in which the succession of team strength estimates over time follows no identifiable pattern. 
 
-On a season-to-season basis, team strengths in each of the leagues tend to revert towards the league average (0). Reversion towards the mean is largest in the NHL (posterior mean $\gamma_{q,seas} = 0.55$, implying 45\% reversion), followed by MLB (38\% reversion), NBA (36\%), and the NFL (30\%). However, there is enough uncertainty in the posterior distribution of $\gamma_{q, seas}$ that we are unable to say for certain if the differences in the season-to-season autocorrelation between MLB, the NBA, and the NBA are significant. In the NFL, the slight inverse association between the two autoregressive parameters, as shown in Figure~\ref{contourGamma}, matches that obseved in \cite{glickman1998state}.
+
 
 \subsection{Visualizing the home advantage}
 
-Figure \ref{alphaAll} shows the 2.5th, median, and 97.5th draws of each team's estimated home advantage parameter, shown on the log-odds scale and using our model with team-level estimates. League's are overlaid to provide a sense of the magnitude of differences between, in order, the home advantage provided in the MLB (increased log-odds of a home win around 0.16), NHL (0.22), NFL (0.36), and NBA (0.50).  The two franchises that have relocated in the last decade, the Atlanta Thrashers (NHL) and Seattle Supersonics (NBA), are also included for the games played in those respective cities. 
 
-Figure \ref{alphaAll} also depicts substantial between-franchise differences in both the NBA and NHL. Conversely, home advantage estimates within the NFL and MLB are, by and large, more consistent across franchises. Interestingly, the home advantages of a few NFL franchises are skewed (see Denver and Seattle, relative to Detroit and St. Louis), potentially the result of a smaller sample of games. Alternatively, the home advantage may vary by season, game time, or the day of the game. Anecdotally, night games (Thursday, Sunday, or Monday) conceivably offer a larger home advantage than those played during the day \citep{Seahawks}. Informally, team-level home advantage coefficients are similar in effect size, both in magnitude and with respect to team ranking, to those depicted by \cite{koopmeiners2012comparison} in the NFL.
-
-In the NBA, extreme home advantages provided to Denver and Utah matches the work of \cite{Jazz}, who found significantly better performances when comparing those two teams to the rest of the league with respect to home and road differences in point differential per game. In MLB, the Colorado Rockies stand out for having a home advantage, as the remaining 29 teams boast overlapping credible intervals. 
-
+Figure \ref{fig:alphaAll} shows the 2.5th, median, and 97.5th draws of each team's estimated home advantage parameter, presented on the log-odds scale. The leagues are overlaid (in order) to provide a sense of the magnitude of differences between the home advantage provided in the MLB (increased log-odds of a home win around 0.16, or about $e^{0.16} - 1 = 17$\% higher), NHL (0.22, or 25\%), NFL (0.36, or 43\%), and NBA (0.50, or 62\%).  The two franchises that have relocated in the last decade, the Atlanta Thrashers (NHL) and Seattle Supersonics (NBA), are also included for the games played in those respective cities. 
 
 <<>>=
 ## Home advantage plots
@@ -611,91 +666,166 @@ gg3 <- ggplot(tidy_alphas, aes(sport, alpha.team.overall)) +
                      labels = labels, "") + 
   xlab("") +
   labs(title = "Probability of beating an equal caliber opponent at home")
-gg3
 @
 
-<<alphaAll, fig.height = 15, fig.width = 10, fig.cap="Median posterior draw (with 2.5th, 97.5th quantiles) of each franchise's home advantage intercept, on log odds scale">>=
+<<alphaAll, fig.height = 10.8, fig.width = 8, fig.cap="Median posterior draw (with 2.5th, 97.5th quantiles) of each franchise's home advantage intercept, on log odds scale">>=
 gg2 
 @
 
 
+<<include=FALSE>>=
+leagues <- tidy_alphas %>% mutate(sport = toupper(sport)) %>% group_by(sport) %>%
+   summarize(mean.sport  = mean(alpha.sport))
 
+teams <- tidy_alphas %>% filter(sport == "nba") %>% group_by(team) %>% summarise(mean.post = mean(alpha.team.overall)) %>% arrange(mean.post) %>% slice(c(1,n()))
 
-\subsection{Uncertainty of postseason tournaments}
-
-One application of our work extends estimated team strengths to explore the each league's respective postseason. The four leagues all use a knockout-style postseason tournament, in which teams with stronger regular season performances are matched against weaker teams, with the winner advancing to future rounds. In MLB, the NHL, and the NBA, match-ups use a series format, where the series winner is generally determined by which of the two participating teams wins the majority of games. Generally, series lengths are capped at seven games (MLB, for example, also uses five game series in earlier rounds), with the series winner being the first team to win four games. Informally, these are known as `best of 7' series. In these formats, one team is given a home advantage, which allows for one extra home game over the duration of the series. Traditionally, the team with the stronger regular season performance receives the extra home game, although leagues allow for slight adaptations of this requirement. In contrast to the other three leagues, NFL postseason tournaments have consisted only of compilations of one game competitions.
-
-Leagues also differ with respect to the number of teams eligible for postseason play. As of 2016, 10 (MLB), 12 (NFL), and 16 (NFL, NBA) teams make the postseason in each season, although for the duration of our data, MLB used only 8 teams each year. Given these general guidelines, we assess the randomness of postseason formats by comparing the top 8 teams in each league.
-
-Let $\theta_{q,s,k,i} | \bf{X}_{q,s,k}, \bf{J}_{g_{q,s,k}}$ be the posterior distribution of the estimated team strength of $i$ at week $k$, estimated using $\widehat{\theta}_{q,s,k,i}$ (the 8,000 posterior estimates drawn from our Bayesian model). Teams in league $q$ at season $s$ were ranked based on $\bar{\widehat{\theta}}_{q, s, i}$, where
-
-\begin{eqnarray} 
-\bar{\widehat{\theta}}_{q, s, i} = (\widehat{\theta}_{q,s,(k_q - 4), i} + \widehat{\theta}_{q,s,(k_q - 3), i} + \widehat{\theta}_{q,s,(k_q - 2), i} + \widehat{\theta}_{q,s,(k_q-1), i}+ \widehat{\theta}_{q,s,(k_q), i})/5, \nonumber
-\end{eqnarray}
-
-\noindent the average posterior team strength of $i$ over the last five weeks of the regular season. These draws are meant to roughly reflect team quality entering the postseason; five weeks are used in place of using $k_q$ alone to account for the possibility that top performing teams rest top players in the final few games, thereby lowering their perceived team quality.
-
-Next, let $\bar{\widehat{\theta}}_{q,s, |r|}$ be the $r^{th}$ ranked team strength in sport $q$ in season $s$. For example, $\bar{\widehat{\theta}}_{MLB,2005,|1|} = 0.499$ represents the average posterior draw of team strength for 2005 New York Yankees, which ranks first in MLB for that season. To simulate a `best of $n$' series between the first ranked team (team $i_1$, where $\bar{\widehat{\theta}}_{q,s,|i_1|}$ = $\bar{\widehat{\theta}}_{q,s,|1|}$) and the second ranked team ($i_2$), the following procedure was used in each $q$ and $s$. 
-
-\begin{enumerate}
-
-
-\item Draw $n$ samples from each of $\widehat{\theta}_{q,s, i_1}$ and $\widehat{\theta}_{q,s, i_2}$, respectively, labeled as $\widetilde{\theta}_{q,s, i_1}$ amd $\widetilde{\theta}_{q,s, i_2}$, respectively.
-
-\item Draw $n$ samples from the posterior distribution of $\alpha_q | \bf{X}_{q,s,k}, \bf{J}_{g_{q,s,k}}$, labeled as $\widetilde{\alpha}_q$. 
-
-\item Estimate $\widetilde{logit}(p_{q, s, i_1, i_2}) = \widetilde{\theta}_{q,s, i_1} - \widetilde{\theta}_{q,s, i_2} + \widetilde{\alpha}_q*\mathds{1^*}$, where $\mathds{1^*}$ is an $n$-dimensional vector of alternating 1's and -1's to account for rotating home advantages.  
-
-\item Sample from $exp\{\widetilde{logit}(p_{i_1, i_2, q, s})\}/(1+exp\{\widetilde{logit}(p_{i_1, i_2, q, s})\}$ to obtain 1's and 0's reflecting simulated postseason outcomes. If the sum of these simulations is greater than $n/2$, team $i_1$ wins the series. Otherwise, team $i_2$ wins the series.
-\item Repeat 10,000 times for each $q$ and $s$, and for teams ranked third ($i_2$) through eight ($i_8$). 
-\end{enumerate}
-
-Figure~\ref{fig:sevenSeries} shows a plot of the estimated probabilities that the top-ranked team beats opponents ranked No. 2--No. 8 in each sport, averaged over $s$. 
-
-
-<<sevenSeries, fig.cap="Probability top ranked team wins a postseason series by sport and opponent rank">>=
-probs <- read.csv("data/seven.simulations.final.csv")
-library(dplyr)
-library(ggplot2)
-probs.hfa <- probs %>%
-  group_by(sport, second.seed) %>%
-  summarise(mean.win = mean(better.winP.hfa)) %>% 
-  ungroup() %>%
-  mutate(sport = toupper(factor(sport, levels = c("nba", "nfl", "nhl", "mlb"))))
-
-probs.nohfa <- probs %>%
-  group_by(sport, second.seed) %>%
-  summarise(mean.win = mean(better.winP.nohfa)) %>% 
-  ungroup() %>%
-  mutate(sport = toupper(factor(sport, levels = c("nba", "nfl", "nhl", "mlb"))))
-
-
-ggplot(probs.hfa, aes(second.seed, mean.win, colour = sport))  + 
-  geom_point(aes(shape = sport), size = 2) + 
-  geom_line(size = 1) + 
-  #geom_point(data = probs.nohfa, aes(second.seed, mean.win, group = sport, colour = sport)) +
-  #geom_line(data = probs.nohfa, aes(second.seed, mean.win, group = sport, colour = sport)) +
-  ggtitle("Probability of No. 1 team winning in postseason") +
-  theme(legend.title = element_blank()) +
-  scale_x_continuous("Opponent rank", breaks = 2:8) + 
-  #scale_colour_grey(start = 0.1, end = .8) +
-  scale_y_continuous("", breaks = 11:16*5/100, labels = c("55%", "60%", "65%", "70%", "75%", "80%")) # + 
-  #facet_wrap(~sport)
+league.ave <- round(exp(leagues$mean.sport[2])/(1+exp(leagues$mean.sport[2])), 3)
+league.high <- round(exp(teams$mean.post[2])/(1+exp(teams$mean.post[2])), 3)
+league.low <- round(exp(teams$mean.post[1])/(1+exp(teams$mean.post[1])), 3)
 @
 
-% One extension - do this without the home advantage?  This was done, but not sure I love the plots
 
-In general, the probability that the better team wins is highest in the NBA, ranging from roughly 60\% (No. 1 over No. 2) to 80\% (No. 1 over No. 8). Most often, the top NFL team expects to win between 62\% and 72\% of its postseason match-ups, while those numbers are closer to between 55\% and 65\% in the MLB and NHL. Across seeds No. 3--No. 8, the MLB shows the most randomness; even in an average match-up between its top team and its eighth best team, the top team wins no more than 65\% of the time.
+Figure \ref{fig:alphaAll} also depicts substantial between-franchise differences within both the NBA and NHL. Conversely, home advantage estimates within the NFL and MLB are, by and large, more consistent across franchises. Interestingly, the home advantages of a few NFL franchises are skewed (see Denver and Seattle, relative to Detroit), potentially the result of a shorter regular season. Alternatively, the home advantage may vary by season, game time, or the day of the game. Anecdotally, night games (Thursday, Sunday, or Monday) conceivably offer a larger home advantage than those played during the day \citep{Seahawks}. Informally, team-level home advantage coefficients are similar in effect size, both in magnitude and with respect to team ranking, to those depicted by \cite{koopmeiners2012comparison} in the NFL.
 
-A related question explores the number of games that other sports must play in order to match the frequency with which the best team in the NBA wins. To ensure an 81\% chance that the league's top team has defeated its eighth best team, as in the NBA, the NFL would require a ``Best of 9'", the NHL a ``Best of 51", and MLB a ``Best of 61". Thus, each league must each play a substantially larger number of games than current league standards allow in order to match the NBA's consistency of the best team advancing. 
+In the NBA, the league's best advantage is found in Denver (increased log-odds, \Sexpr{round(teams$mean.post[2], 3)}), with the worst shown in Brooklyn (\Sexpr{round(teams$mean.post[1], 3)}). The extreme home advantages provided to Denver and Utah matches the results of \cite{Jazz}, who found significantly better performances when comparing those two teams to the rest of the league with respect to home and road differences in point differential per game. In MLB, the Colorado Rockies stand out for having the highest home advantage, as the remaining 29 teams boast overlapping credible intervals. We note that teams playing at home in Denver have the largest home advantages in MLB and the NBA, the 3rd-highest in the NFL, and the 8th-highest in the NHL. We speculate that this consistent advantage across sports is related to the home team's acclimation to the city's notably high altitude.  
+
+Such distinctions have plausible impacts on league standings. An NBA team with a typical home advantage can expect to win \Sexpr{100*league.ave}\% of home games against a like-caliber opponent; for Brooklyn, the corresponding figure is \Sexpr{100*league.low}\%, while for Denver, \Sexpr{100*league.high}\%. Across 41 games (the number each team plays at home), this implies that Denver's home advantage is worth an extra \Sexpr{round(41*(league.high-league.ave), 2)} wins in a single season, relative to a league average team. Compared to Brooklyn, Denver's home advantage has been worth an estimated \Sexpr{round(41*(league.high-league.low), 2)} wins per year. 
+
+\subsection{Validation of team strength estimates}
+
+It is worth clarifying that our team strength estimates are more accurate than the most traditional way in which teams are evaluated, won-loss percentage. To do so, we...
 
 
-%Similar game thresholds must be reached when comparn to ensure a 72\% chance of Likewise, to ensure a 72\% chance that the league's top team has defeated its fourth best team, as is the NBA average, simlar game thresholds must be reached (9 games in the NFL, 41 in the NHL, and 55 in MLB). 
 
-%One likely reason that the NFL falls short of the NBA in this chart is that the NBA's series length gives the better team more chances to win. 
+<<>>=
+load("data/tidy_betas.final.rda")
+load("data/bigfour.final.rda")
 
-This lends some credence to the expression that ``Billy Beane's stuff doesn't work in the playoffs." That is, analytic strategies designed to maximize winning percentage over a full MLB regular season are not effective in a short postseason series\footnote{Beane was the Oakland A's general manager during all ten years of our study. The A's have been famously successful in the regular season, but have not made a World Series appearance in Beane's tenure. We note that in Figure~\ref{fig:spaghetti-mlb}, the A's were by far the strongest team in baseball by the end of the 2014 season. They lost a one-game playoff to the eventual World Series runner-up Kansas City Royals.}. Furthermore, these results confirm our intuition that champions in the NBA are much more likely to be the ``true" strongest team. Conversely, the strongest baseball team in the regular season is quite likely to be derailed by MLB's short postseason series. As noted previously, while this is likely to frustrate team executives, coaches, and players, it might be a rational decision on MLB's part, as it likely increases fan interest in the postseason. 
+bigfour <- bigfour.final %>% arrange(sport, Date)
 
+min.day <- bigfour %>%
+  group_by(sport, season) %>%
+  summarise(min.day = min(gameDate), max.day = max(gameDate))
+
+bigfour1 <- bigfour %>%
+  left_join(min.day) %>%
+  mutate(day = as.Date(gameDate) - as.Date(min.day),
+         days.left = as.Date(max.day) - as.Date(gameDate), 
+         max.days = day + days.left, 
+         percent = as.numeric(day)/as.numeric(max.days))
+
+date.vis <- bigfour1 %>% 
+  select(gameDate, day, visitor_team, season, home_win, sport) %>%
+  rename(team = visitor_team) %>%
+  mutate(win = !home_win) %>%
+  select(-home_win)
+
+date.home <- bigfour1 %>% 
+  select(gameDate, day, home_team, season, home_win, sport) %>%
+  rename(team = home_team) %>%
+  mutate(win = home_win) %>%
+  select(-home_win)
+
+stack.game <- rbind(date.vis, date.home)
+stack.game <- stack.game %>%
+  arrange(sport, season, team, day) 
+
+n.season <- data.frame(sport = c("nhl", "nba", "mlb", "nfl"), season.n = c(82, 20, 162, 16))
+
+stack.game1 <- stack.game %>%
+  group_by(season, team) %>%
+  mutate(n.game = row_number(), cum.wins = cumsum(win), 
+         win.p = cum.wins/n.game, percent.season = n.game/n(), 
+         wins.final = sum(win), win.p.final = wins.final/n(), 
+         win.p.left = (wins.final - cum.wins)/(n()-n.game))
+
+
+stack.game1 <- filter(stack.game1, !(season==2012&sport == "nba"),
+                      !(season==2013 & sport == "nhl"), !(season==2007 & sport == "nfl"))
+
+
+func.sport2 <- function(sports, days){
+  names.sport <- subset(stack.game1, sport == sports)  
+  corr.grid <- expand.grid(day.season = 1:days, corr.day = NA)
+  for (i in 1:days){
+    day.sport <- subset(stack.game1, n.game == i & sport == sports)
+    corr.grid[i, 2] <- cor(day.sport$win.p, day.sport$win.p.left,
+                           use = "pairwise.complete.obs")^2
+  }
+  return(corr.grid)
+}
+
+mlb <- func.sport2("mlb", 162)
+nfl <- func.sport2("nfl", 16)
+nba <- func.sport2("nba", 82)
+nhl <- func.sport2("nhl", 82)
+mlb$sport <- "mlb"; nba$sport <- "nba"; nhl$sport <- "nhl"; nfl$sport <- "nfl"
+
+### Win percentage R-squareds
+all.sport.winp.remains <- rbind(mlb, nba, nhl, nfl)
+
+tidy_betas <- filter(tidy_betas, !(season==7&sport == "nba"),
+                      !(season==8 & sport == "nhl"), !(season==2 & sport == "nfl"))
+
+unique.weeks <- tidy_betas %>%
+  rename(team = name) %>%
+  mutate(time_val = time_val + 1, season = floor(time_val)) %>% 
+  arrange(sport, season, team) %>%
+  select(sport, season, team, week, beta)
+
+min.day <- stack.game1 %>%
+  group_by(season, sport) %>%
+  summarise(min.day = min(gameDate))
+
+stack.game2 <- stack.game1 %>%
+  left_join(min.day) %>%
+  mutate(day = as.Date(gameDate) - as.Date(min.day), week = as.numeric(floor(day/7)+1)) %>%
+  left_join(unique.weeks)
+
+
+func.sport3 <- function(sports, week){
+  names.sport <- subset(stack.game2, sport == sports)  
+  corr.grid <- expand.grid(day.season = 1:week, corr.day = NA)
+  for (i in 1:week){
+    day.sport <- subset(stack.game2, n.game == i & sport == sports)
+    corr.grid[i, 2] <- cor(day.sport$beta, day.sport$win.p.left, 
+                           use = "pairwise.complete.obs")^2
+  }
+  return(corr.grid)
+}
+
+mlb <- func.sport3("mlb", 162)
+nfl <- func.sport3("nfl", 16)
+nba <- func.sport3("nba", 82)
+nhl <- func.sport3("nhl", 82)
+mlb$sport <- "mlb"; nba$sport <- "nba"; nhl$sport <- "nhl"; nfl$sport <- "nfl"
+
+### R-squared's using our estimates
+all.sport.beta.remains <- rbind(mlb, nba, nhl, nfl)
+all.sport.beta.remains$Type <- "Our estimates"
+all.sport.winp.remains$Type <- "Past win %"
+
+all.sport.both <- rbind(all.sport.beta.remains, all.sport.winp.remains)
+all.sport.both$sport <- toupper(all.sport.both$sport)
+
+
+gg.r2 <- ggplot(all.sport.both, aes(day.season, corr.day, lty = Type)) +
+  geom_step() + scale_y_continuous("", lim = c(0, 1)) + 
+  scale_x_continuous("Game of season") + 
+  #labs(title = "Fraction of variability in year end win %",
+   #    subtitle = "2005:2016, lockout seasons excluded") +
+  guides(colour=guide_legend(title=NULL)) + facet_wrap(~sport, scales = "free")
+@
+
+<<fig:R2, fig.height = 4, fig.width = 6, fig.cap="Coefficient of determination with future in-season win percentage. The lockout-shortened seasons in the NBA (2012) and NHL (2013) were dropped.">>=
+gg.r2
+@
+
+Across each sport, our estimates of team strength consistently outperform past team win percentage as far as predicting future win percentage. This gap is most pronounced earlier in each season, which is not surprising given that teams ...
+
+
+
+***ML end 12/19**
 
 \section{Conclusion}
 
@@ -783,6 +913,82 @@ Notes on DIC \url{https://users.soe.ucsc.edu/~draper/rjags.pdf} The problem of d
 
 Gelman \url{http://andrewgelman.com/2011/06/22/deviance_dic_ai/} One of my practical problems with DIC is that it seems to take a lot of simulations to calculate it precisely. Long after we’ve achieved good mixing of the chains and good inference for parameters of interest and we’re ready to go on, it turns out that DIC is still unstable. In the example in our book we ran for a zillion iterations to make sure the DIC was ok.
 
+
+
+\subsection{Uncertainty of postseason tournaments}
+
+One application of our work extends estimated team strengths to explore the each league's respective postseason. The four leagues all use a knockout-style postseason tournament, in which teams with stronger regular season performances are matched against weaker teams, with the winner advancing to future rounds. In MLB, the NHL, and the NBA, match-ups use a series format, where the series winner is generally determined by which of the two participating teams wins the majority of games. Generally, series lengths are capped at seven games (MLB, for example, also uses five game series in earlier rounds), with the series winner being the first team to win four games. Informally, these are known as `best of 7' series. In these formats, one team is given a home advantage, which allows for one extra home game over the duration of the series. Traditionally, the team with the stronger regular season performance receives the extra home game, although leagues allow for slight adaptations of this requirement. In contrast to the other three leagues, NFL postseason tournaments have consisted only of compilations of one game competitions.
+
+Leagues also differ with respect to the number of teams eligible for postseason play. As of 2016, 10 (MLB), 12 (NFL), and 16 (NFL, NBA) teams make the postseason in each season, although for the duration of our data, MLB used only 8 teams each year. Given these general guidelines, we assess the randomness of postseason formats by comparing the top 8 teams in each league.
+
+Let $\theta_{q,s,k,i} | \bf{X}_{q,s,k}, \bf{J}_{g_{q,s,k}}$ be the posterior distribution of the estimated team strength of $i$ at week $k$, estimated using $\widehat{\theta}_{q,s,k,i}$ (the 8,000 posterior estimates drawn from our Bayesian model). Teams in league $q$ at season $s$ were ranked based on $\bar{\widehat{\theta}}_{q, s, i}$, where
+
+\begin{eqnarray} 
+\bar{\widehat{\theta}}_{q, s, i} = (\widehat{\theta}_{q,s,(k_q - 4), i} + \widehat{\theta}_{q,s,(k_q - 3), i} + \widehat{\theta}_{q,s,(k_q - 2), i} + \widehat{\theta}_{q,s,(k_q-1), i}+ \widehat{\theta}_{q,s,(k_q), i})/5, \nonumber
+\end{eqnarray}
+
+\noindent the average posterior team strength of $i$ over the last five weeks of the regular season. These draws are meant to roughly reflect team quality entering the postseason; five weeks are used in place of using $k_q$ alone to account for the possibility that top performing teams rest top players in the final few games, thereby lowering their perceived team quality.
+
+Next, let $\bar{\widehat{\theta}}_{q,s, |r|}$ be the $r^{th}$ ranked team strength in sport $q$ in season $s$. For example, $\bar{\widehat{\theta}}_{MLB,2005,|1|} = 0.499$ represents the average posterior draw of team strength for 2005 New York Yankees, which ranks first in MLB for that season. To simulate a `best of $n$' series between the first ranked team (team $i_1$, where $\bar{\widehat{\theta}}_{q,s,|i_1|}$ = $\bar{\widehat{\theta}}_{q,s,|1|}$) and the second ranked team ($i_2$), the following procedure was used in each $q$ and $s$. 
+
+\begin{enumerate}
+
+
+\item Draw $n$ samples from each of $\widehat{\theta}_{q,s, i_1}$ and $\widehat{\theta}_{q,s, i_2}$, respectively, labeled as $\widetilde{\theta}_{q,s, i_1}$ amd $\widetilde{\theta}_{q,s, i_2}$, respectively.
+
+\item Draw $n$ samples from the posterior distribution of $\alpha_q | \bf{X}_{q,s,k}, \bf{J}_{g_{q,s,k}}$, labeled as $\widetilde{\alpha}_q$. 
+
+\item Estimate $\widetilde{logit}(p_{q, s, i_1, i_2}) = \widetilde{\theta}_{q,s, i_1} - \widetilde{\theta}_{q,s, i_2} + \widetilde{\alpha}_q*\mathds{1^*}$, where $\mathds{1^*}$ is an $n$-dimensional vector of alternating 1's and -1's to account for rotating home advantages.  
+
+\item Sample from $exp\{\widetilde{logit}(p_{i_1, i_2, q, s})\}/(1+exp\{\widetilde{logit}(p_{i_1, i_2, q, s})\}$ to obtain 1's and 0's reflecting simulated postseason outcomes. If the sum of these simulations is greater than $n/2$, team $i_1$ wins the series. Otherwise, team $i_2$ wins the series.
+\item Repeat 10,000 times for each $q$ and $s$, and for teams ranked third ($i_2$) through eight ($i_8$). 
+\end{enumerate}
+
+Figure~\ref{fig:sevenSeries} shows a plot of the estimated probabilities that the top-ranked team beats opponents ranked No. 2--No. 8 in each sport, averaged over $s$. 
+
+
+<<sevenSeries, fig.cap="Probability top ranked team wins a postseason series by sport and opponent rank">>=
+probs <- read.csv("data/seven.simulations.final.csv")
+library(dplyr)
+library(ggplot2)
+probs.hfa <- probs %>%
+  group_by(sport, second.seed) %>%
+  summarise(mean.win = mean(better.winP.hfa)) %>% 
+  ungroup() %>%
+  mutate(sport = toupper(factor(sport, levels = c("nba", "nfl", "nhl", "mlb"))))
+
+probs.nohfa <- probs %>%
+  group_by(sport, second.seed) %>%
+  summarise(mean.win = mean(better.winP.nohfa)) %>% 
+  ungroup() %>%
+  mutate(sport = toupper(factor(sport, levels = c("nba", "nfl", "nhl", "mlb"))))
+
+
+ggplot(probs.hfa, aes(second.seed, mean.win, colour = sport))  + 
+  geom_point(aes(shape = sport), size = 2) + 
+  geom_line(size = 1) + 
+  #geom_point(data = probs.nohfa, aes(second.seed, mean.win, group = sport, colour = sport)) +
+  #geom_line(data = probs.nohfa, aes(second.seed, mean.win, group = sport, colour = sport)) +
+  ggtitle("Probability of No. 1 team winning in postseason") +
+  theme(legend.title = element_blank()) +
+  scale_x_continuous("Opponent rank", breaks = 2:8) + 
+  #scale_colour_grey(start = 0.1, end = .8) +
+  scale_y_continuous("", breaks = 11:16*5/100, labels = c("55%", "60%", "65%", "70%", "75%", "80%")) # + 
+  #facet_wrap(~sport)
+@
+
+% One extension - do this without the home advantage?  This was done, but not sure I love the plots
+
+In general, the probability that the better team wins is highest in the NBA, ranging from roughly 60\% (No. 1 over No. 2) to 80\% (No. 1 over No. 8). Most often, the top NFL team expects to win between 62\% and 72\% of its postseason match-ups, while those numbers are closer to between 55\% and 65\% in the MLB and NHL. Across seeds No. 3--No. 8, the MLB shows the most randomness; even in an average match-up between its top team and its eighth best team, the top team wins no more than 65\% of the time.
+
+A related question explores the number of games that other sports must play in order to match the frequency with which the best team in the NBA wins. To ensure an 81\% chance that the league's top team has defeated its eighth best team, as in the NBA, the NFL would require a ``Best of 9'", the NHL a ``Best of 51", and MLB a ``Best of 61". Thus, each league must each play a substantially larger number of games than current league standards allow in order to match the NBA's consistency of the best team advancing. 
+
+
+%Similar game thresholds must be reached when comparn to ensure a 72\% chance of Likewise, to ensure a 72\% chance that the league's top team has defeated its fourth best team, as is the NBA average, simlar game thresholds must be reached (9 games in the NFL, 41 in the NHL, and 55 in MLB). 
+
+%One likely reason that the NFL falls short of the NBA in this chart is that the NBA's series length gives the better team more chances to win. 
+
+This lends some credence to the expression that ``Billy Beane's stuff doesn't work in the playoffs." That is, analytic strategies designed to maximize winning percentage over a full MLB regular season are not effective in a short postseason series\footnote{Beane was the Oakland A's general manager during all ten years of our study. The A's have been famously successful in the regular season, but have not made a World Series appearance in Beane's tenure. We note that in Figure~\ref{fig:spaghetti-mlb}, the A's were by far the strongest team in baseball by the end of the 2014 season. They lost a one-game playoff to the eventual World Series runner-up Kansas City Royals.}. Furthermore, these results confirm our intuition that champions in the NBA are much more likely to be the ``true" strongest team. Conversely, the strongest baseball team in the regular season is quite likely to be derailed by MLB's short postseason series. As noted previously, while this is likely to frustrate team executives, coaches, and players, it might be a rational decision on MLB's part, as it likely increases fan interest in the postseason. 
 
 
 \bibliographystyle{asa}
