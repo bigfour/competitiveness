@@ -301,11 +301,18 @@ markets_plot + theme_grey(base_size = 16)
 \section{Bayesian state-space model}
 
 
-%$T_q$ is the number of teams in the $q$-th sports league?  This notation is getting crazy.  
-%s season, k week, home team i, away team j, t_q number of teams in league, n_(s,k) number of games in week k of 
-We examine the four major North American sports leagues, indexed by $q$ where $q \in \{MLB, NBA, NFL, NHL\}$, using the model below.
+Our model below builds on the state-space specification provided by \cite{glickman1998state} to provide a unified framework for contrasting the four major North American sports leagues.
 
-Let $p_{(q,s,k)ij}$ be the probability that team $i$ will beat team $j$ in season $s$ during week $k$ of sports league $q$.  Further, let ${\bf p}_{(q,s,k)}$ represent the vector of length $g_{(q,s,k)}$ (the number of games in week $k$ of season $s$ in league $q$) containing all of league $q$'s probabilities in week $k$ of season $s$. These probabilities are assumed to be known, equal to the implied probabilities derived from the betting market data described above.
+Let $p_{(q,s,k)ij}$ be the probability that team $i$ will beat team $j$ in season $s$ during week $k$ of sports league $q$, where $q \in \{MLB, NBA, NFL, NHL\}$. Our model makes the assumption that 
+
+$$
+E[logit(p_{(q,s,k) ij})] = \theta_{(q,s,k) i} - \theta_{(q, s, k) j} + \alpha_{(q) i}, \label{model.full}
+$$
+
+where $logit()$ is equivalent to the log-odds transform. In using the log-odds of victory, we have a cross-sport outcome that provides substantially more information than knowing only which team won the game. 
+
+
+Let ${\bf p}_{(q,s,k)}$ represent the vector of length $g_{(q,s,k)}$ (the number of games in week $k$ of season $s$ in league $q$) containing all of league $q$'s probabilities in week $k$ of season $s$. These probabilities are assumed to be known, equal to the implied probabilities derived from the betting market data described above.
 
 We then fit the model:
 \begin{eqnarray}
@@ -314,7 +321,7 @@ logit(p_{(q,s,k)}) \sim N(\mathbf{\theta_{(q,s,k)}}\mathbf{X}_{q,s,k} + \alpha_{
 
 where $\mathbf{\theta_{(q,s,k)}}$ is a vector of length $t_{q}$ (the number of teams in league $q$) containing the team strength parameters in season $s$ during week $k$, $\alpha_{q_0}$ is the overall home field advantage parameter for sports league $q$, and $\balpha_{q}$ is a vector of length $t^{\star}_{q}$ containing \textit{franchise}-specific home field advantage parameters for league $q$ that do not vary over time (i.e. HFA is assumed to be constant for a team over weeks and seasons). Note that $t^{\star}_{q}$, the number of home venues in league $q$, is greater than $t_{q}$, the number of teams in league $q$, due to franchise relocation.\footnote{There were two franchise relocations in our data, Seattle to Oklahoma City (NBA) and Atlanta to Winnipeg (NHL).} $\mathbf{X}_{q,s,k}$ and $\mathbf{Z}_{q,s,k}$ contain $g_{(q,s,k)}$---the number of games in league $q$ during week $k$ of season $s$---rows and $t_{q}$ and $t^{\star}_{q}$ columns, respectively.   The matrix $\mathbf{X}_{q,s,k}$ contains the values $\{1, 0, -1\}$ where for a given row (i.e. one game) the value of $i^{th}$ column in that row is a 1/-1 if the $i^{th}$ team played at home/away in the given game and 0 otherwise.  $\mathbf{Z}_{q,s,k}$ is a matrix containing a 1 in the $i^{th}$ column if the $i^{th}$ team played the game corresponding to that row at home and 0 otherwise. Finally, $\tau^{2}_{q,game} = 1 / \sigma^{2}_{q,game}$ is the precision, $\mathbf{J}_{g_{q,s,k}}$ is a column vector of length $g_{q,s,k}$ containing all 1's, and $\mathbf{I}_{g_{(q,s,k)}}$ is an identity matrix with dimension ${g_{(q,s,k)}} \times {g_{(q,s,k)}}$.
 
-Similar to \cite{glickman1998state}, we allow the strength parameters of the teams to vary from week-to-week and from season-to-season.  
+Similar to \cite{glickman1998state}, we allow the strength parameters of the teams to vary from week-to-week and from season-to-season. In general, this entails that team strength parameters are shrunk towards the league average over time in expectation. Formally,
 
 $$
 \theta_{(q,s+1,1)} | \gamma_{q,seas}, \mathbf{\theta_{q,s,g_{q,s,.}}}, \tau^{2}_{q,seas},  \sim N (\gamma_{q,seas}\mathbf{\theta}_{(q,s,g_{q,s,.})},(\tau^{2}_{q,seas})I_{t_{q}})
@@ -327,7 +334,7 @@ $$
 where $g_{q,s,.} = \sum_{k=1}^{k^{\star}_{q}} g_{q,s,k}$, $k^{\star}_{q}$ is the number of weeks in a season in league $q$, $\gamma_{q,week}$ is the autoregressive parameter from week-to-week and $\gamma_{q,season}$ is the autoregressive parameter from season-to-season.  
 
 We depart from \cite{glickman1998state} here in our specification of precision.  Here, we estimate three parameters, $\tau^{2}_{q,game}$, $\tau^{2}_{q,season}$, and $\tau^{2}_{q,week}$, allowing for their separate estimation.
-
+\mike{Do we need to identify that we depart from Glickman here? I'd just assume state that we estimate them separately. As it is now, seems like we need to justify our departure choice}
 
 For sport $q$, the team strength parameters for week $k=1$ and season $s=1$ have a prior of
 $$
@@ -357,10 +364,11 @@ In addition, we propose a simplified version of Model (\ref{model.full}) that as
 logit(p_{(q,s,k)}) \sim N(\mathbf{\theta_{(q,s,k)}}\mathbf{X}_{q,s,k} + \alpha_{q_0}\mathbf{J}_{g_{q,s,k}}, \tau^{2}_{q,game}\mathbf{I}_{g_{(q,s,k)}}) \label{model.red}
 \end{eqnarray}
 
-Posterior distributions of each parameter are estimated using Markov Chian Monte Carlo (MCMC) methods. We used Gibbs sampling via the \pkg{rjags} package \citep{rjags} in the \R statistical computing environment to obtain posterior distributions, done separately for each $q$. Three chains, using 40,000 iterations after a burn-in of 2,000 draws, fit with a thin of 5 to reduce the autocorrelation within chains, yielded 8,000 posterior samples in each $q$. Visual inspection of trace plots with parallel chains were used to confirm convergence. Comparisons of Models (\ref{model.full}) and (\ref{model.red}) are made using the Deviance Information Criterion (DIC, \cite{spiegelhalter2002bayesian}), as implemented by \cite{koopmeiners2012comparison}. 
+Our primary interest lies in three levels of variability with respect to the $\theta_{(q,s,k) i}$'s. First, there is variability in the $\theta_{(q,s,k) i}$'s for each sport $q$ at any given time $k$. This reflects the between-team variability in team strength; in other words, how equivalent are the teams to one another at a given snapshot in time? Second, there is the week-to-week auto-regressive parameter, $\gamma_{q,week}$ which generalizes to how teams can improve or worsen over the course of a season. Third, there is a season-to-season auto-regressive parameter, $\gamma_{q,seas}$, which accounts for larger changes to team ability that can occur between seasons. As a final note, our specifications will also allow us to contrast the home advantage in sports, both between leagues and between the teams in each league. 
+
+Posterior distributions of each parameter are estimated using Markov Chian Monte Carlo (MCMC) methods. We used Gibbs sampling via the \pkg{rjags} package \citep{rjags} in the \R statistical computing environment to obtain posterior distributions, done separately for each $q$. Three chains---using 40,000 iterations after a burn-in of 2,000 draws, fit with a thin of 5 to reduce the autocorrelation within chains---yielded 8,000 posterior samples in each $q$. Visual inspection of trace plots with parallel chains were used to confirm convergence. Comparisons of Models (\ref{model.full}) and (\ref{model.red}) are made using the Deviance Information Criterion (DIC, \cite{spiegelhalter2002bayesian}), as implemented by \cite{koopmeiners2012comparison}. 
 
 While we are unable to share our betting market data due to licensing restrictions, the data wrangling code, Gibbs sampling code, posterior draws, game results, and the code used to obtain posterior estimates and figures are all posted to a Github repository, available at \url{https://github.com/bigfour/competitiveness}.
-
 
 
 \section{Results}
