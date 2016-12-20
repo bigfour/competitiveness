@@ -558,6 +558,12 @@ return(gg2)
 
 #NFL: 2006:2015
 #NBA, NHL: 2005:2016
+
+nhl.team <- graph.sport("NHL")
+nba.team <- graph.sport("NBA")
+nfl.team <- graph.sport("NHL")
+mlb.team <- graph.sport("MLB")
+### These charts will be called in the appendix
 @
 
 
@@ -565,8 +571,11 @@ Table \ref{tab:betas} shows summary statistics of the team strength estimates fr
 
 The New England Patriots' 2007 season (NFL) stands out as the top team performance of the last decade. In that season, New England finished the regular season 16-0 before eventually losing in the Super Bowl. Additionally, it is interesting to notice that the team strength estimates of the bad teams in the NBA (e.g. the Miami Heat in 2007--08) lie further from 0 than the the estimates for the good teams. This possibly reveals the tendency for teams in this league to ``tank"---a strategy of fielding a weak team intentionally to improve the chances of having better selection preference in the upcoming player draft \citep{soebbing2013gamblers}.
 
-In the NHL (and only the NHL), there seems to be a possible convergence of team strength estimates towards 0 over time, perhaps implying that team talent is less variable in recent years. Alternatively, the league's point system, which changed before the 2005-06 season and encouraged teams to play more overtime games \citep{lopez2013inefficiencies}, could be responsible. If teams were playing overtime contests more often, it could lead to different perceptions in how betting markets view team strenths, as overtime sessions and the resulting shootouts are, by and large, coin flips \citep{lopez2016predicting}. As a final point of clarification in Figures \ref{fig:spaghetti}, \ref{fig:spaghetti-nba}, and \ref{fig:spaghetti-nhl}, the periods with straight lines of team strength estimates in the 2013 season (NHL) and 2012 season (NBA) reflect games lost due to lockouts. 
+In the NHL, it appears as if the top teams are no longer as dominant as they were a decade ago. For example, there are seven NHL team-seasons in which a strength estimate was 0.55 or greater on the log-odds scale; each of these came during or prior to the 2008-09 season.  In addition to an increased amount of parity, the league's point system change in 2006-06, which encouraged teams to play more overtime games more frequently \citep{lopez2013inefficiencies}, could be responsible. If teams were playing overtime contests more often, it could lead to different perceptions in how betting markets view team strenths, as overtime sessions and the resulting shootouts are, by and large, coin flips \citep{lopez2016predicting}. As a final point of clarification in Figures \ref{fig:spaghetti}, \ref{fig:spaghetti-nba}, and \ref{fig:spaghetti-nhl}, the periods with straight lines of team strength estimates in the 2013 season (NHL) and 2012 season (NBA) reflect games lost due to lockouts. 
 
+<<include=FALSE>>=
+filter(tidy_betas, sport == "NHL", beta > 0.55) %>% select(beta, time_val, season, name) %>% mutate(team.seas = paste(season, name)) %>% arrange(team.seas) %>% print.data.frame() 
+@
 
 \mike{Here's the spot to input a chart of the SD of the team strengths over time}
 
@@ -583,14 +592,14 @@ load("data/params.rda")
 nfl.sum <- params %>% filter(sport == "nfl") %>% summarise(mean.week = round(mean(gamma_w), 2), mean.season = round(mean(gamma_s), 2), low.bound = round(quantile(gamma_s, 0.025), 2), upp.bound = round(quantile(gamma_s, 0.975), 2))
 
 
-ggplot(params, aes(x = sigma_w, y = sigma_s, color = sport)) + 
+ggplot(params, aes(x = sigma_w, y = sigma_s, color = toupper(sport))) + 
   geom_density_2d() + geom_point(alpha = 0.1)
 @
 
 \mike{To do: Edit the contour plots for better axis labels and titles}
 
 <<contourGamma, fig.cap="Contour plot of the season-to-season and week-to-week auto-regressive parameter across all four major sports.">>=
-ggplot(params, aes(x = gamma_w, y = gamma_s, color = sport)) + 
+ggplot(params, aes(x = gamma_w, y = gamma_s, color = toupper(sport))) + 
   geom_vline(xintercept = 1, color = "darkgray", linetype = 2) + 
   annotate("text", x = 1.001, y = 0.85, label = "Random\nWalk", hjust = "left") + 
   geom_density_2d() + geom_point(alpha = 0.1)
@@ -610,43 +619,49 @@ Figure \ref{fig:alphaAll} shows the 2.5th, median, and 97.5th draws of each team
 <<>>=
 ## Home advantage plots
 load("data/tidy_alphas.final.rda")
+library(ggplot2)
 datbetas.null <- tidy_alphas %>%
+  mutate(sport = toupper(sport)) %>%
   group_by(sport) %>%
   arrange(alpha.team.overall) %>%
   mutate(rank.within = 1:n()) 
 datbetas.empty <- datbetas.null %>% ungroup() %>% select(-sport)
 
-gg <- ggplot(datbetas.null)  + ggtitle("Increased log-odds of winning at home") 
-gg1 <- gg + geom_point(data = datbetas.empty, colour = "grey", alpha = .2,  
+gg <- ggplot(datbetas.null)  + ggtitle("Who has the best home advantage? Increased log-odds of winning at home, by team") 
+gg1 <- gg + geom_point(data = datbetas.empty, colour = "grey", 
                        aes(y=alpha.team.overall, x=rank.within, group = team)) + 
-  geom_errorbar(data = datbetas.empty, colour = "grey", alpha = 0.2,
-                aes(x=rank.within, ymax = alpha.team.upper, ymin=alpha.team.lower, group = team), width=0.2) 
+  geom_errorbar(data = datbetas.empty, colour = "grey", 
+                aes(x=rank.within, ymax = alpha.team.upper, 
+                    ymin=alpha.team.lower, group = team), width=0.2) 
 
 for (i in 1:nrow(datbetas.null)){
   df.temp <- slice(ungroup(datbetas.null), i)
   df.plot <- data.frame(x = rep(df.temp$rank.within, 2), y = c(df.temp$alpha.team.lower, df.temp$alpha.team.upper), 
                         z = df.temp$alpha.team.overall, sport = df.temp$sport, lab = df.temp$team)
-  df.text <- data.frame(x = df.temp$rank.within, y = 0, team = df.temp$team, sport = df.temp$sport)
+  df.text <- data.frame(x = df.temp$rank.within, y = -0.21, team = df.temp$team, sport = df.temp$sport)
   gg1 <- gg1 + geom_line(data = df.plot,
                          aes(x = x, y = y), linetype=1, lwd=1.5, colour=df.temp$primary) 
   gg1 <- gg1 + geom_line(data = df.plot,
                          aes(x = x, y = y), linetype=2, lwd=1.5, colour=df.temp$secondary) 
   gg1 <- gg1 + geom_point(data = df.plot,
-                          aes(x = x, y = z), colour=df.temp$secondary, size = 2.5) 
+                          aes(x = x, y = z), colour=df.temp$secondary, size = 1.5) 
   gg1 <- gg1 + geom_text(data = df.text, aes(x = x, y = y, label = team, hjust = "left"), 
-                         colour=df.temp$primary, size = 2.5)
+                         colour=df.temp$primary, size = 3)
 }
 
-gg2 <- gg1  + coord_flip() + facet_wrap(~sport)+ 
-  xlab("") + ylab("") +  theme(axis.line=element_blank(),
-                               axis.text.y=element_blank(),axis.ticks=element_blank(),
-                               axis.title.y=element_blank())
+gg2 <- gg1  + coord_flip() + facet_wrap(~sport) + 
+  xlab("") + ylab("") +
+  theme_grey(base_size = 12)  +  
+  theme(axis.line=element_blank(),
+       axis.text.y=element_blank(), 
+       axis.ticks.y=element_blank(),
+       axis.title.y=element_blank()) + 
+  scale_y_continuous(labels = c("0.00", "0.25", "0.50", "0.75"), breaks = c(0:3)/4) + 
+  scale_x_continuous()
 
+
+## Alternative plot
 load("data/tidy_alphas.final.rda")
-
-#### Note: add in the grey background
-
-
 tidy_alphas <- tidy_alphas %>%
   mutate(sport = toupper(sport)) 
 
@@ -872,19 +887,19 @@ To maintain consistency with the NFL's calendar, we considered time on a weekly 
 
 
 <<spaghetti-mlb, out.extra='angle=90', out.width='\\textheight', fig.height=7, fig.width = 9, fig.cap="Team strength coefficients over time for Major League Baseball.">>=
-graph.sport("MLB")
+mlb.team
 @
 
 <<spaghetti-nba, out.extra='angle=90', out.width='\\textheight', fig.height=7, fig.width = 9, fig.cap="Team strength coefficients over time for the National Basketball Association.">>=
-graph.sport("NBA")
+nba.team
 @
 
 <<spaghetti-nfl, out.extra='angle=90', out.width='\\textheight', fig.height=7, fig.width = 9, fig.cap="Team strength coefficients over time for the National Football League.">>=
-graph.sport("NFL")
+nfl.team
 @
 
 <<spaghetti-nhl, out.extra='angle=90', out.width='\\textheight', fig.height=7, fig.width = 9, fig.cap="Team strength coefficients over time for the National Hockey League.">>=
-graph.sport("NHL")
+nhl.team
 @
 
 
