@@ -521,7 +521,7 @@ gg2
 leagues <- tidy_alphas %>% mutate(sport = toupper(sport)) %>% group_by(sport) %>%
    summarize(mean.sport  = mean(alpha.sport))
 
-teams <- tidy_alphas %>% filter(sport == "nba") %>% group_by(team) %>% summarise(mean.post = mean(alpha.team.overall)) %>% arrange(mean.post) %>% slice(c(1,30))
+teams <- tidy_alphas %>% filter(sport == "nba") %>% group_by(team) %>% summarise(mean.post = mean(alpha.team.overall)) %>% arrange(mean.post) %>% slice(c(1,n()))
 
 league.ave <- round(exp(leagues$mean.sport[2])/(1+exp(leagues$mean.sport[2])), 3)
 league.high <- round(exp(teams$mean.post[2])/(1+exp(teams$mean.post[2])), 3)
