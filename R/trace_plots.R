@@ -19,8 +19,8 @@ rm(z)
 
 param_names <- list(
   'alpha' = expression(alpha),
-  'gammaWeek' = expression(gamma[week]),
   'gammaSeason' = expression(gamma[season]),
+  'gammaWeek' = expression(gamma[week]),
   'sigma' = expression(tau[game]),
   'sigmab' = expression(tau[week]),
   'sigmabSeason' = expression(tau[season])
