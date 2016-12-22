@@ -14,7 +14,28 @@ nbaJAGS<-z
 rm(z)
 
 
-league <- nbaJAGS
+#### Labels for ggplot
+
+
+param_names <- list(
+  'alpha' = expression(alpha),
+  'gammaWeek' = expression(gamma[week]),
+  'gammaSeason' = expression(gamma[season]),
+  'sigma' = expression(tau[game]),
+  'sigmab' = expression(tau[week]),
+  'sigmabSeason' = expression(tau[season])
+)
+
+## Check the parameter names
+
+param_labeller <- function(variable,value){
+  return(param_names[value])
+}
+
+
+### Function
+
+func.trace <- function(league, league.name){
 df.all <- NULL
 param.id <- c(1, 3:7)
 len <- 4000
@@ -28,26 +49,21 @@ for (i in param.id){
 }
 
 
-param_names <- list(
-  'alpha' = expression(alpha),
-  'gammaWeek' = expression(gamma[week]),
-  'gammaSeason' = expression(gamma[seas]),
-  'sigma' = expression(tau[game]),
-  'sigmab' = expression(tau[week]),
-  'sigmabSeason' = expression(tau[seas])
-)
-
-## Check the parameter names
-
-param_labeller <- function(variable,value){
-  return(param_names[value])
+p <- ggplot(df.all, aes(iter, estimates, colour = as.factor(chain))) + 
+  geom_line() + facet_wrap(~param, labeller = param_labeller, scales = "free_y", ncol = 3) + 
+  scale_colour_brewer(palette = "Set1", "Chain") +
+  xlab("Chain index") + ylab("") + labs(title = league.name) + 
+  theme(plot.title = element_text(hjust = 0.5))
+p
 }
 
-ggplot(df.all, aes(iter, estimates, colour = as.factor(chain))) + 
-  geom_line() + facet_wrap(~param, labeller = param_labeller, scales = "free_y", ncol = 1, strip.position = "top") + 
-  scale_colour_brewer(palette = "Set1", "Chain") +
-  xlab("Chain index") + ylab("") +
-  theme(strip.background = element_blank())
+NBA.trace <- func.trace(nbaJAGS, "NBA")
+NHL.trace <- func.trace(nhlJAGS, "NHL")
+MLB.trace <- func.trace(mlbJAGS, "MLB")
+NFL.trace <- func.trace(nflJAGS, "NFL")
 
-
+ggsave(plot = NBA.trace, width = 8, height = 6, filename = "figure/NBAtrace.pdf")
+ggsave(plot = NHL.trace, width = 8, height = 6, filename = "figure/NHLtrace.pdf")
+ggsave(plot = MLB.trace, width = 8, height = 6, filename = "figure/MLBtrace.pdf")
+ggsave(plot = NFL.trace, width = 8, height = 6, filename = "figure/NFLtrace.pdf")
 
