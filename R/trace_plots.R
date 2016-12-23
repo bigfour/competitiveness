@@ -56,7 +56,7 @@ param.id <- c(1, 4:6, 8, 9)
 len <- 4000
 for (i in param.id){
   estimates <- c(league[[i]][,,1], league[[i]][,,2], league[[i]][,,3])
-  if (i > 4){estimates <- 1/estimates}
+  if (i > 4){estimates <- sqrt(1/estimates)}
   chain <- c(rep(1, len), rep(2, len), rep(3, len))
   iter <- c(1:len, 1:len, 1:len)
   df.est <- data.frame(estimates, iter, chain, param = names(league[i]))
