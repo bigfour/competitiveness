@@ -1,19 +1,23 @@
 library(ggplot2)
 library(dplyr)
-load("~/Dropbox/Posterior_Draws/nhl_8_23_constantHFA.RData")
+load("~/Dropbox/Posterior_Draws/nhl_9_23_teamHFA.RData")
 nhlJAGS<-z
 
-load("~/Dropbox/Posterior_Draws/mlb_8_23_constantHFA.RData")
+load("~/Dropbox/Posterior_Draws/mlb_9_23_teamHFA.RData")
 mlbJAGS<-z
 
-load("~/Dropbox/Posterior_Draws/nfl_8_23_constantHFA.RData")
+load("~/Dropbox/Posterior_Draws/nfl_9_23_teamHFA.RData")
 nflJAGS<-z
 
-load("~/Dropbox/Posterior_Draws/nba_8_23_constantHFA.RData")
+load("~/Dropbox/Posterior_Draws/nba_9_23_teamHFA.RData")
 nbaJAGS<-z
 rm(z)
 
-
+league <- nbaJAGS
+len <- length(league$gammaSeason)/3
+plot(1:len, league[[3]][3,10,15,,1], col = "red", type = "l")
+points(1:len, league[[3]][3,10,15,,2], col = "green", type = "l")
+points(1:len, league[[3]][3,10,15,,3], col = "blue", type = "l")
 #### Labels for ggplot
 
 
@@ -37,7 +41,7 @@ param_labeller <- function(variable,value){
 
 func.trace <- function(league, league.name){
 df.all <- NULL
-param.id <- c(1, 3:7)
+param.id <- c(1, 4:6, 8, 9)
 len <- 4000
 for (i in param.id){
   estimates <- c(league[[i]][,,1], league[[i]][,,2], league[[i]][,,3])
