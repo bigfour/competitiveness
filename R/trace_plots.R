@@ -13,6 +13,8 @@ load("~/Dropbox/Posterior_Draws/nba_9_23_teamHFA.RData")
 nbaJAGS<-z
 rm(z)
 
+
+## Team strengths - convergence?
 league <- nbaJAGS
 len <- length(league$gammaSeason)/3
 plot(1:len, league[[3]][3,10,15,,1], col = "red", type = "l")
@@ -21,6 +23,15 @@ points(1:len, league[[3]][3,10,15,,3], col = "blue", type = "l")
 #### Labels for ggplot
 
 
+# Team intercepts - convergence?
+league <- nbaJAGS
+len <- length(league$gammaSeason)/3
+plot(1:len, league[[2]][3,,1], col = "red", type = "l")
+points(1:len, league[[2]][3,,2], col = "green", type = "l")
+points(1:len, league[[2]][3,,3], col = "blue", type = "l")
+
+
+#### Labels for ggplot
 param_names <- list(
   'alpha' = expression(alpha),
   'gammaSeason' = expression(gamma[season]),
