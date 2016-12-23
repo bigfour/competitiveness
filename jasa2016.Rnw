@@ -893,7 +893,7 @@ Opportunities to extend our model are plentiful. One approach would use our team
 
 To maintain consistency with the NFL's calendar, we considered time on a weekly basis. More refined approaches may be appropriate in other sports. As an example, investigation into starting pitchers---who change daily---in baseball could lead to novel findings. Additionally, another model specification could consider the possibility that time-varying estimates of team strength follow something other than an autoregressive structure. One alternative specification, for example, is a stochastic volatility process \citep{glickman2001dynamic}. In this respect, our model can be looked at as a starting point for those looking to dig deeper in any sport witout losing an ability to make cross-league comparisons. 
 
-
+\mike{We never answer our question about the best team winning. That could be easy to do, at least if we sample teams and just average probability of better team winning. At first glance, better team in the NBA wins 66 percent of the time. The NFL is 63 percent, NHL 56 percent, and MLB 55 percent.}
 
 \mike{Does this paragraph fit? I like it but can't place it.}
 Understanding this underlying randomness and the proper evaluation of team talent is crucial to decision makers in these leagues. At critical moments in a team's evolution, such as the trade deadline, free agency, or in the choice to fire a coach, we recommend that team officials look past wins and losses to better understand team strength in the context of their league. As one easy example, it is insufficient to evaluate a baseball or hockey team based on their performance in the postseason alone, given that so many of those contests are near 50-50 outcomes. 
