@@ -81,8 +81,8 @@ Paper ID: 1532
 \normalsize
 
 
-\ULCornerWallPaper{1}{Top.png}
-\LLCornerWallPaper{1}{Bottom.png}
+\ULCornerWallPaper{1}{gfx/Top.png}
+\LLCornerWallPaper{1}{gfx/Bottom.png}
 
 <<echo=FALSE>>=
 source("config.R")
