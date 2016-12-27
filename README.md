@@ -38,3 +38,22 @@ To re-do the simulations:
 ``` bash
 make mcmc
 ```
+
+Compile papers
+--------------
+
+To make the Sloan paper:
+
+``` bash
+# install dependencies for Ubuntu
+# sudo apt get install texlive-xetex texlive-math-extra
+make sloan2016.pdf
+```
+
+Note that this requires `xelatex` and the Cambria family of fonts installed.
+
+To make the JASA paper:
+
+``` bash
+make jasa2016.pdf
+```
