@@ -15,15 +15,6 @@ make
 Use with caution as these will overwrite the existing data!
 -----------------------------------------------------------
 
-<!--
-
-To re-scrape the game results data:
-
-```bash
-make results
-```
-
--->
 To re-build the `bigfour` data:
 
 ``` bash
