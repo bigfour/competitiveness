@@ -15,12 +15,15 @@ make
 Use with caution as these will overwrite the existing data!
 -----------------------------------------------------------
 
+<!--
+
 To re-scrape the game results data:
 
-``` bash
+```bash
 make results
 ```
 
+-->
 To re-wrangle the moneyline data:
 
 ``` bash
