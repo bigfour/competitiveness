@@ -104,7 +104,7 @@ tidy_betas <- tidy_betas %>%
   inner_join(colors, by = c("sport" = "sport", "team_id" = "team_id"))
 
 # save the results so we don't have to do this everytime. 
-save(tidy_betas, file = file.path(root, "data", "tidy_betas.final.rda"), compress = "xz")
+save(tidy_betas, file = file.path(root, "data", "tidy_betas.rda"), compress = "xz")
 
 
 ### Alphas

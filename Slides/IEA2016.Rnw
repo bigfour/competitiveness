@@ -227,7 +227,7 @@ Finally, we assume the following prior distributions:
 \begin{frame}[fragile]
 <<echo=FALSE,warning= FALSE,fig.height=5>>=
 library(dplyr)
-load("/Users/gregorymatthews/Dropbox/competitivenessGit/data/tidy_betas.final.rda")
+load("/Users/gregorymatthews/Dropbox/competitivenessGit/data/tidy_betas.rda")
 tidy_betas <- tidy_betas %>%
   mutate(annotation = "",
          annotation = ifelse(beta == max(beta), 

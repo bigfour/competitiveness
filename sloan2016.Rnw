@@ -276,7 +276,7 @@ While we are unable to share our betting market data due to licensing restrictio
 Figure~\ref{fig:spaghetti} shows estimated team coefficients over time, approximated using posterior mean draws for all weeks $k$ and seasons $s$ across all four sports. Figures~\ref{fig:spaghetti-mlb}, \ref{fig:spaghetti-nba}, \ref{fig:spaghetti-nfl}, and \ref{fig:spaghetti-nhl} (shown in the Appendix) provide an individual plot for each sport, which include divisional facets to allow easier identification of individual teams. Teams in Figures~\ref{fig:spaghetti}, \ref{fig:spaghetti-mlb}, \ref{fig:spaghetti-nba}, \ref{fig:spaghetti-nfl}, and \ref{fig:spaghetti-nhl} are depicted using their two primary colors, scraped from \url{http://jim-nielsen.com/teamcolors/} via the \pkg{teamcolors} package (\url{https://github.com/beanumber/teamcolors}) in \R.
 
 <<echo=FALSE, results='asis'>>=
-load("data/tidy_betas.final.rda")
+load("data/tidy_betas.rda")
 library(xtable)
 tidy_betas %>%
   mutate(sport = toupper(sport)) %>%
@@ -298,7 +298,7 @@ tidy_betas %>%
 
 <<echo=FALSE>>=
 library(dplyr)
-load(file.path(root, "data", "tidy_betas.final.rda"))
+load(file.path(root, "data", "tidy_betas.rda"))
 tidy_betas <- tidy_betas %>%
   mutate(sport = toupper(sport),
          annotation = "",

@@ -409,7 +409,7 @@ Taken wholly, this suggests that perceived differences in the home advantage bet
 Figure~\ref{fig:spaghetti} shows estimated team coefficients over time, approximated using posterior mean draws for all weeks $k$ and seasons $s$ across all four sports. Figures~\ref{fig:spaghetti-mlb}, \ref{fig:spaghetti-nba}, \ref{fig:spaghetti-nfl}, and \ref{fig:spaghetti-nhl} (shown in the Appendix) provide an individual plot for each sport, which include divisional facets to allow easier identification of individual teams. Teams in Figures~\ref{fig:spaghetti} and \ref{fig:spaghetti-mlb} - \ref{fig:spaghetti-nhl} are depicted using their two primary colors, scraped from \url{http://jim-nielsen.com/teamcolors/} via the \pkg{teamcolors} package (\url{https://github.com/beanumber/teamcolors}) in \R.
 
 <<echo=FALSE, results='asis'>>=
-load("data/tidy_betas.final.rda")
+load("data/tidy_betas.rda")
 library(xtable)
 tidy_betas %>%
   mutate(sport = toupper(sport)) %>%
@@ -431,7 +431,7 @@ tidy_betas %>%
 
 <<echo=FALSE>>=
 library(dplyr)
-load(file.path(root, "data", "tidy_betas.final.rda"))
+load(file.path(root, "data", "tidy_betas.rda"))
 tidy_betas <- tidy_betas %>%
   mutate(sport = toupper(sport),
          annotation = "",
@@ -751,7 +751,7 @@ We conclude with a comparison of our team strength estimates to won-loss percent
 Figure~\ref{fig:R2} shows the coefficient of determination comparing each team's future won-loss percentage in a season to both (i) our team strength estimates and (ii) each team's past won-loss percentage. Within each sport, this is done by game number, which helps to account for league-level differences in season length. For purposes of using our team strength estimates, we took the mean posterior draw for each team in each week a particular contest was played. The lockout-shortened seasons in the NBA (2012) and NHL (2013) were dropped.
 
 <<>>=
-load("data/tidy_betas.final.rda")
+load("data/tidy_betas.rda")
 load("data/bigfour.final.rda")
 
 bigfour <- bigfour.final %>% arrange(sport, Date)

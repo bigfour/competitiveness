@@ -1,4 +1,4 @@
-load("~/Dropbox/competitivenessGit/data/tidy_betas.final.rda")
+load("~/Dropbox/competitivenessGit/data/tidy_betas.rda")
 expit <- function(beta1,beta2){exp(beta1-beta2)/(1+exp(beta1-beta2))}
 
 balance <- list()
