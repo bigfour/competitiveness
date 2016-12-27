@@ -113,7 +113,7 @@ to understanding randomness in North American sport}
 \begin{frame}[fragile]{What data do we have}
 \tiny
 <<message=FALSE, results='asis',echo=FALSE,warning=FALSE>>=
-load("/Users/gregorymatthews/Dropbox/competitivenessGit/data/bigfour.final.rda")
+load("/Users/gregorymatthews/Dropbox/competitivenessGit/data/bigfour.rda")
 bigfour <- bigfour.final
 library(dplyr)
 library(xtable)

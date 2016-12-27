@@ -28,8 +28,7 @@ rm(dat)
 n_sports <- sapply(betas, length) / 12000
 
 
-load("data/bigfour.final.rda")
-bigfour <- bigfour.final
+load("data/bigfour.rda")
 teamnames <- bigfour %>% group_by(sport, home_team) %>% summarise(n.games = n())
 
 

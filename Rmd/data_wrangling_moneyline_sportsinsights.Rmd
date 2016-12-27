@@ -347,8 +347,8 @@ bigfour %>%
 Save it!
 
 ```{r}
-bigfour.final <- bigfour %>%
+bigfour <- bigfour %>%
   mutate(home_win = home_score > visitor_score)
 
-save(bigfour.final, file = "../data/bigfour.final.rda", compress = "xz")
+save(bigfour, file = "../data/bigfour.rda", compress = "xz")
 ```

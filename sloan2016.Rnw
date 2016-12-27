@@ -165,8 +165,8 @@ We are not aware of any published findings that have compared leagues using impl
 The motivation for our model begins by confirming the accuracy of betting market data with respect to game outcomes. Regular season game result and betting line data in the four major North American professional sports leagues (MLB, NBA, NFL, and NHL) were obtained for a nominal fee via Sports Insights (\url{https://www.sportsinsights.com}). Although these game results are not official, they are accurate and widely-used. The 2006--2016 seasons were included in our models (see Table~\ref{tab:bigfour}), except for the NFL, which used only the 2006-2015 seasons.
 
 <<include=FALSE>>=
-load("data/bigfour.final.rda"); library(dplyr)
-bigfour <- bigfour.final %>% mutate(sport = toupper(sport)) %>% 
+load("data/bigfour.rda"); library(dplyr)
+bigfour <- bigfour %>% mutate(sport = toupper(sport)) %>% 
   arrange(sport, Date)
 head(bigfour)
 mosaic::favstats(~vig, data = bigfour)
@@ -177,8 +177,8 @@ A summary of our data is shown in Table~\ref{tab:bigfour}.
 
 
 <<message=FALSE, results='asis'>>=
-load("data/bigfour.final.rda")
-bigfour <- bigfour.final %>% mutate(sport = toupper(sport))
+load("data/bigfour.rda")
+bigfour <- bigfour %>% mutate(sport = toupper(sport))
 library(dplyr)
 library(xtable)
 n.games <- data_frame(sport = c("MLB","NBA", "NFL", "NHL"), N_results = as.integer(c(26728, 13290, 2560, 13020)))
