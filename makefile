@@ -29,11 +29,8 @@ results: R/MLBscript.R R/NBAscript.R R/NFLscript.R R/NHLscript.R
 	Rscript R/NFLscript.R
 	Rscript R/NHLscript.R
 
-mline: Rmd/data_wrangling_moneyline.Rmd
-	Rscript -e "library(knitr); knit('Rmd/data_wrangling_moneyline.Rmd')"
-
-bigfour: Rmd/data_wrangling_results.Rmd
-	Rscript -e "library(knitr); knit('Rmd/data_wrangling_results.Rmd')"
+bigfour: Rmd/data_wrangling_moneyline_sportsinsights.Rmd
+	Rscript -e "library(knitr); knit('Rmd/data_wrangling_moneyline_sportsinsights.Rmd')"
 
 mcmc: R/jagsFunction.R
 	Rscript R/jagsFunction.R

@@ -26,11 +26,6 @@ make results
 
 -->
 
-To re-wrangle the moneyline data:
-```{r, engine='bash', eval=FALSE}
-make mline
-```
-
 To re-build the `bigfour` data:
 ```{r, engine='bash', eval=FALSE}
 make bigfour

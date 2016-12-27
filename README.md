@@ -24,12 +24,6 @@ make results
 ```
 
 -->
-To re-wrangle the moneyline data:
-
-``` bash
-make mline
-```
-
 To re-build the `bigfour` data:
 
 ``` bash
