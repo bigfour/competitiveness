@@ -314,7 +314,7 @@ ggplot(data = params, aes(x = alpha, color = sport)) +
 \begin{frame}[fragile]
 <<echo=FALSE,fig.height=5>>=
 ## Home advantage plots
-load("/Users/gregorymatthews/Dropbox/competitivenessGit/data/tidy_alphas.final.rda")
+load("/Users/gregorymatthews/Dropbox/competitivenessGit/data/tidy_alphas.rda")
 datbetas.null <- tidy_alphas %>%
   group_by(sport) %>%
   arrange(alpha.team.overall) %>%

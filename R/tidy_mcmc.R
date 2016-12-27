@@ -147,4 +147,4 @@ tidy_alphas <- alphas.all %>%
 
 
 ### update with an alpha's output, and run the tidy_mcmc
-save(tidy_alphas, file = file.path(root, "data", "tidy_alphas.final.rda"), compress = "xz")  
+save(tidy_alphas, file = file.path(root, "data", "tidy_alphas.rda"), compress = "xz")  

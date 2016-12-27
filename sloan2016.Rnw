@@ -469,7 +469,7 @@ Figure \ref{fig:alphaAll} shows the 2.5th, median, and 97.5th draws of each team
 
 <<>>=
 ## Home advantage plots
-load("data/tidy_alphas.final.rda")
+load("data/tidy_alphas.rda")
 library(ggplot2)
 datbetas.null <- tidy_alphas %>%
   mutate(sport = toupper(sport)) %>%

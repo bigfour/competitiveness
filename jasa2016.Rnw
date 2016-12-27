@@ -640,7 +640,7 @@ Figure \ref{fig:alphaAll} shows the 2.5th, median, and 97.5th draws of each team
 
 <<>>=
 ## Home advantage plots
-load("data/tidy_alphas.final.rda")
+load("data/tidy_alphas.rda")
 library(ggplot2)
 datbetas.null <- tidy_alphas %>%
   mutate(sport = toupper(sport)) %>%
@@ -683,7 +683,7 @@ gg2 <- gg1  + coord_flip() + facet_wrap(~sport) +
 
 
 ## Alternative plot
-load("data/tidy_alphas.final.rda")
+load("data/tidy_alphas.rda")
 tidy_alphas <- tidy_alphas %>%
   mutate(sport = toupper(sport)) 
 
@@ -720,7 +720,7 @@ gg2
 
 
 <<include=FALSE>>=
-load("data/tidy_alphas.final.rda")
+load("data/tidy_alphas.rda")
 leagues <- tidy_alphas %>% group_by(sport) %>% summarise(mean.sport = mean(alpha.sport))
 teams <- tidy_alphas %>% 
   filter(sport == "nba") %>% 
