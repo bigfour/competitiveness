@@ -744,7 +744,7 @@ As one important caveat, our models do not account for varying line-up and injur
 
 \subsection{Validation of team strength estimates}
 
-We conclude with a comparison of our team strength estimates to won-loss percentage. Ultimately, estimates from Model~(\ref{model.full}) are designed to estimate team quality at any given point in a season. If these estimates more properly assess team quality than won-loss percentage, they should perform better at predicting future performance, such as how well teams will do over remaining games in a season.  
+We conclude with a comparison of our team strength estimates to won-loss percentage. Ultimately, estimates from Model~(\ref{model.full}) are designed to estimate team quality at any given point in a season. If these estimates more properly assess team quality than won-loss percentage, they should more accurately assess future performance, such as how well teams will do over remaining games in a season.  
 
 Figure~\ref{fig:R2} shows the coefficient of determination comparing each team's future won-loss percentage in a season to both (i) our team strength estimates and (ii) each team's past won-loss percentage. Within each sport, this is done by game number, which helps to account for league-level differences in season length. For purposes of using our team strength estimates, we took the mean posterior draw for each team in each week a particular contest was played. The lockout-shortened seasons in the NBA (2012) and NHL (2013) were dropped.
 
