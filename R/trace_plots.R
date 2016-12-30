@@ -13,6 +13,16 @@ load("~/Dropbox/Posterior_Draws/nba_9_23_teamHFA.RData")
 nbaJAGS<-z
 rm(z)
 
+### sigma
+sigma.nba <- data.frame(tau.game = 1/sqrt(nbaJAGS[[6]][,,1])); sigma.nba$sport <- "NBA"
+sigma.nhl <- data.frame(tau.game = 1/sqrt(nhlJAGS[[6]][,,1])); sigma.nhl$sport <- "NHL"
+sigma.mlb <- data.frame(tau.game = 1/sqrt(mlbJAGS[[6]][,,1])); sigma.mlb$sport <- "MLB"
+sigma.nfl <- data.frame(tau.game = 1/sqrt(nflJAGS[[6]][,,1])); sigma.nfl$sport <- "NFL"
+
+sigma <- rbind(sigma.nba, sigma.nhl, sigma.mlb, sigma.nfl)
+ggplot(sigma, aes(tau.game, colour = sport)) +
+  geom_density() + ggtitle("Average game-level error") + xlab("")
+
 
 ## Team strengths - convergence?
 league <- nbaJAGS
