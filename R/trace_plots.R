@@ -74,11 +74,15 @@ for (i in param.id){
 }
 
 
-p <- ggplot(df.all, aes(iter, estimates, colour = as.factor(chain))) + 
-  geom_line() + facet_wrap(~param, labeller = param_labeller, scales = "free_y", ncol = 3) + 
+p <- ggplot(df.all, aes(iter, estimates, colour = as.factor(chain),
+                        alpha = as.factor(chain))) + 
+  geom_line() + 
+  facet_wrap(~param, labeller = param_labeller, scales = "free_y", ncol = 3) + 
   scale_colour_brewer(palette = "Set1", "Chain") +
+  scale_alpha_manual(values = c(1, .6, .3)) + 
   xlab("Chain index") + ylab("") + labs(title = league.name) + 
-  theme(plot.title = element_text(hjust = 0.5))
+  theme(plot.title = element_text(hjust = 0.5)) + guides(alpha=FALSE)
+
 p
 }
 
