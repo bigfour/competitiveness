@@ -207,7 +207,7 @@ We are not aware of any published findings that have compared leagues using impl
 
 \section{Validation of betting market data}
 
-The motivation for our model begins by confirming the accuracy of betting market data with respect to game outcomes. Regular season game result and betting line data in the four major North American professional sports leagues (MLB, NBA, NFL, and NHL) were obtained for a nominal fee via Sports Insights (\url{https://www.sportsinsights.com}). Although these game results are not official, they are accurate and widely-used. The 2006--2016 seasons were included in our models, except for the NFL, which used only the 2006-2015 seasons.
+We begin by confirming the accuracy of betting market data with respect to game outcomes. Regular season game result and betting line data in the four major North American professional sports leagues (MLB, NBA, NFL, and NHL) were obtained for a nominal fee from Sports Insights (\url{https://www.sportsinsights.com}). Although these game results are not official, they are accurate and widely-used. The 2006--2016 seasons were included in our models, except for the NFL, which used only the 2006--2015 seasons.
 
 <<include=FALSE>>=
 load("data/bigfour.rda"); library(dplyr)
@@ -217,7 +217,7 @@ head(bigfour)
 mosaic::favstats(~vig, data = bigfour)
 @
 
-These data were more than 99.5\% complete in each league, in the sense that there existed a valid betting line for nearly all games in these four sports across this time period. Betting lines provided by Sports Insights are expressed as payouts, which we subsequently convert into implied probabilities. The average vig in our data set is \Sexpr{round(100 * mean(bigfour$vig), 2)}\%, but is always positive, resulting in revenue for sportsbook over a long run of games. In circumstances where more than one betting line was available for a particular game, we included only the line from before the game started (this is known as the closing line). A summary of our data is shown in Table~\ref{tab:bigfour}. 
+These data were more than 99.3\% complete in each league, in the sense that there existed a valid betting line for nearly all games in these four sports across this time period. Betting lines provided by Sports Insights are expressed as payouts, which we subsequently convert into implied probabilities. The average vig in our data set is \Sexpr{round(100 * mean(bigfour$vig), 2)}\%, but is always positive, resulting in revenue for the sportsbook over a long run of games. In circumstances where more than one betting line was available for a particular game, we included only the line from before the game started (this is known as the closing line). A summary of our data is shown in Table~\ref{tab:bigfour}. 
 
 
 <<message=FALSE, results='asis'>>=
@@ -254,7 +254,7 @@ bigfour %>%
 @
 
 
-We also compared the observed probabilities of a home win to the corresponding probabilities implied by our betting market data (Figure~\ref{fig:betting}). In each of the four sports, the efficient market hypothesis cannot be rejected for any range of implied home win probabilities, based on visual inspection of a LOESS regression model. Thus, we find no evidence to suggest that the probabilities implied by our betting market data are biased or inaccurate---a conclusion that is supported by the body of academic literature referenced above. We thus interpret these probabilities ``true". 
+We also compared the observed probabilities of a home win to the corresponding probabilities implied by our betting market data (Figure~\ref{fig:betting}). In each of the four sports, the efficient market hypothesis cannot be rejected for any range of implied home win probabilities, based on visual inspection of a LOESS regression model. Thus, we find no evidence to suggest that the probabilities implied by our betting market data are biased or inaccurate---a conclusion that is supported by the body of academic literature referenced above. We thus interpret these probabilities ``true." 
 
 <<betting, fig.height=10, fig.cap="Accuracy of probabilities implied by betting markets. Each dot represents a bin of implied probabilities rounded to the nearst hundredth. The size of each dot (N) is proportional to the number of games that lie in that bin. We note that across all four major sports, the observed winning percentages accord with those implied by the betting markets. The dotted diagonal line indicates a completely fair market where probabilities from the betting markets correspond exactly to observed outcomes. In each sport, this diagonal line lies entirely within the standard error surrounding a LOESS regression line, suggesting that an efficient market hypothesis cannot be rejected.">>=
 bigfour_summary <- bigfour %>%
