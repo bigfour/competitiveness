@@ -2,7 +2,7 @@
 
 if (Sys.info()["user"] == "bbaumer") {
   # For Ben
-  root <- "~/Dropbox/lib/competitiveness"
+  root <- "~/Dropbox/git/competitiveness"
   mcmc_dir <- "~/dumps/Posterior_Draws"
 }
 

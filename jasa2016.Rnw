@@ -405,7 +405,7 @@ Table \ref{tab:betas} shows summary statistics of the team strength estimates fr
 
 
 <<echo=FALSE, results='asis'>>=
-load("data/tidy_betas.rda")
+load(file.path(root, "data", "tidy_betas.rda"))
 library(xtable)
 tidy_betas %>%
   mutate(sport = toupper(sport)) %>%
