@@ -927,11 +927,7 @@ The importance of each league's home advantage also makes a meaningful differenc
 
 Finally, we can quantify the proximity of each league's game-level probabilities to coin flips by comparing the approximate area between each CDF and a vertical line at probability 0.5, which reflects the CDF that would be observed if all teams were of equal team strength. For games with no home advantage, the MLB's area to the left of the CDF (ATLC) is the smallest at 25\%, followed by the NHL (28\%), NFL (41\%), and NBA (46\%). When the best team has a home advantage, the ATLC is again smallest in MLB at 31\%, followed by the NHL (37\%), NFL (53\%), and NBA (61\%). Taken wholly, this suggests that when the best team is playing at home, the NFL and NBA are closer to a world where every game outcome is pre-determined than one where every game outcome is a coin flip. 
 
-%The areas to the left of each CDF are also interesting are about 8% (MLB), 12% (NHL), 27% (NFL), and 34% (NBA), done without any home advantage.
- 
-%The areas to the left of each CDF are about 14% (MLB), 21% (NHL), 40% (NFL), and 53% (NBA), done with a constant league-level home advantage.
- 
-%In other words, if you give the best team in each possible match-up a home advantage, the NBA is closer to a world where every game-winner is predetermined than where every game is a coin flip.
+Tie this metric to AUC? 
 
 \section{Conclusion}
 
