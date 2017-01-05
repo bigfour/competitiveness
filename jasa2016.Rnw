@@ -597,7 +597,7 @@ tidy_betas %>%
 load("data/params.rda")
 library(xtable)
 params %>%
-  mutate(sport = toupper(sport)) %>%
+  mutate(sport = toupper(sport), sigma_w = sqrt(sigma_w), sigma_g = sqrt(sigma_g), sigma_s = sqrt(sigma_s)) %>%
   tidyr::gather(key = "param", value = "val", -sport) %>%
   group_by(sport, param) %>%
   summarize(med.sport = median(val), lb = quantile(val, 0.025), ub = quantile(val, 0.975)) %>%
@@ -609,6 +609,7 @@ params %>%
          `$\\gamma_{q, season}$` = gamma_s, 
          `$\\tau_{q, week}$` = sigma_w, 
          `$\\tau_{q, season}$` = sigma_s, 
+         `$\\tau_{q, game}$` = sigma_g, 
          `Sport ($q$)` = sport) %>%
   xtable(caption = "Median posterior draw (and 95% credible intervals) by league.", 
          digits = 3, label = "tab:params") %>%
@@ -617,7 +618,7 @@ params %>%
 
 Table \ref{tab:params} shows the median posterior draw, along with 95\% credible intervals, for $\alpha_{q_0}$, $\gamma_{q, season}$, $\gamma_{q, week}$ $\tau_{q, game}$, $\tau_{q, season}$, and $\tau_{q, week}$ for each $q$. 
 
-%Paragraph about tau_game
+The distribution of $\tau_{q, game}$ reflects the highest game-level errors in the NBA (median posterior draw of $\tau_{NBA, game}$ = 0.273), followed in order by $\tau_{NFL, game}$, $\tau_{MLB, game}$, and $\tau_{NHL, game}$. Interestingly, aalthough its posterior distribution of team strength estimates was relatively narrow, $\tau_{MLB, game}$ is relatively similar to $\tau_{NFL, game}$. We posit that this additional game-level error in MLB is a function of the league's pitching match-ups, in which teams rotate through a handful of starting pitchers of varying calibers.
 
 On a season-to-season basis, team strengths in each of the leagues tend to revert towards the league average (0). Reversion towards the mean is largest in the NHL (posterior mean 0.54, implying 46\% reversion), followed by the NBA (38\%), MLB (38\% reversion), and the NFL (31\%). However, there is enough uncertainty in the posterior distribution of these estimates that we are unable to say for certain if the differences in the season-to-season estimates between MLB, the NBA, and the NBA are significant. 
 
