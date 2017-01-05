@@ -374,7 +374,7 @@ While we are unable to share our betting market data due to licensing restrictio
 
 \subsection{Model fit}
 
-Trace plots of  $\alpha_{q_0}$, $\gamma_{q, season}$, $\gamma_{q, week}$ $\tau^{2}_{q, game}$, $\tau^{2}_{q, season}$, and $\tau^{2}_{q, week}$ are shown for each $q$ in Figures \ref{fig:MLBtrace}, \ref{fig:NBAtrace}, \ref{fig:NFLtrace}, and \ref{fig:NHLtrace} in the Appendix. Visual inspection of these plots does not provide evidence of a lack of convergence or of an autocorrelation between draws. These trace plots stem from Model~(\ref{model.full}); conclusions are similar when plotting draws from Model~(\ref{model.red}). 
+Trace plots of  $\alpha_{q_0}$, $\gamma_{q, season}$, $\gamma_{q, week}$ $\tau_{q, game}$, $\tau_{q, season}$, and $\tau_{q, week}$ are shown for each $q$ in Figures \ref{fig:MLBtrace}, \ref{fig:NBAtrace}, \ref{fig:NFLtrace}, and \ref{fig:NHLtrace} in the Appendix. Visual inspection of these plots does not provide evidence of a lack of convergence or of an autocorrelation between draws. These trace plots stem from Model~(\ref{model.full}); conclusions are similar when plotting draws from Model~(\ref{model.red}). 
 
 Table~\ref{tab:DIC} shows the DIC for each fit in each league, along with the difference in DIC values and its standard error. In each of the leagues, fits with a team-specific HA (Model (\ref{model.full})) yielded significantly lower DIC's (lower is better), with the most noticeable difference in fit improvement in the NBA.
 
@@ -592,8 +592,34 @@ tidy_betas %>%
 
 \subsection{Variance and autoregressive parameters}
 
-\mike{I took out the parameter table for the autoregressive and error parameters. All of the information relative to these models is encapsulated in the contour plots.}
-\ben{Maybe so, but I usually like having the table as well, since you can see the actual numbers.}
+
+<<echo=FALSE, results='asis'>>=
+load("data/params.rda")
+library(xtable)
+params %>%
+  mutate(sport = toupper(sport)) %>%
+  tidyr::gather(key = "param", value = "val", -sport) %>%
+  group_by(sport, param) %>%
+  summarize(med.sport = median(val), lb = quantile(val, 0.025), ub = quantile(val, 0.975)) %>%
+  mutate(CI = paste(round(med.sport, 3), " (", round(lb, 3), ", ", round(ub, 3),")", sep = "")) %>% 
+  select(sport, param, CI) %>%
+  tidyr::spread(param, CI) %>%
+  rename(`$\\alpha_{q_0}$` = alpha, 
+         `$\\gamma_{q, week}$` = gamma_w, 
+         `$\\gamma_{q, season}$` = gamma_s, 
+         `$\\tau_{q, week}$` = sigma_w, 
+         `$\\tau_{q, season}$` = sigma_s, 
+         `Sport ($q$)` = sport) %>%
+  xtable(caption = "Median posterior draw (and 95% credible intervals) by league.", 
+         digits = 3, label = "tab:params") %>%
+  print(include.rownames = FALSE, sanitize.text.function = identity)
+@
+
+Table \ref{tab:params} shows the median posterior draw, along with 95\% credible intervals, for $\alpha_{q_0}$, $\gamma_{q, season}$, $\gamma_{q, week}$ $\tau_{q, game}$, $\tau_{q, season}$, and $\tau_{q, week}$ for each $q$. 
+
+%Paragraph about tau_game
+
+On a season-to-season basis, team strengths in each of the leagues tend to revert towards the league average (0). Reversion towards the mean is largest in the NHL (posterior mean 0.54, implying 46\% reversion), followed by the NBA (38\%), MLB (38\% reversion), and the NFL (31\%). However, there is enough uncertainty in the posterior distribution of these estimates that we are unable to say for certain if the differences in the season-to-season estimates between MLB, the NBA, and the NBA are significant. 
 
 The joint distribution of the variability in team strength on a season-to-season ($\tau_{q,season}$) and week-to-week ($\tau_{q,week}$) basis is shown in via contour plots in Figure~\ref{fig:contourSigma}, using separate colors for each $q$. 
 
