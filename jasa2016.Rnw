@@ -912,7 +912,7 @@ gg.r2
 
 Across each sport, our estimates of team strength consistently outperform past team win percentage as far as predicting future win percentage. This gap is most pronounced earlier in each season, which is not surprising given the fluctuations in won-loss percentage in a small number of games, as well as the fact that our model borrows information from the future when assessing team talent. Differences in predictive accuracy remain through most of the regular season in the NHL, MLB, and the NFL, while by the NBA's mid-season, won-loss ratio and our estimates of team strength are similar in assessing future performance. Altogether, results suggest that across seasons and sports, team strength estimates from a state-space model more completely judge team talent than won-loss percentage. 
 
-\subsection{How often does the best team win?}
+\subsection{How often does the best team win?  A better measure of league parity}
 
 One of our initial questions regarded the inherent randomness of game outcomes. While sportsbook odds can approximate the probability of each team winning, these odds are only provided for scheduled games. As a result, any inferences would be contingent upon how each league schedules its games. 
 
@@ -922,16 +922,16 @@ Given sport $q$ with season length $k^{\star}_{q}$, number of seasons $s^{\star}
 
 \begin{enumerate}
 \item Draw season $\tilde{s}$ from $\left\{1, \ldots, s^{\star}_{q} \right \}$
-\item Draw week $\tilde{k}$ from $\left\{1, \ldots , s^{\star}_{q} \right \}$
+\item Draw week $\tilde{k}$ from $\left\{1, \ldots , k^{\star}_{q} \right \}$
 \item Draw teams $\tilde{i}$ and $\tilde{j}$ from $\left \{1, \ldots , t_{q} \right \}$ without replacement. Assign $\tilde{i}$ to be the team with the better average posterior distribution of team strength during season $\tilde{s}$ and week $\tilde{k}$
-\item Sample one posterior draw of team strength for $\tilde{i}$ and $\tilde{j}$, $\tilde{\theta}_{(q,\tilde{s},\tilde{s}) \tilde{i}}$ and $\tilde{\theta}_{(q,\tilde{s},\tilde{s}) \tilde{j}}$, respectively, from the posterior distributions of $\tilde{i}$ and $\tilde{j}$'s team strength estimates
+\item Sample one posterior draw of team strength for $\tilde{i}$ and $\tilde{j}$, $\tilde{\theta}_{(q,\tilde{s},\tilde{k}) \tilde{i}}$ and $\tilde{\theta}_{(q,\tilde{s},\tilde{k}) \tilde{j}}$, respectively, from the posterior distributions of $\tilde{i}$ and $\tilde{j}$'s team strength estimates
 \item Sample one posterior draw of the HA, $\tilde{\alpha}_{q_0}$, from the posterior distribution of $\alpha_{q_0}$
-\item Impute the simulate log-odds of $\tilde{i}$ beating $\tilde{j}$, $\text{logit}(p_{(q,\tilde{s},\tilde{k}) \tilde{i}\tilde{j}}) = \tilde{\theta}_{(q,\tilde{s},\tilde{s}) \tilde{i}} - \tilde{\theta}_{(q,\tilde{s},\tilde{s}) \tilde{j}} +  \tilde{\alpha}_{q_0}$
-\item Transform $\text{logit}(\tilde{p}_{(q,\tilde{s},\tilde{k}) \tilde{i}\tilde{j}})$ into probability form to obtain an estimate of $\tilde{p}_{(q,\tilde{s},\tilde{k}) \tilde{i}\tilde{j}}$
-\item Repeat the above steps 1000 times.
+\item Impute the simulate log-odds of $\tilde{i}$ beating $\tilde{j}$, $\text{logit}(p_{(q,\tilde{s},\tilde{k}) \tilde{i}\tilde{j}}) = \tilde{\theta}_{(q,\tilde{s},\tilde{k}) \tilde{i}} - \tilde{\theta}_{(q,\tilde{s},\tilde{k}) \tilde{j}} +  \tilde{\alpha}_{q_0}$
+\item Transform $\text{logit}(\tilde{p}_{(q,\tilde{s},\tilde{k}) \tilde{i}\tilde{j}})$ into probability form to obtain an estimate of $\tilde{p}_{q, sim} = \tilde{p}_{(q,\tilde{s},\tilde{k}) \tilde{i}\tilde{j}}$
+\item Repeat the above steps $n_{sim}$ times to obtain $\tilde{p}_{q, 1}, \ldots \tilde{p}_{q, n_{sim}}$.
 \end{enumerate}
 
-The steps above were repeated for each $q$. Additionally, to remove the effect of each league's HA on simulated probabilities, we also repeated the process using a home advantage of 0 in each league (as if the game were played at a neutral site).
+The steps above were repeated for each $q$ with $n_{sim} = 1000$. Additionally, to remove the effect of each league's HA on simulated probabilities, we also repeated the process using a home advantage of 0 in each league (as if the game were played at a neutral site).
 
 Figure \ref{fig:BestWin} shows the cumulative distribution functions for each set of probabilities. 
 
@@ -944,9 +944,15 @@ For more than 90\% of MLB and NHL games played at neutral sites, match-ups are l
 
 The importance of each league's home advantage also makes a meaningful difference. When the best team plays at home in the NBA, that squad is almost always favored to win 60\% of the time, with the middle 50\% of games ranging from a 70\% probability to an 84\% probability. Meanwhile, even with a home advantage, it is rare that the best MLB team is $ever$ given a 70\% probability of winning, with the middle 50\% of games ranging from 56\% to 63\%. 
 
-Finally, we can quantify the proximity of each league's game-level probabilities to coin flips by comparing the approximate area between each CDF and a vertical line at probability 0.5, which reflects the CDF that would be observed if all teams were of equal team strength. For games with no home advantage, the MLB's area to the left of the CDF (ATLC) is the smallest at 25\%, followed by the NHL (28\%), NFL (41\%), and NBA (46\%). When the best team has a home advantage, the ATLC is again smallest in MLB at 31\%, followed by the NHL (37\%), NFL (53\%), and NBA (61\%). Taken wholly, this suggests that when the best team is playing at home, the NFL and NBA are closer to a world where every game outcome is pre-determined than one where every game outcome is a coin flip. 
+\mike{This is still a work in progress. Think the best idea is to tie into area under curve. Highest area = 1 = complete parity, lowest area = 0 = no parity}
 
-Tie this metric to AUC? 
+Finally, we can quantify the proximity of each league's game-level probabilities to coin flips by comparing the approximate area between each CDF and vertical line at probability 0.5, which reflects the CDF that would be observed if all teams were of equal team strength.  Let $Parity_q$ be our parity measure, such that
+
+$Parity_q$ = $1 - \sum_{sim = 1}^{n_{sim}} \frac{|\tilde{p}_{q, sim} - 0.5|}{n_{sim}}$.
+
+\noindent $Parity_q$ = 1 if all games were coin flips, while $Parity_q$ = 0 if all outcomes were pre-determined. \mike{Tie to AUC?}
+
+For games with no home advantage, $Parity_{MLB} = 0.75$, followed by the NHL (0.72), NFL (0.59), and NBA (0.54). When the best team has a home advantage, parity is again the greatet in the MLB (0.69), followed by the NHL (0.63), NFL (0.47), and NBA (0.39). Taken wholly, this suggests that when the best team is playing at home, the NFL and NBA are closer to a world where every game outcome is pre-determined than one where every game outcome is a coin flip. 
 
 \section{Conclusion}
 
