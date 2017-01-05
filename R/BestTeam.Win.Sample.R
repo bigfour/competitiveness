@@ -129,9 +129,10 @@ cdf.all <- rbind(df.mlb, df.nfl, df.nba, df.nhl)
 p <- ggplot(cdf.all) + stat_ecdf(aes(probs, colour = sport)) + 
   stat_ecdf(data = cdf.all, aes(probsH, colour = sport), lty = "dotted") + 
   ggtitle("How often does the best team win?") + 
+  geom_vline(xintercept = 0.5, colour = "black", lty = 5) + 
   labs(subtitle = "Solid: neutral site, Dashed: home game for better team") +
-  xlab("Probability") + ylab("CDF") + xlim(0.4, 1.0)
-ggsave(plot = p, width = 6, height = 4, filename = "figure/BestWin.pdf")
+  xlab("Simulated win probability") + ylab("CDF") + xlim(0.4, 1.0)
+ggsave(plot = p, width = 5, height = 3.5, filename = "figure/BestWin.pdf")
 
 
 
@@ -181,10 +182,14 @@ cdf.dfHA <- data.frame(Probability = rep(z, 4),
                      cdf = c(nfl.cdf, nhl.cdf, nba.cdf, mlb.cdf), 
                      sport = rep(c("NFL", "NHL", "NBA", "MLB"), each = length(z)), 
                      Type = "HA")
-cdf.all <- rbind(cdf.df, cdf.dfHA)
+cdf.all2 <- rbind(cdf.df, cdf.dfHA)
 
 
 ### Area under the curve
 cdf.all %>% group_by(sport, Type) %>%
   summarise(AUC = (length(z) - sum(cdf))/length(z))
+
+
+cdf.all %>% mutate(dist.50 = abs(probs - 0.5), dist.50H = abs(probsH - 0.5)) %>%
+  group_by(sport) %>% summarise(ave.dist = mean(dist.50), ave.distH = mean(dist.50H))
 
