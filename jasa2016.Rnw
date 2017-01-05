@@ -902,19 +902,19 @@ One approach that can better assess the equivalence of teams in each league woul
 Given sport $q$ with season length $k^{\star}_{q}$, number of seasons $s^{\star}_{q}$, and number of teams $t_{q}$, 
 
 \begin{enumerate}
-\item Draw season $\tilde{s}$ from $\left{1, \ldots, s^{\star}_{q}\right\}$
-\item Draw week $\tilde{k}$ from $\left{1, \ldots , s^{\star}_{q}\right\}$
-\item Draw teams $\tilde{i}$ and $\tilde{j}$ from $\left{1, \ldots , t_{q}\right\}$ without replacement. Assign $\tilde{i}$ to be the team with the better average posterior distribution of team strength during season $\tilde{s}$ and week $\tilde{k}$
+\item Draw season $\tilde{s}$ from $\left\{1, \ldots, s^{\star}_{q} \right \}$
+\item Draw week $\tilde{k}$ from $\left\{1, \ldots , s^{\star}_{q} \right \}$
+\item Draw teams $\tilde{i}$ and $\tilde{j}$ from $\left \{1, \ldots , t_{q} \right \}$ without replacement. Assign $\tilde{i}$ to be the team with the better average posterior distribution of team strength during season $\tilde{s}$ and week $\tilde{k}$
 \item Sample one posterior draw of team strength for $\tilde{i}$ and $\tilde{j}$, $\tilde{\theta}_{(q,\tilde{s},\tilde{s}) \tilde{i}}$ and $\tilde{\theta}_{(q,\tilde{s},\tilde{s}) \tilde{j}}$, respectively, from the posterior distributions of $\tilde{i}$ and $\tilde{j}$'s team strength estimates
 \item Sample one posterior draw of the HA, $\tilde{\alpha}_{q_0}$, from the posterior distribution of $\alpha_{q_0}$
 \item Impute the simulate log-odds of $\tilde{i}$ beating $\tilde{j}$, $\text{logit}(p_{(q,\tilde{s},\tilde{k}) \tilde{i}\tilde{j}}) = \tilde{\theta}_{(q,\tilde{s},\tilde{s}) \tilde{i}} - \tilde{\theta}_{(q,\tilde{s},\tilde{s}) \tilde{j}} +  \tilde{\alpha}_{q_0}$
 \item Transform $\text{logit}(\tilde{p}_{(q,\tilde{s},\tilde{k}) \tilde{i}\tilde{j}})$ into probability form to obtain an estimate of $\tilde{p}_{(q,\tilde{s},\tilde{k}) \tilde{i}\tilde{j}}$
-\item Repeat the above steps 1000 times
+\item Repeat the above steps 1000 times.
 \end{enumerate}
 
 The steps above were repeated for each $q$. Additionally, to remove the effect of each league's HA on simulated probabilities, we also repeated the process using a home advantage of 0 in each league (as if the game were played at a neutral site).
 
-Figure \ref{BestWin} shows the cumulative distribution functions for each set of probabilities. 
+Figure \ref{fig:BestWin} shows the cumulative distribution functions for each set of probabilities. 
 
 \begin{figure}[h]
 \includegraphics{figure/BestWin.pdf}
