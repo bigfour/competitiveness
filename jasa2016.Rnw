@@ -254,7 +254,7 @@ bigfour %>%
 @
 
 
-We also compared the observed probabilities of a home win to the corresponding probabilities implied by our betting market data (Figure~\ref{fig:betting}). In each of the four sports, the efficient market hypothesis cannot be rejected for any range of implied home win probabilities, based on visual inspection of a LOESS regression model. Thus, we find no evidence to suggest that the probabilities implied by our betting market data are biased or inaccurate---a conclusion that is supported by the body of academic literature referenced above. We thus interpret these probabilities ``true." 
+We also compared the observed probabilities of a home win to the corresponding probabilities implied by our betting market data (Figure~\ref{fig:betting}). In each of the four sports, the efficient market hypothesis cannot be rejected for any range of implied home win probabilities, based on visual inspection of a LOESS regression model. Thus, we find no evidence to suggest that the probabilities implied by our betting market data are biased or inaccurate---a conclusion that is supported by the body of academic literature referenced above. Accordingly, we interpret these probabilities ``true." 
 
 <<betting, fig.height=10, fig.cap="Accuracy of probabilities implied by betting markets. Each dot represents a bin of implied probabilities rounded to the nearst hundredth. The size of each dot (N) is proportional to the number of games that lie in that bin. We note that across all four major sports, the observed winning percentages accord with those implied by the betting markets. The dotted diagonal line indicates a completely fair market where probabilities from the betting markets correspond exactly to observed outcomes. In each sport, this diagonal line lies entirely within the standard error surrounding a LOESS regression line, suggesting that an efficient market hypothesis cannot be rejected.">>=
 bigfour_summary <- bigfour %>%
@@ -304,11 +304,9 @@ Let $p_{(q,s,k)ij}$ be the probability that team $i$ will beat team $j$ in seaso
 $$
 E[logit(p_{(q,s,k) ij})] = \theta_{(q,s,k) i} - \theta_{(q, s, k) j} + \alpha_{(q) i},
 $$
-\mike{I added the corresponding fit from the constant HA model. This comes next}
+\mike{Above should be conditional? Also, I added the corresponding fit from the constant HA model. This comes next}
 
-
-
-where $logit()$ is equivalent to the log-odds transform and $\alpha_{(q) i}$ is the home advantage (HA) parameter for a game played at the home of franchise $i$. In using the log-odds of victory, we have a cross-sport outcome that provides more information than only knowing which team won the game\ben{or what the score was?}. 
+where $logit()$ is equivalent to the log-odds transform and $\alpha_{(q) i}$ is the home advantage (HA) parameter for a game played at the home of franchise $i$. In using the log-odds of victory, we have a cross-sport outcome that provides more information than only knowing which team won the game or what the score was.
 
 Let ${\bf p}_{(q,s,k)}$ represent the vector of length $g_{(q,s,k)}$ (the number of games in week $k$ of season $s$ in league $q$) containing all of league $q$'s probabilities in week $k$ of season $s$. We then assume that
 \begin{eqnarray}
@@ -369,7 +367,7 @@ Our primary interest lies in three levels of variability with respect to the $\t
 
 Posterior distributions of each parameter are estimated using Markov Chain Monte Carlo (MCMC) methods. We used Gibbs sampling via the \pkg{rjags} package \citep{rjags} in the \R statistical computing environment to obtain posterior distributions, done separately for each $q$. Three chains---using 40,000 iterations after a burn-in of 2,000 draws, fit with a thin of 5 to reduce the autocorrelation within chains---yielded 8,000 posterior samples in each $q$. Visual inspection of trace plots with parallel chains are used to confirm convergence. Comparisons of Models (\ref{model.full}) and (\ref{model.red}) are made using the Deviance Information Criterion (DIC, \cite{spiegelhalter2002bayesian}).
 
-While we are unable to share our betting market data due to licensing restrictions, the data wrangling code, Gibbs sampling code, posterior draws, \st{game results}, and the code used to obtain posterior estimates and figures are all posted to a GitHub repository, available at \url{https://github.com/bigfour/competitiveness}.
+While we are unable to share our betting market data due to licensing restrictions, the data wrangling code, Gibbs sampling code, posterior draws, and the code used to obtain posterior estimates and figures are all posted to a GitHub repository, available at \url{https://github.com/bigfour/competitiveness}.
 
 
 \section{Results}
