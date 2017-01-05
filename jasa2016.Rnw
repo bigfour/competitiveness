@@ -597,26 +597,26 @@ tidy_betas %>%
 load("data/params.rda")
 library(xtable)
 params %>%
+  select(-alpha) %>%
   mutate(sport = toupper(sport), sigma_w = sqrt(sigma_w), sigma_g = sqrt(sigma_g), sigma_s = sqrt(sigma_s)) %>%
   tidyr::gather(key = "param", value = "val", -sport) %>%
   group_by(sport, param) %>%
   summarize(med.sport = median(val), lb = quantile(val, 0.025), ub = quantile(val, 0.975)) %>%
-  mutate(CI = paste(round(med.sport, 3), " (", round(lb, 3), ", ", round(ub, 3),")", sep = "")) %>% 
+  mutate(CI = paste(round(med.sport, 2), " (", round(lb, 2), ", ", round(ub, 2),")", sep = "")) %>% 
   select(sport, param, CI) %>%
   tidyr::spread(param, CI) %>%
-  rename(`$\\alpha_{q_0}$` = alpha, 
-         `$\\gamma_{q, week}$` = gamma_w, 
+  rename(`$\\gamma_{q, week}$` = gamma_w, 
          `$\\gamma_{q, season}$` = gamma_s, 
          `$\\tau_{q, week}$` = sigma_w, 
          `$\\tau_{q, season}$` = sigma_s, 
          `$\\tau_{q, game}$` = sigma_g, 
          `Sport ($q$)` = sport) %>%
-  xtable(caption = "Median posterior draw (and 95% credible intervals) by league.", 
+  xtable(caption = "Median posterior draw (and 95 percent credible intervals) by league.", 
          digits = 3, label = "tab:params") %>%
   print(include.rownames = FALSE, sanitize.text.function = identity)
 @
 
-Table \ref{tab:params} shows the median posterior draw, along with 95\% credible intervals, for $\alpha_{q_0}$, $\gamma_{q, season}$, $\gamma_{q, week}$ $\tau_{q, game}$, $\tau_{q, season}$, and $\tau_{q, week}$ for each $q$. 
+Table \ref{tab:params} shows the median posterior draw, along with 95\% credible intervals, for $\gamma_{q, season}$, $\gamma_{q, week}$ $\tau_{q, game}$, $\tau_{q, season}$, and $\tau_{q, week}$ for each $q$. 
 
 Posterior draws of $\tau_{q, game}$ suggest the highest game-level errors in the NBA (median posterior draw of $\tau_{NBA, game}$ = 0.273), followed in order by $\tau_{NFL, game}$, $\tau_{MLB, game}$, and $\tau_{NHL, game}$. Interestingly, although its posterior distribution of team strength estimates was relatively narrow, MLB's game-level error rate, $\tau_{MLB, game}$, is relatively similar to $\tau_{NFL, game}$, at around 0.20. We posit that this additional game-level error in MLB is a function of the league's pitching match-ups, in which teams rotate through a handful of starting pitchers of varying calibers.
 
