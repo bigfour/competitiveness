@@ -1,6 +1,7 @@
 library(dplyr)
 # tidy the MCMC output
 source("config.R")
+set.seed(0)
 
 library(dplyr); library(ggplot2)
 sports <- c("mlb", "nba", "nfl", "nhl")
@@ -183,10 +184,7 @@ cdf.dfHA <- data.frame(Probability = rep(z, 4),
 cdf.all <- rbind(cdf.df, cdf.dfHA)
 
 
-ggplot(filter(cdf.all, Type == "No HA"), 
-       aes(Probability, cdf, colour = sport)) + 
-  geom_line() +
-  geom_line(data = filter(cdf.all, Type == "HA"), 
-            aes(Probability, cdf, colour = sport), lty = )
-
+### Area under the curve
+cdf.all %>% group_by(sport, Type) %>%
+  summarise(AUC = (length(z) - sum(cdf))/length(z))
 
