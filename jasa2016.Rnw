@@ -594,7 +594,7 @@ tidy_betas %>%
 
 
 Table \ref{tab:params} shows the median posterior draw, along with 95\% credible intervals, for $\gamma_{q, season}$, $\gamma_{q, week}$ $\tau_{q, game}$, $\tau_{q, season}$, and $\tau_{q, week}$ for each $q$. 
-
+\mike{I want to use three digits here but the table is too wide. Thoughts?}
 <<echo=FALSE, results='asis'>>=
 load("data/params.rda")
 library(xtable)
