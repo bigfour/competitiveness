@@ -43,7 +43,7 @@ points(1:len, league[[2]][3,,3], col = "blue", type = "l")
 
 #### Labels for ggplot
 param_names <- list(
-  'alpha' = expression(alpha),
+  'alpha' = expression(alpha[q[o]]),
   'gammaSeason' = expression(gamma[season]),
   'gammaWeek' = expression(gamma[week]),
   'sigma' = expression(tau[game]),
