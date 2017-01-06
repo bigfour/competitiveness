@@ -673,7 +673,7 @@ As in \cite{glickman1998state}, we also observe an inverse link in posterior dra
 
 Figure \ref{fig:alphaAll} shows the 2.5th, median, and 97.5th draws of each team's estimated home advantage parameter, presented on the log-odds scale. These are calculated by summing draws of $\alpha_{q_0}$ with $\alpha_{(q)i}$ for all $i$. The leagues are overlaid (in order) to provide a sense of the magnitude of differences between the home advantage provided in the MLB (increased log-odds of a home win around 0.16, or about $e^{0.16} - 1 = 17$\% higher), NHL (0.22, or 25\%), NFL (0.36, or 43\%), and NBA (0.50, or 62\%).  The two franchises that have relocated in the last decade, the Atlanta Thrashers (NHL) and Seattle Supersonics (NBA), are also included for the games played in those respective cities. 
 
-<<>>=
+<<ha-plot>>=
 ## Home advantage plots
 load("data/tidy_alphas.rda")
 library(ggplot2)
@@ -705,7 +705,9 @@ for (i in 1:nrow(datbetas.null)){
   gg1 <- gg1 + geom_text(data = df.text, aes(x = x, y = y, label = team, hjust = "left"), 
                          colour=df.temp$primary, size = 3)
 }
+@
 
+<<ha-plot-full>>=
 gg2 <- gg1  + coord_flip() + facet_wrap(~sport) + 
   xlab("") + ylab("") +
   theme_grey(base_size = 12)  +  
@@ -715,8 +717,9 @@ gg2 <- gg1  + coord_flip() + facet_wrap(~sport) +
        axis.title.y=element_blank()) + 
   scale_y_continuous(labels = c("0.00", "0.25", "0.50", "0.75"), breaks = c(0:3)/4) + 
   scale_x_continuous()
+@
 
-
+<<ha-plot-summary>>=
 ## Alternative plot
 load("data/tidy_alphas.rda")
 tidy_alphas <- tidy_alphas %>%
@@ -738,7 +741,8 @@ breaks <- c(exp.fun(0.5), exp.fun(0.55), exp.fun(0.6), exp.fun(0.65),
 labels <- paste0(seq(50, 70, by = 5), "%")
 
 gg3 <- ggplot(tidy_alphas, aes(sport, alpha.team.overall)) + 
-  geom_dotplot(binaxis = "y", stackdir = "center", binwidth = 0.005) + coord_flip() + geom_point(data = tidy_alphas.limits, 
+  geom_dotplot(binaxis = "y", stackdir = "center", binwidth = 0.005) + 
+  coord_flip() + geom_point(data = tidy_alphas.limits, 
                   aes(sport, alpha.team.overall), size = 0.5) +
   geom_text(data = tidy_alphas.limits, 
                   aes(sport, alpha.team.overall, label = team.name), 
@@ -749,8 +753,38 @@ gg3 <- ggplot(tidy_alphas, aes(sport, alpha.team.overall)) +
   labs(title = "Probability of beating an equal caliber opponent at home")
 @
 
-<<alphaAll, fig.height = 10.8, fig.width = 8, fig.cap="Median posterior draw (with 2.5th, 97.5th quantiles) of each franchise's home advantage intercept, on the log odds scale">>=
-gg2 
+<<ha-plot-simple>>=
+tidy_alpha_prob <- tidy_alphas %>%
+  mutate(alpha_prob = mosaic::ilogit(alpha.team.overall), 
+         top_half = alpha_prob < 0.58)
+tidy_alpha_summary <- tidy_alpha_prob %>%
+  group_by(sport) %>%
+  summarize(N = n(), median_ha = median(alpha_prob))
+
+gg4 <- ggplot(data = tidy_alpha_prob, 
+              aes(y = alpha_prob, 
+                  x = reorder(team, alpha_prob), 
+                  color = sport)) + 
+  geom_hline(data = tidy_alpha_summary, alpha = 0.5,
+             aes(yintercept = median_ha, color = sport)) + 
+  geom_errorbar(aes(ymin = mosaic::ilogit(alpha.team.lower), 
+                    ymax = mosaic::ilogit(alpha.team.upper))) +
+  geom_point() + 
+  coord_flip() + 
+  scale_x_discrete(NULL) + 
+  scale_y_continuous("Probability of beating an equal caliber opponent at home", 
+                     breaks = tidy_alpha_summary$median_ha, 
+                     labels = round(tidy_alpha_summary$median_ha, 3),
+                     minor_breaks = NULL) + 
+  ggtitle("Estimated Home Advantage by Franchise")
+@
+
+<<alphaAll, fig.height = 10.8, fig.width = 8, fig.cap="Median posterior draw (with 2.5th, 97.5th quantiles) of each franchise's home advantage intercept, on the probability scale. We note that the magnitude of home advantages are strongly segregated by sport, with only one exception (the Colorado Rockies). We also note that no NFL team, nor any MLB team other than the Rockies, has a home advantage whose 95\\% credible interval does not contain the league median. ">>=
+gg4 + theme(axis.text = element_text(size = 7))
+# This will facet, but I think it is too confusing
+# + facet_wrap(~top_half, scales = "free_y") + 
+#  theme(strip.background = element_blank(),
+#        strip.text.x = element_blank())
 @
 
 
