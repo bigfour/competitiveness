@@ -944,7 +944,9 @@ For more than 90\% of MLB and NHL games played at neutral sites, match-ups are l
 
 The importance of each league's home advantage also makes a meaningful difference. When the best team plays at home in the NBA, that squad is almost always favored to win 60\% of the time, with the middle 50\% of games ranging from a 70\% probability to an 84\% probability. Meanwhile, even with a home advantage, it is rare that the best MLB team is $ever$ given a 70\% probability of winning, with the middle 50\% of games ranging from 56\% to 63\%. 
 
-\mike{This is still a work in progress. Think the best idea is to tie into area under curve. Highest area = 1 = complete parity, lowest area = 0 = no parity}
+\mike{This is still a work in progress. Think the best idea is to tie into area under curve. Highest area = 1 = complete parity, lowest area = 0 = no parity. R code for trapezoid area here
+
+http://stats.stackexchange.com/questions/145566/how-to-calculate-area-under-the-curve-auc-or-the-c-statistic-by-hand}
 
 Finally, we can quantify the proximity of each league's game-level probabilities to coin flips by comparing the approximate area between each CDF and vertical line at probability 0.5, which reflects the CDF that would be observed if all teams were of equal team strength.  Let $Parity_q$ be our parity measure, such that
 
