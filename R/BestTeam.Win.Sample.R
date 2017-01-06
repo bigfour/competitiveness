@@ -187,7 +187,7 @@ cdf.all2 <- rbind(cdf.df, cdf.dfHA)
 
 
 ### Area under the curve
-cdf.all2 %>% group_by(sport, Type) %>%
+cdf.all2 %>% group_by(Type, sport) %>%
   summarise(AUC = 2*sum(diff(Probability)*rollmean(cdf,2)))
 
 x <- z
