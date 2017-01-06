@@ -8,6 +8,7 @@ get_sport <- function(sport) {
   message(paste("reading", sport, "data..."))
   load(file.path(mcmc_dir, paste0(sport, "_9_23_teamHFA.RData")))
   out <- data.frame(
+    sigma_g = 1/z$sigma[,,1],
     sigma_w = 1/z$sigmab[,,1],
     sigma_s = 1/z$sigmabSeason[,,1],
     gamma_w = z$gammaWeek[,,1],
@@ -28,6 +29,8 @@ params <- lapply(dat, function(x) { return(x[["out"]]) } ) %>%
   bind_rows()
 # save the params
 save(params, file = file.path(root, "data", "params.rda"), compress = "xz")
+
+
 
 betas <- lapply(dat,function(x){return(x[["beta"]])})  
 names(betas) <-  sports
