@@ -1,7 +1,6 @@
 library(dplyr)
 # tidy the MCMC output
 source("config.R")
-set.seed(0)
 
 library(dplyr); library(ggplot2)
 sports <- c("mlb", "nba", "nfl", "nhl")
@@ -79,13 +78,9 @@ betas2 <- betas.sport[season, week, teams[2],sample(1:4000, 1),sample(1:3, 1)]
 
 ## Step 5b: ensure team1 is better team
 
-team1.mean <- mean(betas.sport[season, week, teams[1],,])
-team2.mean <- mean(betas.sport[season, week, teams[2],,])
-if (team2.mean > team1.mean){
-  betas1 = betas1 + betas2
-  betas2 = betas1 - betas2
-  betas1 = betas1 - betas2
-}
+#team1.mean <- mean(betas.sport[season, week, teams[1],,])
+#team2.mean <- mean(betas.sport[season, week, teams[2],,])
+
 
 ## Step 6
 sport_ <- sport
@@ -96,16 +91,22 @@ HA <- sample(HA.league$alpha, 1)
 ## Step 7
 sigma.league <- params %>% mutate(sigma_game = sqrt(sigma_game)) %>% 
   select(sigma_game) 
-sigma <- sample(sigma.league$sigma_game, 1)
-sigma <- 0
+sigma <- sample(sigma.league$sigma_game, 1)*sample(c(1,-1), 1)  
+## Could be positive or negative
+#sigma <- 0
 
 ## Step 8
 
-prob.sim <- exp(0 + betas1 - betas2 + sigma)/
-  (1 + exp(0 + betas1 - betas2 + sigma))
+## Log odds would be positive if Team 1 better on that draw, negative if Team 2 better on that draw
+## Take the absolute value to ensure all probabilities start at 0.5 to reflect the "Favorite"
+log.odds <- abs(betas1 - betas2 + sigma)
 
-prob.simHA <- exp(HA + betas1 - betas2 + sigma)/
-  (1 + exp(HA + betas1 - betas2 + sigma))
+
+prob.sim <- exp(0 + log.odds)/
+  (1 + exp(0 + log.odds))
+
+prob.simHA <- exp(HA + log.odds)/
+  (1 + exp(HA + log.odds))
 
 probs.sport <- c(probs.sport, prob.sim)
 probs.sportHA <- c(probs.sportHA, prob.simHA)
@@ -113,7 +114,7 @@ probs.sportHA <- c(probs.sportHA, prob.simHA)
 
 return(list(Probs = probs.sport, ProbsHA = probs.sportHA))
 }
-
+set.seed(0)
 nba <- fun.bestwin("nba", betas$nba)
 nhl <- fun.bestwin("nhl", betas$nhl)
 mlb <- fun.bestwin("mlb", betas$mlb)
@@ -131,8 +132,8 @@ p <- ggplot(cdf.all) + stat_ecdf(aes(probs, colour = sport)) +
   ggtitle("How often does the best team win?") + 
   geom_vline(xintercept = 0.5, colour = "black", lty = 5) + 
   labs(subtitle = "Solid: neutral site, Dashed: home game for better team") +
-  xlab("Simulated win probability") + ylab("CDF") + xlim(0.4, 1.0)
-ggsave(plot = p, width = 5, height = 3.5, filename = "figure/BestWin.pdf")
+  xlab("Simulated win probability") + ylab("CDF") + xlim(0.5, 1.0)
+ggsave(plot = p, width = 6, height = 3.5, filename = "figure/BestWin.pdf")
 
 
 
@@ -144,7 +145,7 @@ ggsave(plot = p, width = 5, height = 3.5, filename = "figure/BestWin.pdf")
 
 ### CDFs without HA
 P <- ecdf(nfl$Probs)
-z <- seq(0.4, 1, by = 0.00001)
+z <- seq(0.5, 1, by = 0.00001)
 nfl.cdf <- P(z)
 
 P <- ecdf(nba$Probs)
@@ -166,7 +167,7 @@ cdf.df <- data.frame(Probability = rep(z, 4),
 
 ### CDFs with HA
 P <- ecdf(nfl$ProbsHA)
-z <- seq(0.4, 1, by = 0.00001)
+z <- seq(0.5, 1, by = 0.00001)
 nfl.cdf <- P(z)
 
 P <- ecdf(nba$ProbsHA)
@@ -186,10 +187,15 @@ cdf.all2 <- rbind(cdf.df, cdf.dfHA)
 
 
 ### Area under the curve
-cdf.all %>% group_by(sport, Type) %>%
-  summarise(AUC = (length(z) - sum(cdf))/length(z))
+cdf.all2 %>% group_by(sport, Type) %>%
+  summarise(AUC = 2*sum(diff(Probability)*rollmean(cdf,2)))
+
+x <- z
+y <- nhl.cdf
+id <- order(x)
+AUC <- sum(diff(z)*rollmean(y,2))
 
 
-cdf.all %>% mutate(dist.50 = abs(probs - 0.5), dist.50H = abs(probsH - 0.5)) %>%
-  group_by(sport) %>% summarise(ave.dist = mean(dist.50), ave.distH = mean(dist.50H))
+#cdf.all %>% mutate(dist.50 = abs(probs - 0.5), dist.50H = abs(probsH - 0.5)) %>%
+#  group_by(sport) %>% summarise(ave.dist = mean(dist.50), ave.distH = mean(dist.50H))
 
