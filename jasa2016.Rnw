@@ -917,7 +917,7 @@ Across each sport, our estimates of team strength consistently outperform past t
 
 One of our initial questions regarded the inherent randomness of game outcomes. While sportsbook odds can approximate the probability of each team winning, these odds are only provided for scheduled games. As a result, any between-league comparisons would be contingent upon each league's schedule. 
 
-To better assess the equivalence of all teams teams in each league, we consider the likelihood that, given any pair of teams chosen at random, the better team won. If the better team in a randomly chosen match-up wins more often, it would correspond to a sport with less inherent randomness. Using our posterior draws, we approximate the distribution of game-level probabilities between two randomly chosen teams using the following steps.
+To better assess the equivalence of all teams teams in each league, we consider the likelihood that, given any pair of teams chosen at random, the better team won. For our purposes, we define the $better$ team to be the one $better$, a priori, for that given game, whih is a function of both team strength and inherent game level error. If the better team in a randomly chosen match-up wins more often, it would correspond to a sport with less inherent randomness. Using our posterior draws, we approximate the distribution of game-level probabilities between two randomly chosen teams using the following steps.
 
 Given sport $q$ with season length $k^{\star}_{q}$, number of seasons $s^{\star}_{q}$, and number of teams $t_{q}$, 
 
