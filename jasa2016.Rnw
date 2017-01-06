@@ -210,10 +210,8 @@ We are not aware of any published findings that have compared leagues using impl
 We begin by confirming the accuracy of betting market data with respect to game outcomes. Regular season game result and betting line data in the four major North American professional sports leagues (MLB, NBA, NFL, and NHL) were obtained for a nominal fee from Sports Insights (\url{https://www.sportsinsights.com}). Although these game results are not official, they are accurate and widely-used. The 2006--2016 seasons were included in our models, except for the NFL, which used only the 2006--2015 seasons.
 
 <<include=FALSE>>=
-load("data/bigfour.rda")
-library(dplyr)
-bigfour <- bigfour %>% 
-  mutate(sport = toupper(sport)) %>% 
+load("data/bigfour.rda"); library(dplyr)
+bigfour <- bigfour %>% mutate(sport = toupper(sport)) %>% 
   arrange(sport, Date)
 head(bigfour)
 mosaic::favstats(~vig, data = bigfour)
@@ -914,6 +912,7 @@ gg.r2
 
 Across each sport, our estimates of team strength consistently outperform past team win percentage as far as predicting future win percentage. This gap is most pronounced earlier in each season, which is not surprising given the fluctuations in won-loss percentage in a small number of games, as well as the fact that our model borrows information from the future when assessing team talent. Differences in predictive accuracy remain through most of the regular season in the NHL, MLB, and the NFL, while by the NBA's mid-season, won-loss ratio and our estimates of team strength are similar in assessing future performance. Altogether, results suggest that across seasons and sports, team strength estimates from a state-space model more completely judge team talent than won-loss percentage. 
 
+
 \subsection{How often does the best team win?  A better measure of league parity}
 
 One of our initial questions regarded the inherent randomness of game outcomes. While sportsbook odds can approximate the probability of each team winning, these odds are only provided for scheduled games. As a result, any between-league comparisons would be contingent upon each league's schedule. 
@@ -956,6 +955,7 @@ Finally, we use the CDF curves displayed above to quantify the proximity of each
 $Parity_q = 2*\int_{0.5}^1 P(\tilde{p}_{q, sim} \leq x) dx$. We multiply by 2 to scale so that $0 \leq Parity_q \leq 1$, where 1 represents complete parity (every game a coin flip) and 0 represents no parity (every game outcome pre-determined) \mike{Tie to AUC?}
 
 For games with no home advantage, $Parity_{MLB} = 86\%$, followed by the NHL (83\%), NFL (68\%), and NBA (64\%). When the best team has a home advantage, parity is again the greatet in the MLB (79\%), followed by the NHL (73\%), NFL (54\%), and NBA (46\%). Taken wholly, this suggests that when the best team is playing at home, the NBA is closer to a world where every game outcome is pre-determined than to one where every game outcome is a coin flip. Meanwhile, even when giving the best team a HA, baseball game outcomes remain lightly-weighted coin flips. 
+
 
 \section{Conclusion}
 
