@@ -99,7 +99,7 @@ Given both national public interest and an academic curiosity that has extended 
 
 However, because randomness manifests differently in different sports, a limitation of sport-specific models is that inferences cannot generally be applied to other competitions. As a result,  researchers who hope to contrast one league to another often focus on the one outcome common to all sports: won-loss ratio. Among other flaws, measuring team strength using wins and losses performs poorly in a small sample size, ignores the game's final score (which is known to be more predictive of future performance than won-loss ratio \citep{boulier2003predicting}), and is unduly impacted by, among other sources, fluctuations in league scheduling, season length, injury to key players, and the general advantage of playing at home. As a result, until now, analysts and fans have never quite been able to quantify inherent differences between sports with respect to randomness and the dispersion and evolution of team strength. We aim to fill this void. 
 
-In the sections that follow, we present a novel approach for estimating team ability that accounts for league scheduling differences, measures each team's home advantage, and uncovers inherent differences in North American sport. First, we validate an assumption that game-level probabilities provided by betting markets provide unbiased and low-variance estimates of the true probabilities of wins and losses in each professional contest. Second, we implement a modified Bayesian state-space model that uses these probabilities to capture implied team strength and variability. Next, by examining posterior estimates of within and between season variability, as well as the overall dispersion in team strength estimates, we present unique league-level contrasts that to this point have been difficult to capture. Finally, we conclude by showing that our estimates of team strength improve upon won-loss ratio with respect to correlating to future performance, and use our posterior draws propose a novel metric of assessing parity.  We find that, on account of both narrower talent distributions and smaller home advantages, a typical contest in the NHL or MLB is much closer to a coin-flip than one in the NBA or NFL. Additionally, the NHL (from one season to the next) and NBA (from one week to the next) boast the least consistency in team strength estimates over time.
+In the sections that follow, we present a novel approach for estimating team ability that accounts for league scheduling differences, measures each team's home advantage, and uncovers inherent differences in North American sport. First, we validate an assumption that game-level probabilities provided by betting markets provide unbiased and low-variance estimates of the true probabilities of wins and losses in each professional contest. Second, we implement a modified Bayesian state-space model that uses these probabilities to capture implied team strength and variability. Next, by examining posterior estimates of within and between season variability, as well as the overall dispersion in team strength estimates, we present unique league-level contrasts that to this point have been difficult to capture. Finally, we conclude by showing that our estimates of team strength improve upon both won-loss ratio and point differential with respect to correlating to future performance, and use our posterior draws propose a novel metric of assessing parity.  We find that, on account of both narrower talent distributions and smaller home advantages, a typical contest in the NHL or MLB is much closer to a coin-flip than one in the NBA or NFL. Additionally, the NHL (from one season to the next) and NBA (from one week to the next) boast the least consistency in team strength estimates over time.
 
 \subsection{Review}
 
@@ -811,17 +811,14 @@ As one important caveat, our models do not account for varying line-up and injur
 
 \subsection{Validation of team strength estimates}
 
-We conclude with a comparison of our team strength estimates to won-loss percentage. Ultimately, estimates from Model~(\ref{model.full}) are designed to estimate team quality at any given point in a season. If these estimates more properly assess team quality than won-loss percentage, they should more accurately assess future performance, such as how well teams will do over remaining games in a season.  
+We begin the final steps of our analysis by comparing our team strength estimates to won-loss percentage and point differential. Ultimately, estimates from Model~(\ref{model.full}) are designed to estimate team quality at any given point in a season. If these estimates more properly assess team quality than won-loss percentage and point differential, they should more accurately assess future performance, such as how well teams will do over remaining games in a season.  
 
-Figure~\ref{fig:R2} shows the coefficient of determination comparing each team's future won-loss percentage in a season to both (i) our team strength estimates and (ii) each team's past won-loss percentage. Within each sport, this is done by game number, which helps to account for league-level differences in season length. For purposes of using our team strength estimates, we took the mean posterior draw for each team in each week a particular contest was played. The lockout-shortened seasons in the NBA (2012) and NHL (2013) were dropped.
+Figure~\ref{fig:R2} shows the coefficient of determination comparing each team's future won-loss percentage in a season to (i) our team strength estimates, (ii) each team's past cumulative point differential, and (iii) each team's past won-loss percentage. Within each sport, this is done by game number, which helps to account for league-level differences in season length. For purposes of using our team strength estimates, we took the mean posterior draw for each team in each week a particular contest was played. The lockout-shortened seasons in the NBA (2012) and NHL (2013) were dropped.
 
 <<>>=
 load("data/bigfour.rda")
 load("data/tidy_betas.rda")
 bigfour <- bigfour %>% arrange(sport, Date)
-head(bigfour)
-
-
 min.day <- bigfour %>%
   group_by(sport, season) %>%
   summarise(min.day = min(gameDate), max.day = max(gameDate))
@@ -849,14 +846,11 @@ date.home <- bigfour1 %>%
   mutate(win = home_win) %>%
   select(-home_win)
 
-
-
 stack.game <- rbind(date.vis, date.home)
 stack.game <- stack.game %>%
   arrange(sport, season, team, day) 
 
-
-n.season <- data.frame(sport = c("nhl", "nba", "mlb", "nfl"), season.n = c(82, 20, 162, 16))
+n.season <- data.frame(sport = c("nhl", "nba", "mlb", "nfl"), season.n = c(82, 82, 162, 16))
 
 stack.game1 <- stack.game %>%
   group_by(season, team) %>%
@@ -868,9 +862,7 @@ stack.game1 <- stack.game %>%
   #filter(!(sport == "nba" & n.game > 20))
 
 stack.game1 <- filter(stack.game1, !(season==2012&sport == "nba"),
-                      !(season==2013 & sport == "nhl"), !(season==2007 & sport == "nfl"))
-
-
+                      !(season==2013 & sport == "nhl"))
 
 
 ####################################################
@@ -988,8 +980,7 @@ gg.r2 <- ggplot(all.sport.both, aes(day.season, corr.day, lty = type)) +
 gg.r2
 @
 
-Across each sport, our estimates of team strength consistently outperform past team win percentage as far as predicting future win percentage. This gap is most pronounced earlier in each season, which is not surprising given the fluctuations in won-loss percentage in a small number of games, as well as the fact that our model borrows information from the future when assessing team talent. Differences in predictive accuracy remain through most of the regular season in the NHL, MLB, and the NFL, while by the NBA's mid-season, won-loss ratio and our estimates of team strength are similar in assessing future performance. Altogether, results suggest that across seasons and sports, team strength estimates from our state-space model more completely judge team talent than won-loss percentage. 
-
+Across each sport, our estimates of team strength consistently outperform past team win percentage and point differential as far as predicting future win percentage. This gap is most pronounced earlier in each season, which is not surprising given the fluctuations in won-loss percentage and point differential in a small number of games, as well as the fact that our model borrows information from the future when assessing team talent. Differences in predictive accuracy remain throughout most of the regular season in the NHL, MLB, and the NFL, while by the NBA's mid-season, won-loss ratio and point differential are similar to our estimates of team strength in assessing future performance. Altogether, results suggest that across seasons and sports, team strength estimates from our state-space model more completely judge team talent than won-loss percentage and point differential. 
 
 \subsection{How often does the best team win?  A better measure of league parity}
 
@@ -1047,7 +1038,7 @@ Our second set of findings relates to the autoregressive nature of team strength
 
 Our next finding relates to the relative equivalence of the home advantage in each league, with the NBA well ahead of the pack, showing, on average, a \Sexpr{round(leagues$mean.sport[2], 3)} increase on the log-odds of a home win (which corresponds to a win probability of \Sexpr{100*round(exp(leagues$mean.sport[2])/(1+exp(leagues$mean.sport[2])), 3)}\% against a like-caliber opponent). We also show that the home advantage varies most significantly between arenas within each of the NBA and the NHL. In the NBA, for example, the league's best team home advantage is worth a few wins per year, in expectation, over the league's worst home advantage. 
 
-Finally, we identify that incorporating information from betting markets can help to more accurately gauge the caliber of each league's teams, as shown by more accurate forecasts of future team performance. Unlike wins and losses, our estimates of team strength account for league characteristics such as unbalanced schedules and season length. We conclude by using these team strength draws to propose a parity metric that can compare team equivalence without being impacted by league-level characteristics like unbalanced schedules. 
+Finally, we identify that incorporating information from betting markets can help to more accurately gauge the caliber of each league's teams, as shown by more accurate forecasts of future team performance. Unlike wins and losses or point differential, our estimates of team strength account for league characteristics such as unbalanced schedules and season length. We conclude by using these team strength draws to propose a parity metric that can compare team equivalence without being impacted by league-level characteristics like unbalanced schedules. 
 
 Opportunities to extend our model are plentiful. One approach would use our team strength estimates to examine how each league's scheduling quirks impact resulting won-loss standings. As an example, what is the impact of the NFL using an unbalanced schedule? A second task would link our estimates of team strength to performance in the postseason. How likely is it for the best team to win each league's title? Alternatively, how likely is it for the best team in each league to win a 7-game series? Finally, one could use time-varying estimates of team strength to consider the existence of tanking, in which teams---in order to secure a better draft position---are better off losing games later in the season. While this has been demonstrated in basketball using betting market data \citep{soebbing2013gamblers}, it would also be worth looking at tanking in other leagues, or if team interest in tanking corresponds to the perceived talent available in the upcoming draft.
 
@@ -1114,123 +1105,6 @@ nfl.team
 <<spaghetti-nhl, out.extra='angle=90', out.width='\\textheight', fig.height=7, fig.width = 9, fig.cap="Team strength coefficients over time for the National Hockey League.">>=
 nhl.team
 @
-
-
-\section{Appendix}
-
-
-\citep{humphreys2002alternative} derives the `Competitive Balance Ratio' to assess between season changes in standings.  CBR is a function of within team variation (over time) and between team variation (within a season), measured using win percentage. It can account for varying season lengths, and potentially boasts positive links to attendance. 
-
-\cite{lenten2015measurement} proposed measurements of competitive balance to account for conference and division-based unbalanced scheduling. Implementing on the NFL, it is suggested that teams with high win ratios have generally played easier schedules, and teams with low win ratios have tended to play more difficult schedules. `The Seahawks effectively had an advantage of more than 8.6 wins over 10 seasons distributed to them via mere virtue of the schedule.'
-
-Hirfindahl-Hirschman Indexes (HHI) measure of competitive balance looks at the concentration of championships or other related outcomes (such as finishing in first place in a division).
-
-Noll-Scully most common metric of assessing competitive balance \citep{noll1988professional, scully1989business}. N-S is the ratio of the observed standard deviation of number of wins and the idealized standard deviation, that which would have been observed under binomial distribution (Ex: ISD in NFL = 8/sqrt(16)). N-S is influence by season length (fluctuation of observed SD, and influence of ISD). In general, N-S increasing in terms of number of games played. 
-
-
-Gini coefficient as one measure of within season inequality of league outcomes, comparing proportion of the total wins of the population which has been cumulatively earned by the bottom proportion of teams, relative to idealized value. Issues with Gini given unbalanced schedule, inter-league play \citep{utt2002pitfalls}. 
-
-\cite{lee2009competitive} contrasts parity in the NFL before and after the 1993 collective bargaining agreement, finding interseasonal parity, as measured by looking at winning percentages, increased as a result. The author finds first-order autoregressive nature to winning percentages; with coefficients suggesting team win percentages will revert towards league average about 70\%. 
-
-\cite{fort2007structural} identify that most break points in the four major sports, including expansion and team relocation, have corresponded with increased competitive balance. As a result, leagues tend to be more balanced than in the past.
-
-\citep{owen2010limitations, owen2015competitive} uses simulations to identify that RSD is sensitive to changes in season length when there are imbalances in team strength. Team strength parameters for the simulations are estimated using BTM. ASD (RSD without dividing by ISD) less sensitive to changes in season length, although it tends to overestimate imbalance in shorter seasons. Additionally, RSD has an upper bound that is a function of games played \citep{owen2010limitations}. 
-
-
-\subsection{Additional notes}
-
-Points from \citep{glickman2016estimating}: 
-
-Restriction of $\rho$ so that stochastic process on $\theta_{jt}$ is stationary. Considered to be a normal linear state space model and is also example of the Kalman filter (see paper for citations). 
-
-
-
-
-Suggestion for varying HA in hockey: West coast teams more consistently awarded rest advantages (suggested by Mike's hockey people).  
-
-
-
-
-Notes on DIC \url{https://users.soe.ucsc.edu/~draper/rjags.pdf} The problem of determining what is a noteworthy difference in DIC (or other penalized deviance) between two models is currently unsolved. Following the results of Ripley (1996) on the Akaike Information Criterion, Plummer (2008) argues that there is no absolute scale for comparison of two penalized deviance statistics, and proposes that the difference should be calibrated with respect to the sample standard deviation of the individual contributions from each observed stochastic node.
-
-Gelman \url{http://andrewgelman.com/2011/06/22/deviance_dic_ai/} One of my practical problems with DIC is that it seems to take a lot of simulations to calculate it precisely. Long after we’ve achieved good mixing of the chains and good inference for parameters of interest and we’re ready to go on, it turns out that DIC is still unstable. In the example in our book we ran for a zillion iterations to make sure the DIC was ok.
-
-
-
-\subsection{Uncertainty of postseason tournaments}
-
-One application of our work extends estimated team strengths to explore the each league's respective postseason. The four leagues all use a knockout-style postseason tournament, in which teams with stronger regular season performances are matched against weaker teams, with the winner advancing to future rounds. In MLB, the NHL, and the NBA, match-ups use a series format, where the series winner is generally determined by which of the two participating teams wins the majority of games. Generally, series lengths are capped at seven games (MLB, for example, also uses five game series in earlier rounds), with the series winner being the first team to win four games. Informally, these are known as `best of 7' series. In these formats, one team is given a home advantage, which allows for one extra home game over the duration of the series. Traditionally, the team with the stronger regular season performance receives the extra home game, although leagues allow for slight adaptations of this requirement. In contrast to the other three leagues, NFL postseason tournaments have consisted only of compilations of one game competitions.
-
-Leagues also differ with respect to the number of teams eligible for postseason play. As of 2016, 10 (MLB), 12 (NFL), and 16 (NFL, NBA) teams make the postseason in each season, although for the duration of our data, MLB used only 8 teams each year. Given these general guidelines, we assess the randomness of postseason formats by comparing the top 8 teams in each league.
-
-Let $\theta_{q,s,k,i} | \bf{X}_{q,s,k}, \bf{J}_{g_{q,s,k}}$ be the posterior distribution of the estimated team strength of $i$ at week $k$, estimated using $\widehat{\theta}_{q,s,k,i}$ (the 8,000 posterior estimates drawn from our Bayesian model). Teams in league $q$ at season $s$ were ranked based on $\bar{\widehat{\theta}}_{q, s, i}$, where
-
-\begin{eqnarray} 
-\bar{\widehat{\theta}}_{q, s, i} = (\widehat{\theta}_{q,s,(k_q - 4), i} + \widehat{\theta}_{q,s,(k_q - 3), i} + \widehat{\theta}_{q,s,(k_q - 2), i} + \widehat{\theta}_{q,s,(k_q-1), i}+ \widehat{\theta}_{q,s,(k_q), i})/5, \nonumber
-\end{eqnarray}
-
-\noindent the average posterior team strength of $i$ over the last five weeks of the regular season. These draws are meant to roughly reflect team quality entering the postseason; five weeks are used in place of using $k_q$ alone to account for the possibility that top performing teams rest top players in the final few games, thereby lowering their perceived team quality.
-
-Next, let $\bar{\widehat{\theta}}_{q,s, |r|}$ be the $r^{th}$ ranked team strength in sport $q$ in season $s$. For example, $\bar{\widehat{\theta}}_{MLB,2005,|1|} = 0.499$ represents the average posterior draw of team strength for 2005 New York Yankees, which ranks first in MLB for that season. To simulate a `best of $n$' series between the first ranked team (team $i_1$, where $\bar{\widehat{\theta}}_{q,s,|i_1|}$ = $\bar{\widehat{\theta}}_{q,s,|1|}$) and the second ranked team ($i_2$), the following procedure was used in each $q$ and $s$. 
-
-\begin{enumerate}
-
-
-\item Draw $n$ samples from each of $\widehat{\theta}_{q,s, i_1}$ and $\widehat{\theta}_{q,s, i_2}$, respectively, labeled as $\widetilde{\theta}_{q,s, i_1}$ amd $\widetilde{\theta}_{q,s, i_2}$, respectively.
-
-\item Draw $n$ samples from the posterior distribution of $\alpha_q | \bf{X}_{q,s,k}, \bf{J}_{g_{q,s,k}}$, labeled as $\widetilde{\alpha}_q$. 
-
-\item Estimate $\widetilde{logit}(p_{q, s, i_1, i_2}) = \widetilde{\theta}_{q,s, i_1} - \widetilde{\theta}_{q,s, i_2} + \widetilde{\alpha}_q*\mathds{1^*}$, where $\mathds{1^*}$ is an $n$-dimensional vector of alternating 1's and -1's to account for rotating home advantages.  
-
-\item Sample from $exp\{\widetilde{logit}(p_{i_1, i_2, q, s})\}/(1+exp\{\widetilde{logit}(p_{i_1, i_2, q, s})\}$ to obtain 1's and 0's reflecting simulated postseason outcomes. If the sum of these simulations is greater than $n/2$, team $i_1$ wins the series. Otherwise, team $i_2$ wins the series.
-\item Repeat 10,000 times for each $q$ and $s$, and for teams ranked third ($i_2$) through eight ($i_8$). 
-\end{enumerate}
-
-Figure~\ref{fig:sevenSeries} shows a plot of the estimated probabilities that the top-ranked team beats opponents ranked No. 2--No. 8 in each sport, averaged over $s$. 
-
-
-<<sevenSeries, fig.cap="Probability top ranked team wins a postseason series by sport and opponent rank">>=
-probs <- read.csv("data/seven.simulations.final.csv")
-library(dplyr)
-library(ggplot2)
-probs.hfa <- probs %>%
-  group_by(sport, second.seed) %>%
-  summarise(mean.win = mean(better.winP.hfa)) %>% 
-  ungroup() %>%
-  mutate(sport = toupper(factor(sport, levels = c("nba", "nfl", "nhl", "mlb"))))
-
-probs.nohfa <- probs %>%
-  group_by(sport, second.seed) %>%
-  summarise(mean.win = mean(better.winP.nohfa)) %>% 
-  ungroup() %>%
-  mutate(sport = toupper(factor(sport, levels = c("nba", "nfl", "nhl", "mlb"))))
-
-
-ggplot(probs.hfa, aes(second.seed, mean.win, colour = sport))  + 
-  geom_point(aes(shape = sport), size = 2) + 
-  geom_line(size = 1) + 
-  #geom_point(data = probs.nohfa, aes(second.seed, mean.win, group = sport, colour = sport)) +
-  #geom_line(data = probs.nohfa, aes(second.seed, mean.win, group = sport, colour = sport)) +
-  ggtitle("Probability of No. 1 team winning in postseason") +
-  theme(legend.title = element_blank()) +
-  scale_x_continuous("Opponent rank", breaks = 2:8) + 
-  #scale_colour_grey(start = 0.1, end = .8) +
-  scale_y_continuous("", breaks = 11:16*5/100, labels = c("55%", "60%", "65%", "70%", "75%", "80%")) # + 
-  #facet_wrap(~sport)
-@
-
-% One extension - do this without the home advantage?  This was done, but not sure I love the plots
-
-In general, the probability that the better team wins is highest in the NBA, ranging from roughly 60\% (No. 1 over No. 2) to 80\% (No. 1 over No. 8). Most often, the top NFL team expects to win between 62\% and 72\% of its postseason match-ups, while those numbers are closer to between 55\% and 65\% in the MLB and NHL. Across seeds No. 3--No. 8, the MLB shows the most randomness; even in an average match-up between its top team and its eighth best team, the top team wins no more than 65\% of the time.
-
-A related question explores the number of games that other sports must play in order to match the frequency with which the best team in the NBA wins. To ensure an 81\% chance that the league's top team has defeated its eighth best team, as in the NBA, the NFL would require a ``Best of 9'", the NHL a ``Best of 51", and MLB a ``Best of 61". Thus, each league must each play a substantially larger number of games than current league standards allow in order to match the NBA's consistency of the best team advancing. 
-
-
-%Similar game thresholds must be reached when comparn to ensure a 72\% chance of Likewise, to ensure a 72\% chance that the league's top team has defeated its fourth best team, as is the NBA average, simlar game thresholds must be reached (9 games in the NFL, 41 in the NHL, and 55 in MLB). 
-
-%One likely reason that the NFL falls short of the NBA in this chart is that the NBA's series length gives the better team more chances to win. 
-
-This lends some credence to the expression that ``Billy Beane's stuff doesn't work in the playoffs." That is, analytic strategies designed to maximize winning percentage over a full MLB regular season are not effective in a short postseason series\footnote{Beane was the Oakland A's general manager during all ten years of our study. The A's have been famously successful in the regular season, but have not made a World Series appearance in Beane's tenure. We note that in Figure~\ref{fig:spaghetti-mlb}, the A's were by far the strongest team in baseball by the end of the 2014 season. They lost a one-game playoff to the eventual World Series runner-up Kansas City Royals.}. Furthermore, these results confirm our intuition that champions in the NBA are much more likely to be the ``true" strongest team. Conversely, the strongest baseball team in the regular season is quite likely to be derailed by MLB's short postseason series. As noted previously, while this is likely to frustrate team executives, coaches, and players, it might be a rational decision on MLB's part, as it likely increases fan interest in the postseason. 
 
 
 \bibliographystyle{asa}
