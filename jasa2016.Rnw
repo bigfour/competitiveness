@@ -917,7 +917,6 @@ all.sport.pdiff.remains <- rbind(mlb, nba, nhl, nfl)
 
 
 ############ Correlation of current team strength estimate with remaining win percentage
-head(tidy_betas)
 tidy_betas <- filter(tidy_betas, !(season==7&sport == "nba"),
                       !(season==8 & sport == "nhl"), !(season==2 & sport == "nfl"))
 
