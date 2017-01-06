@@ -1104,7 +1104,7 @@ nfl.team
 
 <<spaghetti-nhl, out.extra='angle=90', out.width='\\textheight', fig.height=7, fig.width = 9, fig.cap="Team strength coefficients over time for the National Hockey League.">>=
 nhl.team
-@
+@ 
 
 
 \bibliographystyle{asa}
