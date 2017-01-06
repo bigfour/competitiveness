@@ -1053,8 +1053,8 @@ i) unneeded files in Github
 ii) parameter names in most files don't match those in document}
 
 
-\section{Appendix: Trace plots}
 
+\section{Appendix}
 
 
 
@@ -1085,10 +1085,7 @@ ii) parameter names in most files don't match those in document}
 \caption{Trace plots of NHL parameters\label{fig:NHLtrace}}
 \end{figure}
 
-
-
-\section{Appendix: League-level plots}
-
+\newpage
 
 <<spaghetti-mlb, out.extra='angle=90', out.width='\\textheight', fig.height=7, fig.width = 9, fig.cap="Team strength coefficients over time for Major League Baseball.">>=
 mlb.team
