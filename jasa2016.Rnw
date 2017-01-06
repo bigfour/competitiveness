@@ -831,7 +831,6 @@ bigfour1 <- bigfour %>%
          percent = as.numeric(day)/as.numeric(max.days), 
          scorediff.vis = visitor_score - home_score, 
          scorediff.home = -1*scorediff.vis)
-sample_n(bigfour1, 5) %>% print.data.frame()
 
 
 date.vis <- bigfour1 %>% 
