@@ -434,9 +434,9 @@ tidy_betas %>%
 
 Figure~\ref{fig:spaghetti} shows estimated team strength coefficients over time, approximated using posterior mean draws for all weeks $k$ and seasons $s$ across all four sports leagues. Figures~\ref{fig:spaghetti-mlb}, \ref{fig:spaghetti-nba}, \ref{fig:spaghetti-nfl}, and \ref{fig:spaghetti-nhl} (shown in the Appendix) provide an individual plot for each sport, which include divisional facets to allow easier identification of individual teams. Teams in Figures~\ref{fig:spaghetti} and \ref{fig:spaghetti-mlb}--\ref{fig:spaghetti-nhl} are depicted using their two primary colors, scraped from \url{http://jim-nielsen.com/teamcolors/} via the \pkg{teamcolors} package (\url{https://github.com/beanumber/teamcolors}) in \R. 
 
-<<echo=FALSE>>=
+<<set-colors, echo=FALSE>>=
 library(dplyr)
-load(file.path(root, "data", "tidy_betas.rda"))
+# load(file.path(root, "data", "tidy_betas.rda"))
 tidy_betas <- tidy_betas %>%
   mutate(sport = toupper(sport),
          annotation = "",
@@ -455,44 +455,32 @@ names(primary) <- colors$name
 names(secondary) <- colors$name
 @
 
-<<spaghetti, fig.height=13.5, fig.cap="Team strengths over time for all four sports. MLB and NFL seasons follow each yearly tick mark on the x-axis, while NBA and NHL seasons occur during years labeled by adjacent tick marks.">>=
-library(ggplot2)
-tidy_betas <- mutate(tidy_betas, time_val = 
-        ifelse(sport == "NFL"|sport == "MLB", time_val + 1, time_val))
-spag <- ggplot(data = tidy_betas, 
-       aes(x = time_val, y = beta, 
-           color = name, fill = name)) +
-  geom_line(alpha = 0.5) + 
-  geom_point(shape = 21, size = 0.5, alpha = 0.8) + 
-  facet_wrap(~sport, ncol = 1) + 
-  geom_text(aes(label = annotation), color = "black", hjust = "left", nudge_x = 0.25) + 
-  scale_color_manual(name = NULL, values = primary) + 
-  scale_fill_manual(name = NULL, values = secondary) + 
-  scale_x_continuous(name = "Season", breaks = 2005:2016) +
-  scale_y_continuous(name = "Team Strength (log odds scale)") + 
-  guides(color = FALSE, fill = FALSE)
-  #  guides(color = guide_legend(ncol = 2))
-spag + theme_grey(base_size = 18) 
-
-
+<<set-divisions>>=
+library(teamcolors)
 
 ###### Football only
 div <- c("AFC East", "AFC West", "AFC North", "AFC South", 
          "NFC East", "NFC West", "NFC North", "NFC South")
 div.teams.NFL <- c(div[6], div[8], div[3], div[1], div[8], 
-               div[7], div[3], div[3], div[5], div[2],
+               div[3], div[3], div[5], div[7], div[2],
                div[7], div[7], div[4], div[4], div[4],
                div[2], div[6], div[1], div[7], div[1], div[8],
                div[5], div[1], div[2], div[5], div[3], 
                div[2], div[6], div[6],  div[8], 
                div[4], div[5])
+divisions_nfl <- data_frame(sport = "nfl", division = div.teams.NFL)
+divisions_nfl$team <- teamcolors %>%
+  filter(sport == "nfl") %>%
+  select(name) %>%
+  unlist()
+# divisions %>% arrange(division)
 
 ###### MLB only
 div <- c("AL East", "AL Central", "AL West",
          "NL East", "NL Central", "NL West")
 div.teams.MLB <- c(div[6], div[4], div[1], 
                div[1], div[5], div[2],
-               div[5], div[2], div[6], 
+               div[5], div[6], div[2], 
                div[2], div[3], div[2], 
                div[3], div[6], div[4],
                div[5], div[2], div[4], 
@@ -500,6 +488,12 @@ div.teams.MLB <- c(div[6], div[4], div[1],
                div[5], div[6], div[6], 
                div[3], div[5], div[1], 
                div[3], div[1], div[4])
+divisions_mlb <- data_frame(sport = "mlb", division = div.teams.MLB)
+divisions_mlb$team <- teamcolors %>%
+  filter(sport == "mlb") %>%
+  select(name) %>%
+  unlist()
+# divisions_mlb %>% arrange(division) %>% print(n = Inf)
 
 
 ###### NBA only
@@ -515,6 +509,12 @@ div.teams.NBA <- c(div[3], div[1], div[1],
                div[3], div[1], div[4], 
                div[6], div[4], div[5], 
                div[1], div[6], div[3])
+divisions_nba <- data_frame(sport = "nba", division = div.teams.NBA)
+divisions_nba$team <- teamcolors %>%
+  filter(sport == "nba") %>%
+  select(name) %>%
+  unlist()
+# divisions_nba %>% arrange(division) %>% print(n = Inf)
 
 
 
@@ -526,9 +526,66 @@ div.teams.NHL <- c(div[4], div[4], div[2], div[2], div[4],
                div[2], div[3], div[1], div[1], div[1],
                div[2], div[1], div[1], div[4], div[3], 
                div[2], div[2], div[4], div[1], div[3])
+divisions_nhl <- data_frame(sport = "nhl", division = div.teams.NHL)
+divisions_nhl$team <- teamcolors %>%
+  filter(sport == "nhl") %>%
+  select(name) %>%
+  unlist()
+# divisions_nhl %>% arrange(division) %>% print(n = Inf)
+
+divisions <- rbind(divisions_nfl, divisions_mlb, divisions_nba, divisions_nhl)
+teamcolors <- teamcolors %>%
+  left_join(divisions, by = c("sport" = "sport", "name" = "team")) %>%
+  mutate(name = ifelse(name == "Los Angeles Angels of Anaheim", "Los Angeles Angels", name),
+         name = ifelse(name == "St Louis Blues", "St. Louis Blues", name)) 
+@
+
+<<>>=
+tidy_betas <- tidy_betas %>%
+  left_join(select(teamcolors, name, division), by = c("name" = "name")) %>%
+  mutate(time_val = ifelse(sport == "NFL" | sport == "MLB", 
+                           time_val + 1, time_val))
+max.beta <- round(max(tidy_betas$beta), 2)
+min.beta <- round(min(tidy_betas$beta), 2)
+@
 
 
+<<spaghetti-base>>=
+library(ggplot2)
+spag <- ggplot(data = tidy_betas, 
+       aes(x = time_val, y = beta, 
+           color = name, fill = name)) +
+  geom_line(alpha = 0.5) + 
+  geom_point(shape = 21, size = 0.5, alpha = 0.8) + 
+  geom_text(aes(label = annotation), color = "black", hjust = "left", nudge_x = 0.25) + 
+  scale_color_manual(name = NULL, values = primary) + 
+  scale_fill_manual(name = NULL, values = secondary) + 
+  scale_x_continuous(name = "Season", breaks = 2005:2016) +
+  scale_y_continuous(name = "Team Strength (log odds scale)") + 
+  guides(color = FALSE, fill = FALSE) +
+  #  guides(color = guide_legend(ncol = 2)) 
+  theme_grey(base_size = 18)
+@
 
+<<spaghetti, fig.height=13.5, fig.cap="Team strengths over time for all four sports. MLB and NFL seasons follow each yearly tick mark on the x-axis, while NBA and NHL seasons occur during years labeled by adjacent tick marks.">>=
+spag + facet_wrap(~sport, ncol = 1)
+@
+
+<<spag_sport>>=
+spag_sport <- function(sport_name) {
+  x <- filter(tidy_betas, sport == sport_name)
+  spag %+% x + 
+    geom_line(data = select(x, -division), color = "darkgray", alpha = 0.3) + 
+    geom_line(alpha = 0.5) + 
+    geom_point(shape = 21, size = 0.5, alpha = 0.8) + 
+    facet_wrap(~division, ncol = 2) + 
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
+    ggtitle(paste("Team strengths over time,", sport_name))
+}
+@
+
+<<include=FALSE, eval=FALSE>>=
+# deprecated
 graph.sport <- function(sport){
 
 year.max <- 2016
@@ -576,8 +633,6 @@ nhl.team <- graph.sport("NHL")
 nba.team <- graph.sport("NBA")
 nfl.team <- graph.sport("NFL")
 mlb.team <- graph.sport("MLB")
-max.beta <- round(max(tidy_betas$beta), 2)
-min.beta <- round(min(tidy_betas$beta), 2)
 ### These charts will be called in the appendix
 @
 
@@ -824,9 +879,11 @@ We begin the final steps of our analysis by comparing our team strength estimate
 Figure~\ref{fig:R2} shows the coefficient of determination comparing each team's future won-loss percentage in a season to (i) our team strength estimates, (ii) each team's past cumulative point differential, and (iii) each team's past won-loss percentage. Within each sport, this is done by game number, which helps to account for league-level differences in season length. For purposes of using our team strength estimates, we took the mean posterior draw for each team in each week a particular contest was played. The lockout-shortened seasons in the NBA (2012) and NHL (2013) were dropped.
 
 <<>>=
+# load("data/tidy_betas.rda")
 load("data/bigfour.rda")
-load("data/tidy_betas.rda")
+
 bigfour <- bigfour %>% arrange(sport, Date)
+
 min.day <- bigfour %>%
   group_by(sport, season) %>%
   summarise(min.day = min(gameDate), max.day = max(gameDate))
@@ -1093,21 +1150,23 @@ ii) parameter names in most files don't match those in document}
 
 \newpage
 
-<<spaghetti-mlb, out.extra='angle=90', out.width='\\textheight', fig.height=7, fig.width = 9, fig.cap="Team strength coefficients over time for Major League Baseball.">>=
-mlb.team
+
+<<spaghetti-mlb, fig.height=11, fig.width = 8, fig.cap="Team strength coefficients over time for Major League Baseball.">>=
+# mlb.team
+spag_sport("MLB")
 @
 
-<<spaghetti-nba, out.extra='angle=90', out.width='\\textheight', fig.height=7, fig.width = 9, fig.cap="Team strength coefficients over time for the National Basketball Association.">>=
-nba.team
+<<spaghetti-nba, fig.height=11, fig.width = 8, fig.cap="Team strength coefficients over time for the National Basketball Association.">>=
+spag_sport("NBA")
 @
 
-<<spaghetti-nfl, out.extra='angle=90', out.width='\\textheight', fig.height=7, fig.width = 9, fig.cap="Team strength coefficients over time for the National Football League.">>=
-nfl.team
+<<spaghetti-nfl, fig.height=11, fig.width = 8, fig.cap="Team strength coefficients over time for the National Football League.">>=
+spag_sport("NFL")
 @
 
-<<spaghetti-nhl, out.extra='angle=90', out.width='\\textheight', fig.height=7, fig.width = 9, fig.cap="Team strength coefficients over time for the National Hockey League.">>=
-nhl.team
-@ 
+<<spaghetti-nhl, fig.height=11, fig.width = 8, fig.cap="Team strength coefficients over time for the National Hockey League.">>=
+spag_sport("NHL")
+@
 
 
 \bibliographystyle{asa}
