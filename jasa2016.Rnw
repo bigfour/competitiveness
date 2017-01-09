@@ -213,7 +213,6 @@ In principle, money line prices account for all determinants of game outcomes kn
 We are not aware of any published findings that have compared leagues using implied probabilities. Given the varying within-sport metrics of judging team quality and the flawed between-sport approaches that rely on wins and losses alone, we aim to extend paired comparison models using money line information to better capture relative team equivalence in a method that can be applied generally.
 
 %In addition to being used as standards by which to judge predictive accuracy, betting markets have been used to suggest that NBA teams `tank' \citep{soebbing2013gamblers}, that bettors place larger shares of bets on the home team \citep{paul2011nfl}, and that markets do not move lines to attract an even number of bets on each side \citep{paul2008price, humphreys2014understanding}. We are not aware of any published findings that have compared leagues using implied probabilities. In one somewhat related cross-sport project, \cite{wolfson2015s} used BTM's and margin-of-victory BTM's to find a clear separation between two pairs of leagues, the NFL and the NBA versus the NHL and MLB, as far as predictive accuracy when testing out of sample.
-testing out of sample.
 
 \section{Validation of betting market data}
 
