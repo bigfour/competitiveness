@@ -577,7 +577,7 @@ spag_sport <- function(sport_name) {
     geom_line(data = select(x, -division), color = "darkgray", alpha = 0.3) + 
     geom_line(alpha = 0.5) + 
     geom_point(shape = 21, size = 0.5, alpha = 0.8) + 
-    facet_wrap(~division, ncol = 2) + 
+    facet_wrap(~division, ncol = 2, dir = "v") + 
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
     ggtitle(paste("Team strengths over time,", sport_name))
 }
@@ -877,7 +877,7 @@ We begin the final steps of our analysis by comparing our team strength estimate
 
 Figure~\ref{fig:R2} shows the coefficient of determination comparing each team's future won-loss percentage in a season to (i) our team strength estimates, (ii) each team's past cumulative point differential, and (iii) each team's past won-loss percentage. Within each sport, this is done by game number, which helps to account for league-level differences in season length. For purposes of using our team strength estimates, we took the mean posterior draw for each team in each week a particular contest was played. The lockout-shortened seasons in the NBA (2012) and NHL (2013) were dropped.
 
-<<>>=
+<<validation>>=
 # load("data/tidy_betas.rda")
 load("data/bigfour.rda")
 
