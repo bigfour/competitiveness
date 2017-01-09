@@ -191,7 +191,7 @@ In place of paired comparison models, alternative measures for estimating team s
 
 In many instances, researchers derive estimates of team strength in order to predict game-level probabilities. Betting market information has long been recommended to judge the accuracy of these probabilities \citep{harville1980predictions, stern1991probability}. Before each contest, sports books---including those in Las Vegas and in overseas markets---provide a price for each team, more commonly known as the money line. 
 
-Mathematically, if team $i$'s line money line is $\ell_i$, then the boundary win probability for that team, $p_i(\ell_i)$, is given by:
+Mathematically, if team $i$'s line money line is $\ell_i$ against team $j$ (with money line $\ell_j$), then the boundary win probability for that team, $p_i(\ell_i)$, is given by:
 $$
   p_i(\ell_i) = \begin{cases}
         \frac{100}{100 + \ell_i} & \text{ if } \ell_i > 0 \\
@@ -201,7 +201,7 @@ $$
 
 The boundary win probability represents the threshold at which point betting on team $i$ would be profitable in the long run.
 
-As an example, suppose the Chicago Cubs were favored ($\ell_i = -127$ on the money line) to beat the Arizona Diamondbacks ($\ell_j = 117$). The boundary win probabilities for the Cubs would be $p_i(-127) = 0.559$; for the Diamondbacks, $p_j(117) = 0.461$. The boundary win probabilities implied by the betting markets sum to greater than one by an amount collected by the sportsbook as profit (known colloquially as the ``vig" or ``vigorish").  However, it is straightforward to normalize these prices to sum to unity to estimate $p_{ij}$, the implied probability of $i$ defeating $j$: 
+As an example, suppose the Chicago Cubs were favored ($\ell_i = -127$ on the money line) to beat the Arizona Diamondbacks ($\ell_j = 117$). The boundary win probabilities for the Cubs would be $p_i(-127) = 0.559$; for the Diamondbacks, $p_j(117) = 0.461$. Boundary win probabilities sum to greater than one by an amount collected by the sportsbook as profit (known colloquially as the ``vig" or ``vigorish").  However, it is straightforward to normalize boundary probabilities to sum to unity to estimate $p_{ij}$, the implied probability of $i$ defeating $j$: 
 \begin{eqnarray}
   p_{ij} = \frac{p_i(\ell_i)}{p_i(\ell_i) + p_j(\ell_j)}. \label{eqn:moneyline}
 \end{eqnarray}
