@@ -191,7 +191,7 @@ In place of paired comparison models, alternative measures for estimating team s
 
 In many instances, researchers derive estimates of team strength in order to predict game-level probabilities. Betting market information has long been recommended to judge the accuracy of these probabilities \citep{harville1980predictions, stern1991probability}. Before each contest, sports books---including those in Las Vegas and in overseas markets---provide a price for each team, more commonly known as the money line. 
 
-Mathematically, if team $i$'s line money line is $\ell_i$ against team $j$ (with money line $\ell_j$), then the boundary win probability for that team, $p_i(\ell_i)$, is given by:
+Mathematically, if team $i$'s money line is $\ell_i$ against team $j$ (with corresponding money line $\ell_j$), then the boundary win probability for that team, $p_i(\ell_i)$, is given by:
 $$
   p_i(\ell_i) = \begin{cases}
         \frac{100}{100 + \ell_i} & \text{ if } \ell_i > 0 \\
