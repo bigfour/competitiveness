@@ -56,12 +56,6 @@
 to understanding randomness in North American sport}
 %
 \author{
-Benjamin S. Baumer \\
-%Department of Mathematics \& Statistics \\
-Smith College \\
-%Northampton, MA 01063, USA \\
-\texttt{bbaumer@smith.edu}
-\and
 Michael Lopez\\
 %Department of Statistics \\ 
 Skidmore College\\
@@ -70,6 +64,12 @@ Skidmore College\\
 Gregory J. Matthews\\
 Loyola University Chicago\\
 \texttt{gmatthews1@luc.edu}
+\and
+Benjamin S. Baumer \\
+%Department of Mathematics \& Statistics \\
+Smith College \\
+%Northampton, MA 01063, USA \\
+\texttt{bbaumer@smith.edu}
 }
 
 <<echo=FALSE>>=
