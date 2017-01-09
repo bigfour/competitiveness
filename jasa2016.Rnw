@@ -190,14 +190,21 @@ In place of paired comparison models, alternative measures for estimating team s
 
 In many instances, researchers derive estimates of team strength in order to predict game-level probabilities. Betting market information has long been recommended to judge the accuracy of these probabilities \citep{harville1980predictions, stern1991probability}. Before each contest, sports books---including those in Las Vegas and in overseas markets---provide a price for each team, more commonly known as the money line. 
 
-As an example, suppose the Chicago Cubs were favored ($-127$ on the money line) to beat the Arizona Diamondbacks ($117$). Mathematically, if a team's line is $\ell$, then the implied probability of a win for that team, $p(\ell)$, is given by:
+Mathematically, if team $i$'s line money line is $\ell_i$, then the implied probability of a win for that team, $p_i(\ell_i)$, is given by:
 $$
-  p(\ell) = \begin{cases}
-        \frac{100}{100 + \ell} & \text{ if } \ell > 0 \\
-        \frac{|\ell|}{100 + |\ell|} & \text{ if } \ell < 0
+  p_i(\ell_i) = \begin{cases}
+        \frac{100}{100 + \ell_i} & \text{ if } \ell_i > 0 \\
+        \frac{|\ell_i|}{100 + |\ell_i|} & \text{ if } \ell_i < 0
       \end{cases} \,.
 $$
-The win probabilities implied by the betting markets for the Cubs ($p(-127) = 0.559$) and the Diamondbacks ($p(117) = 0.461$) sum to greater than one by an amount collected by the sportsbook as profit (known colloquially as the ``vig" or ``vigorish").  However, it is straightforward to normalize money line prices to sum to unity. In our example, dividing each probability by $1.02 = (0.559 + 0.461)$ implies win probabilities of 54.8\% for the Cubs and 45.2\% for the Diamondbacks. 
+
+
+As an example, suppose the Chicago Cubs were favored ($\ell_i = -127$ on the money line) to beat the Arizona Diamondbacks ($\ell_j = 117$). The win probabilities implied by the betting markets for the Cubs ($p_i(-127) = 0.559$) and the Diamondbacks ($p_j(117) = 0.461$) sum to greater than one by an amount collected by the sportsbook as profit (known colloquially as the ``vig" or ``vigorish").  However, it is straightforward to normalize money line prices to sum to unity to estimate $p_{ij}$, the probability of $i$ defeating $j$: 
+\begin{eqnarray}
+  p_{ij} = \frac{p_i(\ell_i)}{p_i(\ell_i) + p_j(\ell_j)}. \label{eqn:moneyline}
+\end{eqnarray}
+
+\noindent In our example, dividing each probability by $1.02 = (0.559 + 0.461)$ implies win probabilities of 54.8\% for the Cubs and 45.2\% for the Diamondbacks. 
 
 In principle, money line prices account for all determinants of game outcomes known to the public prior to the game, including team strength, location, and injuries. Across time and sporting leagues, researchers have identified that these prices\ben{estimates? Are you trying to beat the price or the win probability implied by the price?} \mike{Think you are trying to beat both. To make money, you have to beat the price, which entails beating the win probability as well. I think?} are difficult to beat; i.e, that the betting markets are efficient. As an incomplete list, see \cite{harville1980predictions,  gandar1988testing, lacey1990estimation, stern1991probability, carlin1996improved, colquitt2001testing, spann2009sports, nichols2012impact, paul2014market, lopez2015building}. Interestingly, \cite{colquitt2001testing} suggested that the efficiency of college basketball markets was proportional to the amount of pre-game information available---this would suggest that markets in professional sports are as efficient as they come. \cite{manner2015modeling} merged predictions from a state-space model with those from betting markets, finding that the combination of both predictions only occasionally outperformed betting markets alone.
 
@@ -299,7 +306,7 @@ markets_plot + theme_grey(base_size = 16)
 
 Our model below builds on the state-space specification provided by \cite{glickman1998state} to provide a unified framework for contrasting the four major North American sports leagues.
 
-Let $p_{(q,s,k)ij}$ be the probability that team $i$ will beat team $j$ in season $s$ during week $k$ of sports league $q$, where $q \in \{MLB, NBA, NFL, NHL\}$. These probabilities are assumed to be known, calculated using $p(\ell)$ via sportsbook odds for teams $i$ and $j$. Letting $\theta_{(q,s,k) i}$ and $\theta_{(q, s, k) j}$ be season-week team strength parameters for teams $i$ and $j$, respectively, we assume that 
+Let $p_{(q,s,k)ij}$ be the probability that team $i$ will beat team $j$ in season $s$ during week $k$ of sports league $q$, where $q \in \{MLB, NBA, NFL, NHL\}$. These probabilities are assumed to be known, calculated using sportsbook odds via Equation (\ref{eqn:moneyline}). Letting $\theta_{(q,s,k) i}$ and $\theta_{(q, s, k) j}$ be season-week team strength parameters for teams $i$ and $j$, respectively, we assume that 
 
 $$
 E[logit(p_{(q,s,k) ij})] = \theta_{(q,s,k) i} - \theta_{(q, s, k) j} + \alpha_{(q) i},
