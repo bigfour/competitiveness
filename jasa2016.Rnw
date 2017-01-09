@@ -186,11 +186,12 @@ In place of paired comparison models, alternative measures for estimating team s
 
 
 
+
 \subsection{Betting market probabilities}
 
 In many instances, researchers derive estimates of team strength in order to predict game-level probabilities. Betting market information has long been recommended to judge the accuracy of these probabilities \citep{harville1980predictions, stern1991probability}. Before each contest, sports books---including those in Las Vegas and in overseas markets---provide a price for each team, more commonly known as the money line. 
 
-Mathematically, if team $i$'s line money line is $\ell_i$, then the implied probability of a win for that team, $p_i(\ell_i)$, is given by:
+Mathematically, if team $i$'s money line is $\ell_i$ against team $j$ (with corresponding money line $\ell_j$), then the boundary win probability for that team, $p_i(\ell_i)$, is given by:
 $$
   p_i(\ell_i) = \begin{cases}
         \frac{100}{100 + \ell_i} & \text{ if } \ell_i > 0 \\
@@ -198,13 +199,14 @@ $$
       \end{cases} \,.
 $$
 
+The boundary win probability represents the threshold at which point betting on team $i$ would be profitable in the long run.
 
-As an example, suppose the Chicago Cubs were favored ($\ell_i = -127$ on the money line) to beat the Arizona Diamondbacks ($\ell_j = 117$). The win probabilities implied by the betting markets for the Cubs ($p_i(-127) = 0.559$) and the Diamondbacks ($p_j(117) = 0.461$) sum to greater than one by an amount collected by the sportsbook as profit (known colloquially as the ``vig" or ``vigorish").  However, it is straightforward to normalize money line prices to sum to unity to estimate $p_{ij}$, the probability of $i$ defeating $j$: 
+As an example, suppose the Chicago Cubs were favored ($\ell_i = -127$ on the money line) to beat the Arizona Diamondbacks ($\ell_j = 117$). The boundary win probabilities for the Cubs would be $p_i(-127) = 0.559$; for the Diamondbacks, $p_j(117) = 0.461$. Boundary win probabilities sum to greater than one by an amount collected by the sportsbook as profit (known colloquially as the ``vig" or ``vigorish").  However, it is straightforward to normalize boundary probabilities to sum to unity to estimate $p_{ij}$, the implied probability of $i$ defeating $j$: 
 \begin{eqnarray}
   p_{ij} = \frac{p_i(\ell_i)}{p_i(\ell_i) + p_j(\ell_j)}. \label{eqn:moneyline}
 \end{eqnarray}
 
-\noindent In our example, dividing each probability by $1.02 = (0.559 + 0.461)$ implies win probabilities of 54.8\% for the Cubs and 45.2\% for the Diamondbacks. 
+\noindent In our example, dividing each boundary probability by $1.02 = (0.559 + 0.461)$ implies win probabilities of 54.8\% for the Cubs and 45.2\% for the Diamondbacks. 
 
 In principle, money line prices account for all determinants of game outcomes known to the public prior to the game, including team strength, location, and injuries. Across time and sporting leagues, researchers have identified that these prices\ben{estimates? Are you trying to beat the price or the win probability implied by the price?} \mike{Think you are trying to beat both. To make money, you have to beat the price, which entails beating the win probability as well. I think?} are difficult to beat; i.e, that the betting markets are efficient. As an incomplete list, see \cite{harville1980predictions,  gandar1988testing, lacey1990estimation, stern1991probability, carlin1996improved, colquitt2001testing, spann2009sports, nichols2012impact, paul2014market, lopez2015building}. Interestingly, \cite{colquitt2001testing} suggested that the efficiency of college basketball markets was proportional to the amount of pre-game information available---this would suggest that markets in professional sports are as efficient as they come. \cite{manner2015modeling} merged predictions from a state-space model with those from betting markets, finding that the combination of both predictions only occasionally outperformed betting markets alone.
 
