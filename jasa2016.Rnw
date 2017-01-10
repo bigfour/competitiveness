@@ -396,7 +396,7 @@ While we are unable to share our betting market data due to licensing restrictio
 
 \subsection{Model fit}
 
-Trace plots of  $\alpha_{q_0}$, $\gamma_{q, season}$, $\gamma_{q, week}$ $\tau_{q, game}$, $\tau_{q, season}$, and $\tau_{q, week}$ are shown for each $q$ in Figures \ref{fig:MLBtrace}, \ref{fig:NBAtrace}, \ref{fig:NFLtrace}, and \ref{fig:NHLtrace} in the Appendix. Visual inspection of these plots does not provide evidence of a lack of convergence or of an autocorrelation between draws. These trace plots stem from Model~(\ref{model.full}); conclusions are similar when plotting draws from Model~(\ref{model.red}). 
+Trace plots of  $\alpha_{q_0}$, $\gamma_{q, season}$, $\gamma_{q, week}$ $\tau_{q, game}$, $\tau_{q, season}$, and $\tau_{q, week}$ are shown for each $q$ in Figures \ref{fig:MLBtrace} - \ref{fig:NHLtrace} in the Appendix. Visual inspection of these plots does not provide evidence of a lack of convergence or of an autocorrelation between draws. These trace plots stem from Model~(\ref{model.full}); conclusions are similar when plotting draws from Model~(\ref{model.red}). 
 
 Table~\ref{tab:DIC} shows the DIC for each fit in each league, along with the difference in DIC values and its standard error. In each of the leagues, fits with a team-specific HA (Model (\ref{model.full})) yielded significantly lower DIC's (lower is better), with the most noticeable difference in fit improvement in the NBA.
 
@@ -415,7 +415,7 @@ NHL & -18335  & -18148 & -187.6 (20.7)\\
 \caption{Deviance information criterion (DIC) by sport and model, along with the difference in DIC (standard errors (SE) of the difference shown in parenthesis, HA: home advantage) \label{tab:DIC}}
 \end{table}
 
-Taken wholly, this suggests that perceived differences in the home advantage between teams in each league are likely not accounted for due to chance alone, with NBA teams showing the largest team-to-team differences in the HA. As such, results that follow use model estimates from Model (\ref{model.full}). 
+Taken wholly, this suggests that perceived differences in the home advantage between teams in each league are likely not accounted for due to chance alone, with NBA teams showing the largest team-to-team differences. As such, results that follow use model estimates from Model (\ref{model.full}). 
 
 \subsection{Team strength}
 
@@ -439,14 +439,14 @@ tidy_betas %>%
             CIR = quantile(beta, probs = 0.95),
             max = max(beta),
             sd = sd(beta)) %>%
-  rename(`N*` = N, `$5^{th}$` = CIL, `$95^{th}$` = CIR) %>%
+  rename(`N*` = N, `$5^{th}$` = CIL, `$95^{th}$` = CIR, `League ($q$)` = sport) %>%
   xtable(caption = "Summary of team strength parameters, taken on the log-odds scale. N*: number of unique team strength draws (teams $\\times$ seasons $\\times$ weeks)", 
          digits = 3, label = "tab:betas") %>%
   print(include.rownames = FALSE, sanitize.text.function = identity)
 @
 
 
-Figure~\ref{fig:spaghetti} shows estimated team strength coefficients over time, approximated using posterior mean draws for all weeks $k$ and seasons $s$ across all four sports leagues. Figures~\ref{fig:spaghetti-mlb}, \ref{fig:spaghetti-nba}, \ref{fig:spaghetti-nfl}, and \ref{fig:spaghetti-nhl} (shown in the Appendix) provide an individual plot for each sport, which include divisional facets to allow easier identification of individual teams. Teams in Figures~\ref{fig:spaghetti} and \ref{fig:spaghetti-mlb}--\ref{fig:spaghetti-nhl} are depicted using their two primary colors, scraped from \url{http://jim-nielsen.com/teamcolors/} via the \pkg{teamcolors} package (\url{https://github.com/beanumber/teamcolors}) in \R. 
+Figure~\ref{fig:spaghetti} shows estimated team strength coefficients over time, approximated using posterior mean draws for all weeks $k$ and seasons $s$ across all four sports leagues. Figures~\ref{fig:spaghetti-mlb} - \ref{fig:spaghetti-nhl} (shown in the Appendix) provide an individual plot for each sport, which include divisional facets to allow easier identification of individual teams. Teams in Figures~\ref{fig:spaghetti} and \ref{fig:spaghetti-mlb}--\ref{fig:spaghetti-nhl} are depicted using their primary color, scraped from \url{http://jim-nielsen.com/teamcolors/} via the \pkg{teamcolors} package (\url{https://github.com/beanumber/teamcolors}) in \R. 
 
 <<set-colors, echo=FALSE>>=
 library(dplyr)
@@ -581,7 +581,7 @@ spag <- ggplot(data = tidy_betas,
   theme_grey(base_size = 18)
 @
 
-<<spaghetti, fig.height=13.5, fig.cap="Team strengths over time for all four sports. MLB and NFL seasons follow each yearly tick mark on the x-axis, while NBA and NHL seasons occur during years labeled by adjacent tick marks.">>=
+<<spaghetti, fig.height=13.5, fig.cap="Team strengths over time for all four sports leagues. MLB and NFL seasons follow each yearly tick mark on the x-axis, while NBA and NHL seasons occur during years labeled by adjacent tick marks.">>=
 spag + facet_wrap(~sport, ncol = 1)
 @
 
@@ -650,13 +650,13 @@ mlb.team <- graph.sport("MLB")
 ### These charts will be called in the appendix
 @
 
-Figure~\ref{fig:spaghetti} and Table~\ref{tab:betas} both identify wide-gaps in average team talent when comparing each of the NBA and the NFL to the NHL and MLB. These findings stand somewhat in contrast to competitive balance as measured using Noll-Scully, which argues that both the NHL and the NFL are less competitively balanced than MLB \citep{WagesWins}. One likely explanation is that because Noll-Scully increases with a larger number of games played (higher = less balanced), MLB (162 games) appears less balanced under Noll-Scully than it actually is and the NFL (16 games) appears more balanced. Like Noll-Scully, we conclude that the NBA does not show competitive balance relative to other leagues. 
+Figure~\ref{fig:spaghetti} and Table~\ref{tab:betas} both identify wider gaps in average team talent when comparing each of the NBA and the NFL to the NHL and MLB. These findings stand somewhat in contrast to competitive balance as measured using Noll-Scully, which argues that both the NHL and the NFL are less competitively balanced than MLB \citep{WagesWins}. One likely explanation is that because Noll-Scully increases with a larger number of games played (higher = less balanced), MLB (162 games) appears less balanced under Noll-Scully than it actually is and the NFL (16 games) appears more balanced. Like Noll-Scully, we conclude that the NBA does not show competitive balance relative to other leagues. 
 
 Our figures also identify several other interesting observations. For example, the New England Patriots of the NFL stand out with the top performance in the last decade, with an average team strength of \Sexpr{max.beta} on the log-odds scale, observed during Week 11 of 2007. In that season, New England finished the regular season 16-0 before eventually losing in the Super Bowl. The worst performance belongs to the NBA's Miami Heat, which during week 23 of the 2007--08 season averaged a posterior team strength of \Sexpr{min.beta}. That Heat team finished with an overall record of 15-67, at one point losing 15 consecutive contests. Related, it is interesting that the team strength estimates of bad teams in the NBA (e.g. the Heat in 2007--08) lie further from 0 than the estimates for good teams. This possibly reveals the tendency for teams in this league to ``tank"---a strategy of fielding a weak team intentionally to improve the chances of having better selection preference in the upcoming player draft \citep{soebbing2013gamblers}.
 
 Another observation is that in the NHL, top teams appear less dominant than a decade ago. For example, there are seven NHL team-seasons where an average posterior strength estimate of 0.55 or greater was reached; each of these came during or prior to the 2008--09 season.  In addition to an increased amount of parity, the league's point system change in 2005--06, which unintentionally encouraged teams to play more overtime games \citep{lopez2013inefficiencies}, could be responsible. More overtime contests could lead to different perceptions in how betting markets view team strengths, as overtime sessions and the resulting shootouts are, by and large, coin flips \citep{lopez2016predicting}. 
 
-As a final point of clarification in Figures \ref{fig:spaghetti}, \ref{fig:spaghetti-nba}, and \ref{fig:spaghetti-nhl}, the periods with straight lines of team strength estimates in the 2012-13 season (NHL) and 2011-12 season (NBA) reflect games lost due to lockouts. 
+As a final point of clarification in Figures \ref{fig:spaghetti}, \ref{fig:spaghetti-nba}, and \ref{fig:spaghetti-nhl}, the periods with straight lines of team strength estimates in the 2011-12 season (NBA) and 2012-13 season (NHL) reflect games lost due to lockouts. 
 
 <<include=FALSE>>=
 tidy_betas %>%
@@ -689,13 +689,13 @@ params %>%
          `$\\tau_{q, week}$` = sigma_w, 
          `$\\tau_{q, season}$` = sigma_s, 
          `$\\tau_{q, game}$` = sigma_g, 
-         `Sport ($q$)` = sport) %>%
+         `League ($q$)` = sport) %>%
   xtable(caption = "Median posterior draw (and 95 percent credible intervals) by league.", 
          digits = 3, label = "tab:params") %>%
   print(include.rownames = FALSE, sanitize.text.function = identity)
 @
 
-Posterior draws of $\tau_{q, game}$ find the highest game-level errors in our log-odds probability estimates occur in the NBA (median posterior draw of $\tau_{NBA, game}$ = 0.273), followed in order by $\tau_{NFL, game}$, $\tau_{MLB, game}$, and $\tau_{NHL, game}$. Interestingly, although its posterior distribution of team strength estimates was relatively narrow, MLB's game-level error rate, $\tau_{MLB, game}$, is relatively similar to $\tau_{NFL, game}$, at around 0.20. We posit that this additional game-level error in MLB is a function of the league's pitching match-ups, in which teams rotate through a handful of starting pitchers of varying calibers.
+Posterior draws of $\tau_{q, game}$ suggest that the highest game-level errors in our log-odds probability estimates occur in the NBA (median posterior draw of $\tau_{NBA, game}$ = 0.273), followed in order by $\tau_{NFL, game}$, $\tau_{MLB, game}$, and $\tau_{NHL, game}$. Interestingly, although its posterior distribution of average team strength estimates was relatively narrow, MLB's game-level error rate, $\tau_{MLB, game}$, is relatively similar to $\tau_{NFL, game}$, at around 0.20. We posit that this additional game-level error in MLB is a function of the league's pitching match-ups, in which teams rotate through a handful of starting pitchers of varying calibers.
 
 We also examine the joint distribution of the variability in team strength on a season-to-season ($\tau_{q,season}$) and week-to-week ($\tau_{q,week}$) basis via contour plots in Figure~\ref{fig:contourSigma}, using separate colors for each $q$. 
 
@@ -734,7 +734,7 @@ ggplot(params, aes(x = gamma_w, y = gamma_s, color = toupper(sport))) +
   theme_grey(base_size = 16) 
 @
 
-Likewise, figure~\ref{fig:contourGamma} displays the joint posterior distribution of $\gamma_{q, season}$ and $\gamma_{q, week}$ via contour plots for each $q$. On a season-to-season basis, team strengths in each of the leagues tend to revert towards the league average (0), as all draws of $\gamma_{q, season} < 1$ for all $q$. Reversion towards the mean is largest in the NHL (estimated $\gamma_{NHL, season}$ = 0.54, implying 46\% reversion), followed by the NBA (38\%), MLB (38\% reversion), and the NFL (31\%). However, there is enough uncertainty in the posterior distribution of these estimates that we are unable to say for certain if the differences in the season-to-season estimates between MLB, the NBA, and the NBA are significant. 
+Likewise, Figure~\ref{fig:contourGamma} displays the joint posterior distribution of $\gamma_{q, season}$ and $\gamma_{q, week}$ via contour plots for each $q$. On a season-to-season basis, team strengths in each of the leagues tend to revert towards the league average (0), as all draws of $\gamma_{q, season} < 1$ for all $q$. Reversion towards the mean is largest in the NHL (estimated $\gamma_{NHL, season}$ = 0.54, implying 46\% reversion), followed by the NBA (38\%), MLB (38\% reversion), and the NFL (31\%). However, there is enough uncertainty in the posterior distribution of these estimates that we are unable to say for certain if the differences in the season-to-season estimates between MLB, the NBA, and the NBA are significant. 
 
 For each of the NHL, NBA, and NFL, posterior estimates of $\gamma_{q, week}$ (as well as 95\% credible intervals) imply an autoregressive nature to team caliber within each season. Interestingly, the NBA and NFL are the least consistent leagues on a week-to-week basis. In MLB, meanwhile, team strength estimates quite possibly follow a random walk (as in $\gamma_{MLB, week} = 1$), in which the succession of team strength estimates over time follows no identifiable pattern. 
 
@@ -746,7 +746,7 @@ As in \cite{glickman1998state}, we also observe an inverse link in posterior dra
 
 \subsection{The home advantage}
 
-Figure \ref{fig:alphaAll} shows the 2.5th, median, and 97.5th draws of each team's estimated home advantage parameter, presented on the log-odds scale. These are calculated by summing draws of $\alpha_{q_0}$ with $\alpha_{(q)i}$ for all $i$. HAs are shown in order to provide a sense of the magnitude of differences between the home advantage provided in the MLB (increased log-odds of a home win around 0.16, or about $e^{0.16} - 1 = 17$\% higher), NHL (0.22, or 25\%), NFL (0.36, or 43\%), and NBA (0.50, or 62\%).  The two franchises that have relocated in the last decade, the Atlanta Thrashers (NHL) and Seattle Supersonics (NBA), are also included for the games played in those respective cities. 
+Figure \ref{fig:alphaAll} shows the 2.5th, median, and 97.5th draws of each team's estimated home advantage parameter, presented on the log-odds scale. These are calculated by summing draws of $\alpha_{q_0}$ with $\alpha_{(q) i^{\star}}$ for all $i^{\star}$ and for all $q$. HAs are shown in order to provide a sense of the magnitude of differences between the home advantage provided in the MLB (increased log-odds of a home win around 0.16, or about $e^{0.16} - 1 = 17$\% higher), NHL (0.22, or 25\%), NFL (0.36, or 43\%), and NBA (0.50, or 62\%).  The two franchises that have relocated in the last decade, the Atlanta Thrashers (NHL) and Seattle Supersonics (NBA), are also included for the games played in those respective cities. 
 
 <<ha-plot>>=
 ## Home advantage plots
