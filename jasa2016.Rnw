@@ -888,7 +888,7 @@ As one important caveat, our models do not account for varying line-up and injur
 
 \subsection{Validation of team strength estimates}
 
-We begin the final steps of our analysis by comparing our team strength estimates to won-loss percentage and point differential. Ultimately, estimates from Model~(\ref{model.full}) are designed to estimate team quality at any given point in a season. If these estimates more properly assess team quality than won-loss percentage and point differential, they should more accurately assess future performance, such as how well teams will do over remaining games in a season.  
+Ultimately, estimates from Model~(\ref{model.full}) are designed to estimate team quality at any given point in a season. If these estimates more properly assess team quality than other metrics of team success, such as won-loss percentage and point differential, they should more accurately assess future performance, such as how well teams will do over remaining games in a season.  
 
 Figure~\ref{fig:R2} shows the coefficient of determination comparing each team's future won-loss percentage in a season to (i) our team strength estimates, (ii) each team's past cumulative point differential, and (iii) each team's past won-loss percentage. Within each sport, this is done by game number, which helps to account for league-level differences in season length. For purposes of using our team strength estimates, we took the mean posterior draw for each team in each week a particular contest was played. The lockout-shortened seasons in the NBA (2012) and NHL (2013) were dropped.
 
@@ -1057,7 +1057,7 @@ gg.r2 <- ggplot(all.sport.both, aes(day.season, corr.day, lty = type)) +
 gg.r2
 @
 
-Across each sport, our estimates of team strength consistently outperform past team win percentage and point differential as far as predicting future win percentage. This gap is most pronounced earlier in each season, which is not surprising given the fluctuations in won-loss percentage and point differential in a small number of games, as well as the fact that our model borrows information from the future when assessing team talent. Differences in predictive accuracy remain throughout most of the regular season in the NHL, MLB, and the NFL, while by the NBA's mid-season, won-loss ratio and point differential are similar to our estimates of team strength in assessing future performance. Altogether, results suggest that across seasons and sports, team strength estimates from our state-space model more completely judge team talent than won-loss percentage and point differential. 
+Across each sport, our estimates of team strength consistently outperform past team win percentage and point differential as far as predicting future win percentage. This gap is most pronounced earlier in each season, which is not surprising given the fluctuations in won-loss percentage and point differential in a small number of games. Differences in predictive accuracy remain throughout most of the regular season in the NHL, MLB, and the NFL, while by the NBA's mid-season, won-loss ratio and point differential are similar to our estimates of team strength in assessing future performance. Altogether, results suggest that across seasons and sports, team strength estimates from our state-space model more completely judge team talent than won-loss percentage and point differential. 
 
 \subsection{How often does the best team win?  A better measure of league parity}
 
@@ -1079,7 +1079,7 @@ Given sport $q$ with season length $k^{\star}_{q}$, number of seasons $s^{\star}
 \item Repeat the above steps $n_{sim}$ times to obtain $\mathbf{\tilde{p}_{q}} = \left\{\tilde{p}_{q, 1}, \ldots \tilde{p}_{q, n_{sim}}\right\}$.
 \end{enumerate}
 
-The steps above were repeated for each $q$ with $n_{sim} = 1000$. Additionally, to remove the effect of each league's HA on simulated probabilities, we repeated the process using by fixing $\tilde{\alpha}_{q_0} = 0$ for each league, reflecting the probability that would have been given for the game being played at a neutral site.
+For each $q$, we simulated with $n_{sim} = 1000$. Additionally, to remove the effect of each league's HA on simulated probabilities, we repeated the process using by fixing $\tilde{\alpha}_{q_0} = 0$ for each league, reflecting the probability that would have been given for the game being played at a neutral site.
 
 Figure \ref{fig:BestWin} shows the cumulative distribution functions (CDFs) for each set of probabilities in each league. 
 
@@ -1088,7 +1088,7 @@ Figure \ref{fig:BestWin} shows the cumulative distribution functions (CDFs) for 
 \caption{Cumulative Distribution Function (CDF) of 1000 simulated game-level probabilities in each league, for both neutral site and home games, with the better team (on average) used as the reference and given the home advantage.\label{fig:BestWin}}
 \end{figure}
 
-The median probability of the best team winning a neutral site game is highest in the NBA (67\%), followed in order by the NFL (65\%), NHL (57\%), and MLB (56\%). Nearly every simulated netural site MLB and NHL game played at neutral site is less than a 3:1 proposition with respect to the best team winning (75\%). Meanwhile, roughly 30\% of NBA and 23\% of NFL neutral site match-ups are greater than this 3:1 threshold. 
+The median probability of the best team winning a neutral site game is highest in the NBA (67\%), followed in order by the NFL (65\%), NHL (57\%), and MLB (56\%). Nearly every simulated MLB and NHL game played at neutral site is less than a 3:1 proposition with respect to the best team winning (75\%). Meanwhile, roughly 30\% of NBA and 23\% of NFL neutral site match-ups are greater than this 3:1 threshold. 
 
 Factoring in each league's home advantage works to exaggerate league-level differences. When the best team plays at home in the NBA, that squad is always favored to win at least 60\% of the time, with the middle 50\% of games ranging from a 70\% probability to an 85\% probability. Meanwhile, even with a home advantage, it is rare that the best MLB team is $ever$ given a 70\% probability of winning, with the middle 50\% of games ranging from 57\% to 63\%. 
 
@@ -1096,7 +1096,7 @@ Factoring in each league's home advantage works to exaggerate league-level diffe
 
 http://stats.stackexchange.com/questions/145566/how-to-calculate-area-under-the-curve-auc-or-the-c-statistic-by-hand}
 
-Finally, we use the CDFs displayed above to quantify the proximity of each league's game-level probabilities to coin flips by estimating the approximate area under each curve Let $Parity_q$ be our parity measure, such that
+Finally, we use the CDFs displayed above to quantify the proximity of each league's game-level probabilities to coin flips by estimating the approximate area under each curve. Let $Parity_q$ be our parity measure, such that
 
 $$Parity_q = 2*\int_{0.5}^1 P(\mathbf{\tilde{p}_{q}} \leq x) dx$$,
 
@@ -1109,20 +1109,19 @@ For games with no home advantage, $Parity_{MLB} = 86\%$, followed by the NHL (83
 
 Using a modified Bayesian state-space model, we estimate both time-varying team strength and league-level variance parameters in order to better explain the underlying randomness in the four major North American professional sporting leagues, the NBA, NFL, NHL, and MLB. 
 
-Our first finding relates to the relative equivalence of the four leagues. At a single point in time, team strength estimates diverge substantially more in the NBA and NFL than in the NHL and MLB. In the latter two leagues, contests between two randomly chosen teams are closer to to a coin-flip, with each team has a reasonable shot at winning. 
+Our first finding relates to the relative equivalence of the four leagues. At a single point in time, team strength estimates diverge substantially more in the NBA and NFL than in the NHL and MLB. In the latter two leagues, contests between two randomly chosen teams are closer to a coin-flip, where each team has a reasonable shot at winning. 
+
+Understanding this underlying randomness and the proper evaluation of team talent is particularly crucial to decision makers in these leagues. At critical moments in a team's evolution, such as the trade deadline, free agency, or in the choice to fire a coach, we recommend that team officials look past wins and losses to better understand team strength in the context of their league. As one easy example, it is insufficient to evaluate a baseball or hockey team based on their performance in the postseason alone, given that so many of those contests are near 50-50 outcomes. 
 
 Our second set of findings relates to the autoregressive nature of team strengths. Within a season, posterior estimates suggest that teams in each of the NBA (largest reversion), NFL, and NHL tend to revert towards the league average in the long term on a week-to-week basis, while trends of team strength in MLB are indistinguishable from a random walk. On a season-to-season basis, NHL teams exhibit the largest reversion (nearly 50\%) towards the league average, with the other three leagues falling somewhere between roughly 25\% and 40\%. 
 
 Our next finding relates to the relative equivalence of the home advantage in each league, with the NBA well ahead of the pack, showing, on average, a \Sexpr{round(leagues$mean.sport[2], 3)} increase on the log-odds of a home win (which corresponds to a win probability of \Sexpr{100*round(exp(leagues$mean.sport[2])/(1+exp(leagues$mean.sport[2])), 3)}\% against a like-caliber opponent). We also show that the home advantage varies most significantly between arenas within each of the NBA and the NHL. In the NBA, for example, the league's best team home advantage is worth a few wins per year, in expectation, over the league's worst home advantage. 
 
-Finally, we identify that incorporating information from betting markets can help to more accurately gauge the caliber of each league's teams, as shown by more accurate forecasts of future team performance. Unlike wins and losses or point differential, our estimates of team strength account for league characteristics such as unbalanced schedules and season length. We conclude by using these team strength draws to propose a parity metric that can compare team equivalence without being impacted by league-level characteristics like unbalanced schedules. 
+Finally, we identify that incorporating information from betting markets can help to more accurately gauge the caliber of each league's teams, as shown by stronger ties to future team performance. Unlike wins and losses or point differential, our estimates of team strength account for league characteristics such as unbalanced schedules and season length. We conclude by using these team strength draws to propose a parity metric that can compare team equivalence without being impacted by league-level characteristics like unbalanced schedules. 
 
 Opportunities to extend our model are plentiful. One approach would use our team strength estimates to examine how each league's scheduling quirks impact resulting won-loss standings. As an example, what is the impact of the NFL using an unbalanced schedule? A second task would link our estimates of team strength to performance in the postseason. How likely is it for the best team to win each league's title? Alternatively, how likely is it for the best team in each league to win a 7-game series? Finally, one could use time-varying estimates of team strength to consider the existence of tanking, in which teams---in order to secure a better draft position---are better off losing games later in the season. While this has been demonstrated in basketball using betting market data \citep{soebbing2013gamblers}, it would also be worth looking at tanking in other leagues, or if team interest in tanking corresponds to the perceived talent available in the upcoming draft.
 
 To maintain consistency with the NFL's calendar, we considered time on a weekly basis. More refined approaches may be appropriate in other sports. As an example, investigation into starting pitchers---who change daily---in baseball could lead to novel findings. Additionally, another model specification could consider the possibility that time-varying estimates of team strength follow something other than an autoregressive structure. One alternative specification, for example, is a stochastic volatility process \citep{glickman2001dynamic}. In this respect, our model can be looked at as a starting point for those looking to dig deeper in any sport witout losing an ability to make cross-league comparisons. 
-
-\mike{Does this paragraph fit? I like it but can't place it.}
-Understanding this underlying randomness and the proper evaluation of team talent is crucial to decision makers in these leagues. At critical moments in a team's evolution, such as the trade deadline, free agency, or in the choice to fire a coach, we recommend that team officials look past wins and losses to better understand team strength in the context of their league. As one easy example, it is insufficient to evaluate a baseball or hockey team based on their performance in the postseason alone, given that so many of those contests are near 50-50 outcomes. 
 
 
 \mike{To do before publication
