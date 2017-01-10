@@ -129,7 +129,6 @@ $$
 
 where $E[y_{(s,k)ij} | \theta_{(s,k)i},\theta_{(s,k)j},\alpha_{i}]$ is the expected point differential given $i$ and $j$'s team strengths and the home advantage of team $i$.
 
-
 %The distribution of the outcomes of games during season $s$ and week $k$ is:
 
 %$$
@@ -305,18 +304,30 @@ markets_plot + theme_grey(base_size = 16)
 
 Our model below builds on the state-space specification provided by \cite{glickman1998state} to provide a unified framework for contrasting the four major North American sports leagues.
 
-Let $p_{(q,s,k)ij}$ be the probability that team $i$ will beat team $j$ in season $s$ during week $k$ of sports league $q$, where $q \in \{MLB, NBA, NFL, NHL\}$. These probabilities are assumed to be known, calculated using sportsbook odds via Equation (\ref{eqn:moneyline}). Letting $\theta_{(q,s,k) i}$ and $\theta_{(q, s, k) j}$ be season-week team strength parameters for teams $i$ and $j$, respectively, where $i,j = 1, \cdots, t_{q}$, we assume that 
+Let $p_{(q,s,k)ij}$ be the probability that team $i$ will beat team $j$ in season $s$ during week $k$ of sports league $q$, for $q \in \{MLB, NBA, NFL, NHL\}$, $i,j = 1, \cdots, t_{q}$, $t_{MLB} = t_{NBA} = t_{NHL} = 30$ and $t_{NFL} = 32$. The $p_{(q,s,k)ij}$'s are assumed to be known, calculated using sportsbook odds via Equation (\ref{eqn:moneyline}). In using the log-odds of victory, we have a cross-sport outcome that provides more information than only knowing which team won the game or what the score was. \greg{Can we support this statement?} \mike{The literature above implies it, and we somewhat support it using our results.}
+
+\mike{Do we need boundries for $s$ and $k$?  I suppose we discuss them in our autoregressive section.}
+
+
+One immediate hurdle in building a cross-sport model is that in addition to having different numbers of teams in each league, certain teams will relocate from one city to another over time. In our data, there were two franchise relocations, Seattle to Oklahoma City (NBA, 2008) and Atlanta to Winnipeg (NHL, 2011). $\alpha_{(q) i^{\star}}$ is the home advantage (HA) parameter for a game played in the current home venue of franchise $i$, such that $i^{\star} = 1, \cdots t^{\star}_{q}$, where $t^{\star}_{q}$ is the total number of home venues in our data. Note that $t_{q} \le t^{\star}_{q}$ due to franchise relocation. 
+
+
+
+Letting $\theta_{(q,s,k) i}$ and $\theta_{(q, s, k) j}$ be season-week team strength parameters for teams $i$ and $j$, respectively, where $i,j = 1, \cdots, t_{q}$, we assume that 
 
 $$
 E[logit(p_{(q,s,k) ij}) | \theta_{(q,s,k) i}, \theta_{(q, s, k) j}, \alpha_{q_{0}}, \alpha_{(q) i^{\star}}] = \theta_{(q,s,k) i} - \theta_{(q, s, k) j} + \alpha_{q_0} + \alpha_{(q) i^{\star}},
 $$
-\greg{I think we need to add $\alpha_{q_{0}}$ to $\alpha_{(q)i}} \mike{Agree. Added in.}
-\greg{I think the $i$ on $\alpha_(q)i$ has to be different than the other $i$ on $\theta$} \mike{Agree. I called it $i^{\star}$}
-\greg{I think we need to say after the model $i,j = 1, \cdots, t_{q}$, $q = 1,\cdots, 4$, etc.} \mike{We have the space for $q$ in the first sentence, and I added the space for $i$ and $j$ above. Does that work? I also added the space for $i^{\star}$ below.}
-\greg{Do we even need this expected value statement at all?  It is implied by equation 2.} \mike{I think it makes it easier to see the game-level data. It's certainly implied, but it matches what we did with Glickman.}
+\greg{I think we need to add $\alpha_{q_{0}}$ to $\alpha_{(q)i}$} \mike{Agree. Added in.} \\
+\greg{I think the $i$ on $\alpha_(q)i$ has to be different than the other $i$ on $\theta$} \mike{Agree. I called it $i^{\star}$}\\
+\greg{I think we need to say after the model $i,j = 1, \cdots, t_{q}$, $q = 1,\cdots, 4$, etc.} \mike{We have the space for $q$ in the first sentence, and I added the space for $i$ and $j$ above. Does that work? I also added the space for $i^{\star}$ below.}\\
+\greg{Do we even need this expected value statement at all?  It is implied by equation 2.} \mike{I think it makes it easier to see the game-level data. It's certainly implied, but it matches what we did with Glickman.}\\
 \mike{Minor follow-up - Do we need to point out that $i \neq j$?}
 
-where $logit(.)$ is the log-odds transform and $\alpha_{(q) i^{\star}}$ is the home advantage (HA) parameter for a game played in the current home arena or field of franchise $i^{\star}$, for $i^{\star} = 1, \cdots t^{\star}_{q}$. In using the log-odds of victory, we have a cross-sport outcome that provides more information than only knowing which team won the game or what the score was. \greg{Can we support this statement?} \mike{The literature above implies it, and we somewhat support it using our results.}
+where $logit(.)$ is the log-odds transform.
+
+
+
 
 Let ${\bf p}_{(q,s,k)}$ represent the vector of length $g_{(q,s,k)}$ (the number of games in week $k$ of season $s$ in league $q$) containing all of league $q$'s probabilities in week $k$ of season $s$. We then assume that
 \begin{eqnarray}
@@ -324,7 +335,7 @@ Let ${\bf p}_{(q,s,k)}$ represent the vector of length $g_{(q,s,k)}$ (the number
 \end{eqnarray}
 
 \greg{Shouldn't this say ``{\it arena}-specific?}
-where $\mathbf{\theta_{(q,s,k)}}$ is a vector of length $t_{q}$ (the number of teams in league $q$) containing the team strength parameters in season $s$ during week $k$, $\alpha_{q_0}$ is the overall home field advantage parameter for sports league $q$, and $\balpha_{q}$ is a vector of length $t^{\star}_{q}$ containing \textit{franchise}-specific home advantage parameters for league $q$ that do not vary over time (i.e. HA is assumed to be constant for a team over weeks and seasons). Note that $t_{q} \le t^{\star}_{q}$ since the number of home venues in league $q$, $t^{\star}_{q}$, is greater than or equal to the number of teams in league $q$,$t_{q}$,  due to franchise relocation.\footnote{There were two franchise relocations in our data, Seattle to Oklahoma City (NBA) and Atlanta to Winnipeg (NHL).} $\mathbf{X}_{q,s,k}$ and $\mathbf{Z}_{q,s,k}$ contain $g_{(q,s,k)}$---the number of games in league $q$ during week $k$ of season $s$---rows and $t_{q}$ and $t^{\star}_{q}$ columns, respectively.   The matrix $\mathbf{X}_{q,s,k}$ contains the values $\{1, 0, -1\}$ where for a given row (i.e. one game) the value of $i^{th}$ column in that row is a 1/-1 if the $i^{th}$ team played at home/away in the given game and 0 otherwise.  \greg{I think e need a slightly different description fo Z because the number of arenas are greater than the number of teams } $\mathbf{Z}_{q,s,k}$ is a matrix containing a 1 in the $i^{th}$ column if the $i^{th}$ team played the game corresponding to that row at home and 0 otherwise. Finally, $\tau^{2}_{q,game} = 1 / \sigma^{2}_{q,game}$ is the precision \mike{variance?}\greg{We've defined it as precision.  It's easier that way because of Bayesian math and such}, $\mathbf{J}_{g_{q,s,k}}$ is a column vector of length $g_{q,s,k}$ containing all 1's, and $\mathbf{I}_{g_{(q,s,k)}}$ is an identity matrix with dimension ${g_{(q,s,k)}} \times {g_{(q,s,k)}}$.
+where $\mathbf{\theta_{(q,s,k)}}$ is a vector of length $t_{q}$ (the number of teams in league $q$) containing the team strength parameters in season $s$ during week $k$, $\alpha_{q_0}$ is the overall home field advantage parameter for sports league $q$, and $\balpha_{q}$ is a vector of length $t^{\star}_{q}$ containing \textit{franchise}-specific home advantage parameters for league $q$ that do not vary over time (i.e. HA is assumed to be constant for a team over weeks and seasons). $\mathbf{X}_{q,s,k}$ and $\mathbf{Z}_{q,s,k}$ contain $g_{(q,s,k)}$---the number of games in league $q$ during week $k$ of season $s$---rows and $t_{q}$ and $t^{\star}_{q}$ columns, respectively.   The matrix $\mathbf{X}_{q,s,k}$ contains the values $\{1, 0, -1\}$ where for a given row (i.e. one game) the value of $i^{th}$ column in that row is a 1/-1 if the $i^{th}$ team played at home/away in the given game and 0 otherwise.  \greg{I think e need a slightly different description fo Z because the number of arenas are greater than the number of teams } $\mathbf{Z}_{q,s,k}$ is a matrix containing a 1 in the $i^{th}$ column if the $i^{th}$ team played the game corresponding to that row at home and 0 otherwise. Finally, $\tau^{2}_{q,game} = 1 / \sigma^{2}_{q,game}$ is the precision \mike{variance?}\greg{We've defined it as precision.  It's easier that way because of Bayesian math and such}, $\mathbf{J}_{g_{q,s,k}}$ is a column vector of length $g_{q,s,k}$ containing all 1's, and $\mathbf{I}_{g_{(q,s,k)}}$ is an identity matrix with dimension ${g_{(q,s,k)}} \times {g_{(q,s,k)}}$.
 
 In addition, we propose a simplified version of Model (\ref{model.full}), one that assumes that the HA within each sport is identical for each franchise, such that
 \greg{Again, I'm not sure we need that expectation statement as it is implied by the Normal statement following it.  This may have been an attempt to write it out as a GLM with a link function, but we don't need that here since we assume $p$ is known.  }
