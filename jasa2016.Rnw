@@ -226,7 +226,6 @@ These data were more than 99.3\% complete in each league, in the sense that ther
 
 
 <<message=FALSE, results='asis'>>=
-load("data/bigfour.rda")
 bigfour <- bigfour %>% mutate(sport = toupper(sport))
 library(dplyr)
 library(xtable)
@@ -450,6 +449,7 @@ Figure~\ref{fig:spaghetti} shows estimated team strength coefficients over time,
 <<set-colors, echo=FALSE>>=
 library(dplyr)
 # load(file.path(root, "data", "tidy_betas.rda"))
+load("data/tidy_betas.rda")
 tidy_betas <- tidy_betas %>%
   mutate(sport = toupper(sport),
          annotation = "",
@@ -554,18 +554,18 @@ teamcolors <- teamcolors %>%
 @
 
 <<>>=
-tidy_betas <- tidy_betas %>%
+tidy_betas_division <- tidy_betas %>%
   left_join(select(teamcolors, name, division), by = c("name" = "name")) %>%
   mutate(time_val = ifelse(sport == "NFL" | sport == "MLB", 
                            time_val + 1, time_val))
-max.beta <- round(max(tidy_betas$beta), 2)
-min.beta <- round(min(tidy_betas$beta), 2)
+max.beta <- round(max(tidy_betas_division$beta), 2)
+min.beta <- round(min(tidy_betas_division$beta), 2)
 @
 
 
 <<spaghetti-base>>=
 library(ggplot2)
-spag <- ggplot(data = tidy_betas, 
+spag <- ggplot(data = tidy_betas_division, 
        aes(x = time_val, y = beta, 
            color = name, fill = name)) +
   geom_line(alpha = 0.5) + 
@@ -586,7 +586,7 @@ spag + facet_wrap(~sport, ncol = 1)
 
 <<spag_sport>>=
 spag_sport <- function(sport_name) {
-  x <- filter(tidy_betas, sport == sport_name)
+  x <- filter(tidy_betas_division, sport == sport_name)
   spag %+% x + 
     geom_line(data = select(x, -division), color = "darkgray", alpha = 0.3) + 
     geom_line(alpha = 0.5) + 
@@ -595,58 +595,6 @@ spag_sport <- function(sport_name) {
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
     ggtitle(paste("Team strengths over time,", sport_name))
 }
-@
-
-<<include=FALSE, eval=FALSE>>=
-# deprecated
-graph.sport <- function(sport){
-
-year.max <- 2016
-if (sport == "NFL"){year.max = 2015}
-
-sport1 <- eval(sport)
-sportcolors <- subset(tidy_betas, sport == sport1)
-sportcolors <- sportcolors %>%
-  select(name, primary, secondary) %>%
-  unique()
-
-if (sport == "NFL"){sportcolors$division <- div.teams.NFL}
-if (sport == "NHL"){sportcolors$division <- div.teams.NHL}
-if (sport == "NBA"){sportcolors$division <- div.teams.NBA}
-if (sport == "MLB"){sportcolors$division <- div.teams.MLB}
-datbetas3 <- inner_join(tidy_betas, sportcolors, by = c("name" = "name"))
-datbetas.null <- select(datbetas3, -division)
-datbetas.null <- arrange(datbetas.null, time_val)
-
-
-##### Generate plots
-lim <- max(abs(datbetas.null$beta))
-gg <- ggplot()  + ggtitle(paste("Team strengths over time,", sport)) + xlab("Year")  + 
-                            ylab("Log-odds of a win")
-gg <- gg + geom_path(data = datbetas.null, colour = "grey", 
-                     aes(x = time_val, y = beta, group = name)) +
-  scale_y_continuous(lim = c(-lim, lim)) +
-  scale_x_continuous(breaks = c(2005:2016), labels = c(2005:2016)) 
-
-
-for (i in 1:nrow(sportcolors)){
-    gg <- gg + geom_line(data = filter(datbetas3,name==sportcolors$name[i]),aes(x = time_val, y = beta),linetype=1,lwd=1.5,colour=sportcolors$primary[i]) 
-    gg <- gg + geom_line(data = filter(datbetas3,name==sportcolors$name[i]),aes(x = time_val, y = beta),linetype=2,lwd=1.5,colour=sportcolors$secondary[i]) 
-  }
-gg1 <- gg +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-gg2 <- gg1 + facet_wrap(~division, nrow = 2)
-return(gg2)
-}
-
-#NFL: 2006:2015
-#NBA, NHL: 2005:2016
-
-nhl.team <- graph.sport("NHL")
-nba.team <- graph.sport("NBA")
-nfl.team <- graph.sport("NFL")
-mlb.team <- graph.sport("MLB")
-### These charts will be called in the appendix
 @
 
 Figure~\ref{fig:spaghetti} and Table~\ref{tab:betas} both identify wider gaps in average team talent when comparing each of the NBA and the NFL to the NHL and MLB. These findings stand somewhat in contrast to competitive balance as measured using Noll-Scully, which argues that both the NHL and the NFL are less competitively balanced than MLB \citep{WagesWins}. One likely explanation is that because Noll-Scully increases with a larger number of games played (higher = less balanced), MLB (162 games) appears less balanced under Noll-Scully than it actually is and the NFL (16 games) appears more balanced. Like Noll-Scully, we conclude that the NBA does not show competitive balance relative to other leagues. 
@@ -658,7 +606,7 @@ Another observation is that in the NHL, top teams appear less dominant than a de
 As a final point of clarification in Figures \ref{fig:spaghetti}, \ref{fig:spaghetti-nba}, and \ref{fig:spaghetti-nhl}, the periods with straight lines of team strength estimates in the 2011-12 season (NBA) and 2012-13 season (NHL) reflect games lost due to lockouts. 
 
 <<include=FALSE>>=
-tidy_betas %>%
+tidy_betas_division %>%
   filter(sport == "NHL", beta > 0.55) %>% 
   select(beta, time_val, season, name) %>% 
   mutate(team.seas = paste(season, name)) %>% 
