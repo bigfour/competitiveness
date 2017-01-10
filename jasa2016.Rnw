@@ -184,14 +184,14 @@ In place of paired comparison models, alternative measures for estimating team s
 
 In many instances, researchers derive estimates of team strength in order to predict game-level probabilities. Betting market information has long been recommended to judge the accuracy of these probabilities \citep{harville1980predictions, stern1991probability}. Before each contest, sports books---including those in Las Vegas and in overseas markets---provide a price for each team, more commonly known as the money line. 
 
-\greg{The -200 or +160 moneyline convention is one type of money line.  Others are given in odds, for instance.  I believe the -200 or +160 lines are the American style of moneylines.  Should we mention this? }
-\greg{Should we also make the $\ell_i$ cut-offs 100 and -100 instead of 0 since the money line can never be +50 for instance?}
-\greg{Should the money line be $\ell_{ij}$ instead of $\ell_{i}$.  Based on formula (1) further down, I think this answer should be no.  }
-Mathematically, if team $i$'s money line is $\ell_i$ against team $j$ (with corresponding money line $\ell_j$), then the boundary win probability for that team, $p_i(\ell_i)$, is given by:
+\greg{The -200 or +160 moneyline convention is one type of money line.  Others are given in odds, for instance.  I believe the -200 or +160 lines are the American style of moneylines.  Should we mention this? } \mike{For an American journal, not sure it's important}\\
+\greg{Should we also make the $\ell_i$ cut-offs 100 and -100 instead of 0 since the money line can never be +50 for instance?} \mike{Yes. Changed below}
+\greg{Should the money line be $\ell_{ij}$ instead of $\ell_{i}$.  Based on formula (1) further down, I think this answer should be no.  } \mike{don't think the boundary price depends on $j$}
+Mathematically, if team $i$'s money line is $\ell_i$ against team $j$ (with corresponding money line $\ell_j$), where $|\ell_i| \geq 100$, then the boundary win probability for that team, $p_i(\ell_i)$, is given by:
 $$
   p_i(\ell_i) = \begin{cases}
-        \frac{100}{100 + \ell_i} & \text{ if } \ell_i > 0 \\
-        \frac{|\ell_i|}{100 + |\ell_i|} & \text{ if } \ell_i < 0
+        \frac{100}{100 + \ell_i} & \text{ if } \ell_i \geq 100 \\
+        \frac{|\ell_i|}{100 + |\ell_i|} & \text{ if } \ell_i \leq -100
       \end{cases} \,.
 $$
 
@@ -204,7 +204,7 @@ As an example, suppose the Chicago Cubs were favored ($\ell_i = -127$ on the mon
 
 \noindent In our example, dividing each boundary probability by $1.02 = (0.559 + 0.461)$ implies win probabilities of 54.8\% for the Cubs and 45.2\% for the Diamondbacks. 
 
-In principle, money line prices account for all determinants of game outcomes known to the public prior to the game, including team strength, location, and injuries. Across time and sporting leagues, researchers have identified that it is difficult to estimate win probabilities that are more accurate than the market; i.e, that the betting markets are efficient. As an incomplete list, see \cite{harville1980predictions,  gandar1988testing, lacey1990estimation, stern1991probability, carlin1996improved, colquitt2001testing, spann2009sports, nichols2012impact, paul2014market, lopez2015building}. Interestingly, \cite{colquitt2001testing} suggested that the efficiency of college basketball markets was proportional to the amount of pre-game information available---this would suggest that markets in professional sports are as efficient as they come \greg{Can you add something to this sentence to explicilty explain why}. \cite{manner2015modeling} merged predictions from a state-space model with those from betting markets, finding that the combination of both predictions only occasionally outperformed betting markets alone.
+In principle, money line prices account for all determinants of game outcomes known to the public prior to the game, including team strength, location, and injuries. Across time and sporting leagues, researchers have identified that it is difficult to estimate win probabilities that are more accurate than the market; i.e, that the betting markets are efficient. As an incomplete list, see \cite{harville1980predictions,  gandar1988testing, lacey1990estimation, stern1991probability, carlin1996improved, colquitt2001testing, spann2009sports, nichols2012impact, paul2014market, lopez2015building}. Interestingly, \cite{colquitt2001testing} suggested that the efficiency of college basketball markets was proportional to the amount of pre-game information available---with the amount known about professional sports teams, this would suggest that markets in the NFL, NBA, NHL and MLB are as efficient as they come \greg{Can you add something to this sentence to explicilty explain why} \mike{done}. \cite{manner2015modeling} merged predictions from a state-space model with those from betting markets, finding that the combination of both predictions only occasionally outperformed betting markets alone.
 
 We are not aware of any published findings that have compared leagues using implied probabilities. Given the varying within-sport metrics of judging team quality and the flawed between-sport approaches that rely on wins and losses alone, we aim to extend paired comparison models using money line information to better capture relative team equivalence in a method that can be applied generally.
 
@@ -222,7 +222,7 @@ head(bigfour)
 mosaic::favstats(~vig, data = bigfour)
 @
 
-These data were more than 99.3\% complete in each league, in the sense that there existed a valid betting line for nearly all games in these four sports across this time period. Betting lines provided by Sports Insights are expressed as payouts, which we subsequently convert into implied probabilities. The average vig in our data set is \Sexpr{round(100 * mean(bigfour$vig), 2)}\%, but is always positive, resulting in revenue for the sportsbook over a long run of games. In circumstances where more than one betting line was available for a particular game, we included only the line from before the game started \greg{All the lines are from before the game started.  Should we say the most recent line prior to the start of the game?} (this is known as the closing line). A summary of our data is shown in Table~\ref{tab:bigfour}. 
+These data were more than 99.3\% complete in each league, in the sense that there existed a valid betting line for nearly all games in these four sports across this time period. Betting lines provided by Sports Insights are expressed as payouts, which we subsequently convert into implied probabilities. The average vig in our data set is \Sexpr{round(100 * mean(bigfour$vig), 2)}\%, but is always positive, resulting in revenue for the sportsbook over a long run of games. In circumstances where more than one betting line was available for a particular game, we included only the line closest to the start time of the game \greg{All the lines are from before the game started.  Should we say the most recent line prior to the start of the game?} \mike{fixed} (this is known as the closing line). A summary of our data is shown in Table~\ref{tab:bigfour}. 
 
 
 <<message=FALSE, results='asis'>>=
@@ -259,7 +259,7 @@ bigfour %>%
 @
 
 
-We also compared the observed probabilities of a home win to the corresponding probabilities implied by our betting market data (Figure~\ref{fig:betting}). In each of the four sports, the efficient market hypothesis cannot be rejected for any range of implied home win probabilities, based on visual inspection of a LOESS regression model. \greg{Should we do a formal test? } Thus, we find no evidence to suggest that the probabilities implied by our betting market data are biased or inaccurate---a conclusion that is supported by the body of academic literature referenced above. Accordingly, we interpret these probabilities \greg{as} ``true." 
+We also compared the observed probabilities of a home win to the corresponding probabilities implied by our betting market data (Figure~\ref{fig:betting}). In each of the four sports, the efficient market hypothesis cannot be rejected for any range of implied home win probabilities, based on visual inspection of a LOESS regression model. \greg{Should we do a formal test? } \mike{Don't think that's needed} Thus, we find no evidence to suggest that the probabilities implied by our betting market data are biased or inaccurate---a conclusion that is supported by the body of academic literature referenced above. Accordingly, we interpret these probabilities as ``true." 
 
 <<betting, fig.height=10, fig.cap="Accuracy of probabilities implied by betting markets. Each dot represents a bin of implied probabilities rounded to the nearst hundredth. The size of each dot (N) is proportional to the number of games that lie in that bin. We note that across all four major sports, the observed winning percentages accord with those implied by the betting markets. The dotted diagonal line indicates a completely fair market where probabilities from the betting markets correspond exactly to observed outcomes. In each sport, this diagonal line lies entirely within the standard error surrounding a LOESS regression line, suggesting that an efficient market hypothesis cannot be rejected.">>=
 bigfour_summary <- bigfour %>%
@@ -305,9 +305,6 @@ markets_plot + theme_grey(base_size = 16)
 Our model below builds on the state-space specification provided by \cite{glickman1998state} to provide a unified framework for contrasting the four major North American sports leagues.
 
 Let $p_{(q,s,k)ij}$ be the probability that team $i$ will beat team $j$ in season $s$ during week $k$ of sports league $q$, for $q \in \{MLB, NBA, NFL, NHL\}$, $i,j = 1, \cdots, t_{q}$, $t_{MLB} = t_{NBA} = t_{NHL} = 30$ and $t_{NFL} = 32$. The $p_{(q,s,k)ij}$'s are assumed to be known, calculated using sportsbook odds via Equation (\ref{eqn:moneyline}). In using the log-odds of victory, we have a cross-sport outcome that provides more information than only knowing which team won the game or what the score was. \greg{Can we support this statement?} \mike{The literature above implies it, and we somewhat support it using our results.}
-
-\mike{Do we need boundries for $s$ and $k$?  I suppose we discuss them in our autoregressive section.}
-
 
 One immediate hurdle in building a cross-sport model is that in addition to having different numbers of teams in each league, certain franchises may relocate from one city to another over time. In our data, there were two relocations, Seattle to Oklahoma City (NBA, 2008) and Atlanta to Winnipeg (NHL, 2011). Let $\alpha_{q_{0}}$ be the league-wide home advantage (HA) in $q$, and let $\alpha_{(q) i^{\star}}$ be the extra effect (positive or negative) on team $i$ for game's played in venue $i^{\star}$, for $i^{\star} = 1, \cdots t^{\star}_{q}$. Here, $t^{\star}_{q}$ is the total number of home venues; in our data, $t^{\star}_{MLB} = 30$, $t^{\star}_{NBA} = t^{\star}_{NHL} = 31$, and $t^{\star}_{NFL} = 32$.
 
@@ -893,9 +890,8 @@ Ultimately, estimates from Model~(\ref{model.full}) are designed to estimate tea
 Figure~\ref{fig:R2} shows the coefficient of determination comparing each team's future won-loss percentage in a season to (i) our team strength estimates, (ii) each team's past cumulative point differential, and (iii) each team's past won-loss percentage. Within each sport, this is done by game number, which helps to account for league-level differences in season length. For purposes of using our team strength estimates, we took the mean posterior draw for each team in each week a particular contest was played. The lockout-shortened seasons in the NBA (2012) and NHL (2013) were dropped.
 
 <<validation>>=
-# load("data/tidy_betas.rda")
+load("data/tidy_betas.rda")
 load("data/bigfour.rda")
-
 bigfour <- bigfour %>% arrange(sport, Date)
 
 min.day <- bigfour %>%
