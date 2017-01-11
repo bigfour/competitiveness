@@ -1003,7 +1003,7 @@ all.sport.both <- rbind(all.sport.beta.remains, all.sport.winp.remains, all.spor
 
 
 gg.r2 <- ggplot(all.sport.both, aes(day.season, corr.day, lty = type)) +
-  geom_step() + scale_y_continuous(labels = scales::percent, "", lim = c(0, .75)) + 
+  geom_step() + scale_y_continuous(labels = scales::percent, "", lim = c(0, .8)) + 
   scale_x_continuous("Game of season") +
   scale_linetype_manual(labels = c("Our estimates", "Past point differential", "Past win %"), 
                         values = c(1, 2, 3), "Type") +
@@ -1014,7 +1014,7 @@ gg.r2 <- ggplot(all.sport.both, aes(day.season, corr.day, lty = type)) +
 <<R2, fig.height = 4, fig.width = 6, fig.cap="Coefficient of determination with future in-season win percentage.">>=
 gg.r2
 @
-\greg{In figure 6, do we need the y-axis to go all the way to 100\%? }
+\greg{In figure 6, do we need the y-axis to go all the way to 100\%? } 
 
 Across each sport, our estimates of team strength consistently outperform past team win percentage and point differential as far as predicting future win percentage. This gap is most pronounced earlier in each season, which is not surprising given the fluctuations in won-loss percentage and point differential in a small number of games. Differences in predictive accuracy remain throughout most of the regular season in the NHL, MLB, and the NFL, while by the NBA's mid-season, won-loss ratio and point differential are similar to our estimates of team strength in assessing future performance. Altogether, results suggest that across seasons and sports, team strength estimates from our state-space model more completely judge team talent than won-loss percentage and point differential. 
 
