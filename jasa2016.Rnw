@@ -397,11 +397,13 @@ While we are unable to share our betting market data due to licensing restrictio
 
 \section{Results}
 
+In this section we present our results. We begin by validating and comparing the fits of Model~(\ref{model.full}) and (\ref{model.red}). We discuss the implications of our estimates of team strength and home advantage, as well as the interpretation of our variance and autoregressive parameters. We validate our team strength parameters, and illustrate how they can be used to build a league parity metric.  
+
 \subsection{Model fit}
 
-Trace plots of  $\alpha_{q_0}$, $\gamma_{q, season}$, $\gamma_{q, week}$ $\tau_{q, game}$, $\tau_{q, season}$, and $\tau_{q, week}$ are shown for each $q$ in Figures \ref{fig:MLBtrace} - \ref{fig:NHLtrace} in the Appendix. Visual inspection of these plots does not provide evidence of a lack of convergence or of an autocorrelation between draws. These trace plots stem from Model~(\ref{model.full}); conclusions are similar when plotting draws from Model~(\ref{model.red}). 
+We identified no concerns with the fit of Models~(\ref{model.full}) and (\ref{model.red}). Trace plots of $\alpha_{q_0}$, $\gamma_{q, season}$, $\gamma_{q, week}$ $\tau_{q, game}$, $\tau_{q, season}$, and $\tau_{q, week}$ are shown for each $q$ in Figures \ref{fig:MLBtrace}--\ref{fig:NHLtrace} in the Appendix. Visual inspection of these plots does not provide evidence of a lack of convergence or of autocorrelation between draws. These trace plots stem from Model~(\ref{model.full}); conclusions are similar when plotting draws from Model~(\ref{model.red}). 
 
-Table~\ref{tab:DIC} shows the DIC for each fit in each league, along with the difference in DIC values and its standard error. In each of the leagues, fits with a team-specific HA (Model (\ref{model.full})) yielded significantly lower DIC's (lower is better), with the most noticeable difference in fit improvement in the NBA.
+Table~\ref{tab:DIC} shows the deviance information criterion (DIC) for each fit in each league, along with the difference in DIC values and the associated standard error (SE). In each of the leagues, fits with a team-specific HA (Model (\ref{model.full})) yielded \ben{statistically?} significantly lower DIC's (lower is better), with the most noticeable difference in fit improvement in the NBA.
 
 \begin{table}[!ht]
 \makebox[\linewidth]{
@@ -415,12 +417,10 @@ NHL & -18335  & -18148 & -187.6 (20.7)\\
 \hline
 \end{tabular}
 }
-\caption{Deviance information criterion (DIC) by sport and model, along with the difference in DIC (standard errors (SE) of the difference shown in parenthesis, HA: home advantage) \label{tab:DIC}}
+\caption{Deviance information criterion (DIC) by sport and model, along with the difference in DIC and the associated standard errors (SE) (in parentheses). HA is the home advantage) \label{tab:DIC}}
 \end{table}
 
-Taken wholly, this suggests that perceived differences in the home advantage between teams in each league are likely not accounted for due to chance alone, with NBA teams showing the largest team-to-team differences in the HA. As such, results that follow use model estimates from Model (\ref{model.full}). \greg{It's equation (3) but I think it's confusing to call this model 3.  Can we think of a better way to label these models?  } \mike{Agree the labelling could be better. Topic for the phone call.}
-
-Taken wholly, this suggests that perceived differences in the home advantage between teams in each league are likely not accounted for due to chance alone, with NBA teams showing the largest team-to-team differences. As such, results that follow use model estimates from Model (\ref{model.full}). 
+These results suggest that chance along likely does not account for perceived \ben{observed? Didn't we say that the moneyline is the truth, and not just a perception of the truth?} differences in the home advantage among teams in each league, with the NBA showing the largest team-to-team differences in home advantage. As such, results that follow use model estimates from Model (\ref{model.full}). \greg{It's equation (3) but I think it's confusing to call this model 3.  Can we think of a better way to label these models?  } \mike{Agree the labelling could be better. Topic for the phone call.}
 
 \subsection{Team strength}
 
