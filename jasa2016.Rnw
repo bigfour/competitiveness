@@ -351,7 +351,7 @@ for $s = 1, \cdots, 11$ \greg{however, many seasons we have}
 
 \greg{g is the number of games.  It shouls refer to the dimension of some matrices.  But it's not an index.  I'll fix this.  }
 
-\greg{Does going from one season to the next invoke both the week gamma and the season gamma?  Or just the season gamma?  If the latter, which I think is what we did, then we may need to add a statement like ``for $k+1 \< k^{\star}_q$}} \mike{Good point. Let's define tomorrow over the phone, and perhaps figure out the best place to put the season and week information. We should also be transparant about the number of weeks in each sport}
+\greg{Does going from one season to the next invoke both the week gamma and the season gamma?  Or just the season gamma?  If the latter, which I think is what we did, then we may need to add a statement like ``for $k+1 \< k^{\star}_q$} \mike{Good point. Let's define tomorrow over the phone, and perhaps figure out the best place to put the season and week information. We should also be transparant about the number of weeks in each sport}
 
 and 
 
