@@ -342,7 +342,7 @@ E[logit(p_{(q,s,k) ij})] &=& \theta_{(q,s,k) i} - \theta_{(q, s, k) j} + \alpha_
 Similar to \cite{glickman1998state}, we allow the strength parameters of the teams to vary auto-regressively from week-to-week and from season-to-season. In general, this entails that team strength parameters are shrunk towards the league average over time in expectation. Formally,
 
 $$
-\theta_{(q,s+1,1)} | \gamma_{q,season}, \mathbf{\theta_{q,s,g_{q,s,.}}}, \tau^{2}_{q,season},  \sim N (\gamma_{q,season}\mathbf{\theta}_{(q,s,g_{q,s,k^{\star}_{q}})},(\tau^{2}_{q,season})I_{t_{q}})
+\theta_{(q,s+1,1)} | \gamma_{q,season}, \mathbf{\theta_{q,s,g_{q,s,.}}}, \tau^{2}_{q,season}  \sim N (\gamma_{q,season}\mathbf{\theta}_{(q,s,g_{q,s,k^{\star}_{q}})},(\tau^{2}_{q,season})I_{t_{q}})
 $$
 
 for $s = 1, \ldots, 11$ \greg{however, many seasons we have}
@@ -419,7 +419,7 @@ NHL & -18335  & -18148 & -187.6 (20.7)\\
 \hline
 \end{tabular}
 }
-\caption{Deviance information criterion (DIC) by sport and model, along with the difference in DIC and the associated standard errors (SE) (in parentheses). HA is the home advantage) \label{tab:DIC}}
+\caption{Deviance information criterion (DIC) by sport and model, along with the difference in DIC and the associated standard errors (SE) (in parentheses). HA is the home advantage. \label{tab:DIC}}
 \end{table}
 
 These results suggest that chance along likely does not account for perceived \ben{observed? Didn't we say that the moneyline is the truth, and not just a perception of the truth?} differences in the home advantage among teams in each league, with the NBA showing the largest team-to-team differences in home advantage. As such, results that follow use model estimates from Model (\ref{model.full}). \greg{It's equation (3) but I think it's confusing to call this model 3.  Can we think of a better way to label these models?  } \mike{Agree the labelling could be better. Topic for the phone call.}
