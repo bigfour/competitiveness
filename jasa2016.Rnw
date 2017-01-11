@@ -419,11 +419,9 @@ NHL & -18335  & -18148 & -187.6 (20.7)\\
 \caption{Deviance information criterion (DIC) by sport and model, along with the difference in DIC (standard errors (SE) of the difference shown in parenthesis, HA: home advantage) \label{tab:DIC}}
 \end{table}
 
-<<<<<<< HEAD
 Taken wholly, this suggests that perceived differences in the home advantage between teams in each league are likely not accounted for due to chance alone, with NBA teams showing the largest team-to-team differences in the HA. As such, results that follow use model estimates from Model (\ref{model.full}). \greg{It's equation (3) but I think it's confusing to call this model 3.  Can we think of a better way to label these models?  }
-=======
+
 Taken wholly, this suggests that perceived differences in the home advantage between teams in each league are likely not accounted for due to chance alone, with NBA teams showing the largest team-to-team differences. As such, results that follow use model estimates from Model (\ref{model.full}). 
->>>>>>> 55f07233e2d9dca1232f7c17feb5143706c8bbcc
 
 \subsection{Team strength}
 
@@ -611,13 +609,9 @@ Figure~\ref{fig:spaghetti} and Table~\ref{tab:betas} both identify wider gaps in
 
 Our figures also identify several other interesting observations. For example, the New England Patriots of the NFL stand out with the top performance in the last decade, with an average team strength of \Sexpr{max.beta} on the log-odds scale, observed during Week 11 of 2007. In that season, New England finished the regular season 16-0 before eventually losing in the Super Bowl. \greg{I don't acknowledge that game as wever having occurred.  The Patriots finished 18-0......} The worst performance belongs to the NBA's Miami Heat, which during week 23 of the 2007--08 season had a posterior mean team strength of \Sexpr{min.beta}.  That Heat team finished with an overall record of 15-67, at one point losing 15 consecutive contests. Related, it is interesting that the team strength estimates of bad teams in the NBA (e.g. the Heat in 2007--08) lie further from 0 than the estimates for good teams. This possibly reveals the tendency for teams in this league to ``tank"---a strategy of fielding a weak team intentionally to improve the chances of having better selection preference in the upcoming player draft \citep{soebbing2013gamblers}.
 
-Another observation is that in the NHL, top teams appear less dominant than a decade ago. For example, there are seven NHL team-seasons where an average posterior strength estimate of 0.55 or greater was reached; each of these came during or prior to the 2008--09 season.  In addition to an increased amount of parity, the league's point system change in 2005--06, which unintentionally encouraged teams to play more overtime games \citep{lopez2013inefficiencies}, could be responsible. More overtime contests could lead to different perceptions in how betting markets view team strengths, as overtime sessions and the resulting shootouts are, by and large, coin flips \citep{lopez2016predicting}. 
+Another observation is that in the NHL, top teams appear less dominant than a decade ago. For example, there are seven NHL team-seasons where an average posterior strength estimate of 0.55 or greater was reached; each of these came during or prior to the 2008--09 season.  In addition to an increased amount of parity, the league's point system change in 2005--06, which unintentionally encouraged teams to play more overtime games \citep{lopez2013inefficiencies}, could be responsible. More overtime contests could lead to different perceptions in how betting markets view team strengths, as overtime sessions and the resulting shootouts are, by and large, coin flips \citep{lopez2016predicting}.
 
-<<<<<<< HEAD
 As a final point of clarification in Figures \ref{fig:spaghetti}, \ref{fig:spaghetti-nba}, and \ref{fig:spaghetti-nhl}, the periods of time with straight lines of team strength estimates in the 2012-13 season (NHL) and 2011-12 season (NBA) reflect games lost due to lockouts. 
-=======
-As a final point of clarification in Figures \ref{fig:spaghetti}, \ref{fig:spaghetti-nba}, and \ref{fig:spaghetti-nhl}, the periods with straight lines of team strength estimates in the 2011-12 season (NBA) and 2012-13 season (NHL) reflect games lost due to lockouts. 
->>>>>>> 55f07233e2d9dca1232f7c17feb5143706c8bbcc
 
 <<include=FALSE>>=
 tidy_betas_division %>%
@@ -699,11 +693,8 @@ ggplot(params, aes(x = gamma_w, y = gamma_s, color = toupper(sport))) +
   theme_grey(base_size = 16) 
 @
 
-<<<<<<< HEAD
+
 Likewise, figure~\ref{fig:contourGamma} displays the joint posterior distribution of $\gamma_{q, season}$ and $\gamma_{q, week}$ via contour plots for each $q$. On a season-to-season basis, team strengths in each of the leagues tend to revert towards the league average (0), as all draws of $\gamma_{q, season} < 1$ for all $q$. Reversion towards the mean is largest in the NHL (estimated $\gamma_{NHL, season}$ = 0.54, implying 46\% reversion), followed by the NBA (38\%), MLB (38\% reversion), and the NFL (31\%). However, there is enough uncertainty in the posterior distribution of these estimates that we are unable to say for certain if the differences in the season-to-season estimates between MLB, the NBA, and the NBA are significant. \greg{What do you mean by significant here?  Like what would your null be?}
-=======
-Likewise, Figure~\ref{fig:contourGamma} displays the joint posterior distribution of $\gamma_{q, season}$ and $\gamma_{q, week}$ via contour plots for each $q$. On a season-to-season basis, team strengths in each of the leagues tend to revert towards the league average (0), as all draws of $\gamma_{q, season} < 1$ for all $q$. Reversion towards the mean is largest in the NHL (estimated $\gamma_{NHL, season}$ = 0.54, implying 46\% reversion), followed by the NBA (38\%), MLB (38\% reversion), and the NFL (31\%). However, there is enough uncertainty in the posterior distribution of these estimates that we are unable to say for certain if the differences in the season-to-season estimates between MLB, the NBA, and the NBA are significant. 
->>>>>>> 55f07233e2d9dca1232f7c17feb5143706c8bbcc
 
 For each of the NHL, NBA, and NFL, posterior estimates of $\gamma_{q, week}$ (as well as 95\% credible intervals) imply an autoregressive nature to team caliber within each season. Interestingly, the NBA and NFL are the least consistent leagues on a week-to-week basis. In MLB, meanwhile, team strength estimates quite possibly follow a random walk (as in $\gamma_{MLB, week} = 1$), in which the succession of team strength estimates over time follows no identifiable pattern. \greg{can we say something other than ``follows no identifiable patter"? }
 
@@ -715,11 +706,8 @@ As in \cite{glickman1998state}, we also observe an inverse link in posterior dra
 
 \subsection{The home advantage}
 
-<<<<<<< HEAD
-Figure \ref{fig:alphaAll} shows the 2.5th percentile, median, and 97.5th percentile draws of each team's estimated home advantage parameter, presented on the log-odds scale. These are calculated by summing draws of $\alpha_{q_0}$ with $\alpha_{(q)i}$ for all $i$. \greg{This is why we need a different index for teams and arenas.} HAs are shown in order to provide a sense of the magnitude of differences between the home advantage provided in the MLB (increased log-odds of a home win around 0.16, or about $e^{0.16} - 1 = 17$\% higher), NHL (0.22, or 25\%), NFL (0.36, or 43\%), and NBA (0.50, or 62\%).  The two franchises that have relocated in the last decade, the Atlanta Thrashers (NHL) and Seattle Supersonics (NBA), are also included for the games played in those respective cities. 
-=======
-Figure \ref{fig:alphaAll} shows the 2.5th, median, and 97.5th draws of each team's estimated home advantage parameter, presented on the log-odds scale. These are calculated by summing draws of $\alpha_{q_0}$ with $\alpha_{(q) i^{\star}}$ for all $i^{\star}$ and for all $q$. HAs are shown in order to provide a sense of the magnitude of differences between the home advantage provided in the MLB (increased log-odds of a home win around 0.16, or about $e^{0.16} - 1 = 17$\% higher), NHL (0.22, or 25\%), NFL (0.36, or 43\%), and NBA (0.50, or 62\%).  The two franchises that have relocated in the last decade, the Atlanta Thrashers (NHL) and Seattle Supersonics (NBA), are also included for the games played in those respective cities. 
->>>>>>> 55f07233e2d9dca1232f7c17feb5143706c8bbcc
+Figure \ref{fig:alphaAll} shows the 2.5th percentile, median, and 97.5th percentile draws of each team's estimated home advantage parameter, presented on the log-odds scale. These are calculated by summing draws of $\alpha_{q_0}$ with $\alpha_{(q)i^\star}$ for all $i$. \greg{This is why we need a different index for teams and arenas.} \mike{We have one, I just missed this edit} HAs are shown in order to provide a sense of the magnitude of differences between the home advantage provided in the MLB (increased log-odds of a home win around 0.16, or about $e^{0.16} - 1 = 17$\% higher), NHL (0.22, or 25\%), NFL (0.36, or 43\%), and NBA (0.50, or 62\%).  The two franchises that have relocated in the last decade, the Atlanta Thrashers (NHL) and Seattle Supersonics (NBA), are also included for the games played in those respective cities. 
+
 
 <<ha-plot>>=
 ## Home advantage plots
@@ -856,10 +844,10 @@ In the NBA, the league's best HA is found in Denver (increased log-odds of a win
 
 Such distinctions have plausible impacts on league standings. An NBA team with a typical home advantage can expect to win \Sexpr{100*league.ave}\% of home games against a like-caliber opponent; for Brooklyn, the corresponding figure is \Sexpr{100*league.low}\%, while for Denver, \Sexpr{100*league.high}\%. Across 41 games (the number each team plays at home), this implies that Denver's home advantage is worth an extra \Sexpr{round(41*(league.high-league.ave), 2)} wins in a single season, relative to a league average team. Compared to Brooklyn, Denver's home advantage has been worth an estimated \Sexpr{round(41*(league.high-league.low), 2)} wins per year. 
 
-\greg{Our models don't, but our data does.....}
-As one important caveat, our models do not account for varying line-up and injury information. If opposing teams were to rest their star players at Denver, for example, our model would artificially inflate Denver's home advantage. 
+As one important caveat, our model estimates do not account for varying line-up and injury information. If opposing teams were to rest their star players at Denver, for example, our model would artificially inflate Denver's home advantage. 
 
 \greg{I like figure 5. }
+
 \subsection{Validation of team strength estimates}
 
 Ultimately, estimates from Model~(\ref{model.full}) are designed to estimate team quality at any given point in a season. If these estimates more properly assess team quality than other metrics of team success, such as won-loss percentage and point differential, they should more accurately assess future performance, such as how well teams will do over remaining games in a season.  
@@ -1030,7 +1018,7 @@ gg.r2 <- ggplot(all.sport.both, aes(day.season, corr.day, lty = type)) +
 gg.r2
 @
 \greg{In figure 6, do we need the y-axis to go all the way to 100\%? }
-\greg{Figure 6, is missing the solid black line.  }
+\greg{Figure 6, is missing the solid black line.  } \mike{Shows up on my pdf}
 
 Across each sport, our estimates of team strength consistently outperform past team win percentage and point differential as far as predicting future win percentage. This gap is most pronounced earlier in each season, which is not surprising given the fluctuations in won-loss percentage and point differential in a small number of games. Differences in predictive accuracy remain throughout most of the regular season in the NHL, MLB, and the NFL, while by the NBA's mid-season, won-loss ratio and point differential are similar to our estimates of team strength in assessing future performance. Altogether, results suggest that across seasons and sports, team strength estimates from our state-space model more completely judge team talent than won-loss percentage and point differential. 
 
@@ -1042,7 +1030,7 @@ To better assess the equivalence of all teams in each league, we consider the li
 
 Given sport $q$ with season length $k^{\star}_{q}$, number of seasons $s^{\star}_{q}$, and number of teams $t_{q}$, 
 
-\greg{I don't understand step six.  50\% prob of positive or negative? }
+\greg{I don't understand step six.  50\% prob of positive or negative? } \mike{Probably a better way to word it, but it's our random error from the initial full model...so plus or minus $\tau$}
 \greg{Step 7: $\tau$ isn't the error.  $\tau$ is the variance component.  i.e. $\epsilon\sim N(0\tau)$  Something like that, not the posterior draw of $\tau$.  }
 \begin{enumerate}
 \item Draw season $\tilde{s}$ from $\left\{1, \ldots, s^{\star}_{q} \right \}$
@@ -1056,11 +1044,7 @@ Given sport $q$ with season length $k^{\star}_{q}$, number of seasons $s^{\star}
 \item Repeat the above steps $n_{sim}$ times to obtain $\mathbf{\tilde{p}_{q}} = \left\{\tilde{p}_{q, 1}, \ldots \tilde{p}_{q, n_{sim}}\right\}$.
 \end{enumerate}
 
-<<<<<<< HEAD
-The steps above were repeated for each $q$ with $n_{sim} = 1000$. Additionally, to remove the effect of each league's HA on simulated probabilities, we repeated the process used by fixing $\tilde{\alpha}_{q_0} = 0$ for each league, reflecting the probability that would have been given for the game being played at a neutral site.
-=======
 For each $q$, we simulated with $n_{sim} = 1000$. Additionally, to remove the effect of each league's HA on simulated probabilities, we repeated the process using by fixing $\tilde{\alpha}_{q_0} = 0$ for each league, reflecting the probability that would have been given for the game being played at a neutral site.
->>>>>>> 55f07233e2d9dca1232f7c17feb5143706c8bbcc
 
 Figure \ref{fig:BestWin} shows the cumulative distribution functions (CDFs) for each set of probabilities in each league. 
 
