@@ -656,7 +656,9 @@ Posterior draws of $\tau_{q, game}$ suggest that the highest game-level errors i
 We also examine the joint distribution of the variability in team strength on a season-to-season ($\tau_{q,season}$) and week-to-week ($\tau_{q,week}$) basis via contour plots in Figure~\ref{fig:contourSigma}, using separate colors for each $q$. 
 
 \greg{Let's make it clear somewhere that we are looking at precision rather than variance. }
-\greg{Wait, is this backwards.  Aren't the $\tau$'s precision?  That would make the MLB the most varible.} \mike{The $\tau$'s are the standard deviation/variance, and the $\sigma$'s are the precision (you can check the JAGS model). This is perhaps one reason to tighten up our notation in the JAGS model and the tidy_betas/tidy_alphas/tidy_mcmc files.}
+\greg{Wait, is this backwards.  Aren't the $\tau$'s precision?  That would make the MLB the most varible.} \\
+\mike{The $\tau$'s are the standard deviation/variance, and the $\sigma$'s are the precision (you can check the JAGS model). This is perhaps one reason to tighten up our notation in the JAGS model and the tidybetas, tidyalphas, tidymcmc files.}
+
 The highest uncertainty with respect to team strength occurs with the NBA, followed in order by the NFL, NHL, and MLB. There are a couple of plausible explanations regarding the increased uncertainty in NBA team strength on a weekly basis. Injuries, the resting of starters, and in-season trades would seemingly have a larger impact in a sport like basketball where fewer players are participating at a single point in time. In particular, our model cannot precisely gauge team strength when star players, who could play, are rested in favor of lesser alternatives. Relative to the other professional leagues, star players take on a more important role in the NBA \citep{berri2006road}, a fact undoubtably picked up by betting markets. That said, while there is increased variability in our estimate of NBA team strengths, when considering differences in team talent to begin with, these absolute differences are not as extreme (e.g., a difference in team strength of 0.05 means less in the NBA than in the NHL). 
 
 
@@ -1001,7 +1003,7 @@ all.sport.both <- rbind(all.sport.beta.remains, all.sport.winp.remains, all.spor
 
 
 gg.r2 <- ggplot(all.sport.both, aes(day.season, corr.day, lty = type)) +
-  geom_step() + scale_y_continuous(labels = scales::percent, "", lim = c(0, 1)) + 
+  geom_step() + scale_y_continuous(labels = scales::percent, "", lim = c(0, .75)) + 
   scale_x_continuous("Game of season") +
   scale_linetype_manual(labels = c("Our estimates", "Past point differential", "Past win %"), 
                         values = c(1, 2, 3), "Type") +
