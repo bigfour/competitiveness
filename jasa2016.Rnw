@@ -365,7 +365,7 @@ where $k^{\star}_{q}$ is the number of weeks in a season in league $q$, $\gamma_
 %We depart from \cite{glickman1998state} here in our specification of precision.  Here, 
 For our specification of precision, we estimate three parameters, $\tau^{2}_{q,game}$, $\tau^{2}_{q,season}$, and $\tau^{2}_{q,week}$, allowing for their separate estimation.
 
-\mike{Do we need to identify that we depart from Glickman here? I'd just assume state that we estimate them separately. As it is now, seems like we need to better justify our departure choice, as the justification included isn't great.}  We certainly don't need to say that we depart from Glickman.}
+\mike{Do we need to identify that we depart from Glickman here? I'd just assume state that we estimate them separately. As it is now, seems like we need to better justify our departure choice, as the justification included isn't great.}  \greg{We certainly don't need to say that we depart from Glickman.}
 
 Given the time-varying nature of our specification, we use a Bayesian approach to obtain model estimates. For sport $q$, the team strength parameters for week $k=1$ and season $s=1$ have a prior distribution of
 $$
@@ -374,7 +374,7 @@ $$
 
 Team specific home advantage parameters have a similar prior, namely, 
 $$
-\alpha_{(q)i}\sim N(0, \tau^{2}_{q,\alpha}) \,, \qquad \text{for } i \in 1, \ldots, t^{\star}_{q}.
+\alpha_{(q)i^\star}\sim N(0, \tau^{2}_{q,\alpha}) \,, \qquad \text{for } i \in 1, \ldots, t^{\star}_{q}.
 $$
 \greg{I think we need different indices.  These both shouldn't be $i$.  Maybe $i$ and $i'$?}
 
