@@ -91,7 +91,8 @@ HA <- sample(HA.league$alpha, 1)
 ## Step 7
 sigma.league <- params %>% mutate(sigma_game = sqrt(sigma_game)) %>% 
   select(sigma_game) 
-sigma <- sample(sigma.league$sigma_game, 1)*sample(c(1,-1), 1)  
+sigma <- sample(sigma.league$sigma_game, 1)
+epsilon <- rnorm(1, 0, sigma)
 ## Could be positive or negative
 #sigma <- 0
 
@@ -99,7 +100,7 @@ sigma <- sample(sigma.league$sigma_game, 1)*sample(c(1,-1), 1)
 
 ## Log odds would be positive if Team 1 better on that draw, negative if Team 2 better on that draw
 ## Take the absolute value to ensure all probabilities start at 0.5 to reflect the "Favorite"
-log.odds <- abs(betas1 - betas2 + sigma)
+log.odds <- abs(betas1 - betas2 + epsilon)
 
 
 prob.sim <- exp(0 + log.odds)/
@@ -131,8 +132,12 @@ p <- ggplot(cdf.all) + stat_ecdf(aes(probs, colour = sport)) +
   stat_ecdf(data = cdf.all, aes(probsH, colour = sport), lty = "dotted") + 
   ggtitle("How often does the best team win?") + 
   geom_vline(xintercept = 0.5, colour = "black", lty = 5) + 
+  geom_vline(xintercept = 1, colour = "black", lty = 5) + 
   labs(subtitle = "Solid: neutral site, Dashed: home game for better team") +
-  xlab("Simulated win probability") + ylab("CDF") + xlim(0.5, 1.0)
+  xlab("Simulated win probability") + ylab("CDF") + xlim(0.5, 1.0) + 
+  annotate("text", x = .51, y = 1,  hjust = 0, vjust = 1, label = paste("All games \n coin flips"))+ 
+  annotate("text", x = .99, y = 0,  hjust = 1, vjust = 0, label = paste("All games \n pre-determined"))
+p
 ggsave(plot = p, width = 6, height = 3.5, filename = "figure/BestWin.pdf")
 
 
@@ -163,7 +168,7 @@ cdf.df <- data.frame(Probability = rep(z, 4),
                                  Type = "No HA")
 
 
-
+library(zoo)
 
 ### CDFs with HA
 P <- ecdf(nfl$ProbsHA)
