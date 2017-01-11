@@ -846,9 +846,9 @@ As one important caveat, our model estimates do not account for varying line-up 
 
 \subsection{Validation of team strength estimates}
 
-Ultimately, estimates from Model~(\ref{model.full}) are designed to estimate team quality at any given point in a season. If these estimates more properly assess team quality than other metrics of team success, such as won-loss percentage and point differential, they should more accurately assess future performance, such as how well teams will do over remaining games in a season.  
+Ultimately, estimates from Model~(\ref{model.full}) are designed to estimate team quality at any given point in a season. If these estimates more properly assess team quality than other metrics of team success (e.g., won-loss percentage or point differential), they should more accurately assess future performance, such as how well teams will perform over the remainder of the season.  
 
-Figure~\ref{fig:R2} shows the coefficient of determination comparing each team's future won-loss percentage in a season to (i) our team strength estimates, (ii) each team's past cumulative point differential, and (iii) each team's past won-loss percentage. Within each sport, this is done by game number, which helps to account for league-level differences in season length. For purposes of using our team strength estimates, we took the mean posterior draw for each team in each week a particular contest was played. The lockout-shortened seasons in the NBA (2012) and NHL (2013) were dropped.
+Figure~\ref{fig:R2} shows the coefficient of determination ($R^2$) between each team's future won-loss percentage in a season and (i) our team strength estimates, (ii) each team's past \ben{I don't like "past" because it might refer to previous seasons. Most appropriate would be "season-to-date", but that abbreviates to STD! What about "year-to-date" or "prior"?} cumulative point differential, and (iii) each team's past won-loss percentage. Within each sport, this is computed by game number, which helps to account for league-level differences in season length. For purposes of using our team strength estimates, we took the mean posterior draw for each team in each week a particular contest was played. The lockout-shortened seasons in the NBA (2012) and NHL (2013) were dropped.
 
 <<validation>>=
 load("data/tidy_betas.rda")
@@ -1013,9 +1013,9 @@ gg.r2 <- ggplot(all.sport.both, aes(day.season, corr.day, lty = type)) +
 <<R2, fig.height = 4, fig.width = 6, fig.cap="Coefficient of determination with future in-season win percentage.">>=
 gg.r2
 @
-\greg{In figure 6, do we need the y-axis to go all the way to 100\%? } 
+\greg{In figure 6, do we need the y-axis to go all the way to 100\%? } \ben{I don't think that adds anything.}
 
-Across each sport, our estimates of team strength consistently outperform past team win percentage and point differential as far as predicting future win percentage. This gap is most pronounced earlier in each season, which is not surprising given the fluctuations in won-loss percentage and point differential in a small number of games. Differences in predictive accuracy remain throughout most of the regular season in the NHL, MLB, and the NFL, while by the NBA's mid-season, won-loss ratio and point differential are similar to our estimates of team strength in assessing future performance. Altogether, results suggest that across seasons and sports, team strength estimates from our state-space model more completely judge team talent than won-loss percentage and point differential. 
+Across each sport, our estimates of team strength consistently outperform past team win percentage and point differential in predicting future win percentage. This gap is most pronounced earlier in each season, which is not surprising given the instability of won-loss percentage and point differential in a small number of games. Differences in predictive accuracy remain throughout most of the regular season in MLB, the NHL, and the NFL. However, by the NBA's mid-season, won-loss ratio and point differential are similar to our estimates of team strength in assessing future performance. Altogether, results suggest that across seasons and sports, team strength estimates from our state-space model more accurately assess team caliber than won-loss percentage and point differential. 
 
 \subsection{How often does the best team win?  A better measure of league parity}
 
