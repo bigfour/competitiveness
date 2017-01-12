@@ -243,7 +243,7 @@ markets_plot <- ggplot(data = bigfour,
                      labels = scales::percent, limits = c(0,1)) + 
   scale_y_continuous("Observed Probability of Home Win", 
                      labels = scales::percent, limits = c(0,1)) + 
-  scale_colour_brewer(palette = "Set1", "League")+
+  scale_colour_brewer(palette = "Spectral", "League")+
   facet_wrap(~sport) 
 #  facet_grid(sport ~ season)
 markets_plot + theme_grey(base_size = 16) 
@@ -595,7 +595,7 @@ ggplot(params, aes(x = sqrt(sigma_w), y = sqrt(sigma_s),
   geom_density_2d() + geom_point(alpha = 0.1)  + 
   xlab(expression(sigma[week])) + 
   ylab(expression(sigma[season])) + 
-  scale_colour_brewer(palette = "Set1", "League") + 
+  scale_colour_brewer(palette = "Spectral", "League") + 
   theme_grey(base_size = 16) 
 @
 
@@ -607,7 +607,7 @@ ggplot(params, aes(x = gamma_w, y = gamma_s, color = toupper(sport))) +
   geom_density_2d() + geom_point(alpha = 0.1) + 
   xlab(expression(gamma[week])) + 
   ylab(expression(gamma[season]))+ 
-  scale_colour_brewer(palette = "Set1", "League") + 
+  scale_colour_brewer(palette = "Spectral", "League") + 
   theme_grey(base_size = 16) 
 @
 
@@ -649,7 +649,7 @@ gg4 <- ggplot(data = tidy_alpha_prob,
                      breaks = tidy_alpha_summary$median_ha, 
                      labels = round(tidy_alpha_summary$median_ha, 3),
                      minor_breaks = NULL) +  
-  scale_colour_brewer(palette = "Set1", "League") +
+  scale_colour_brewer(palette = "Spectral", "League") +
   ggtitle("Estimated Home Advantage by Franchise")
 @
 
