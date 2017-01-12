@@ -9,10 +9,135 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+\section{Glickman's model}
 
-This contains extra writing: literature review and postseason simulations
 
+
+%The distribution of the outcomes of games during season $s$ and week $k$ is:
+
+%$$
+%\bf{y}_{(s,k)}|\tilde{X}_{(s,k)}, \tilde{\theta}_{(s,k)},\phi \sim N(\tilde{X}_{(s,k)}\tilde{\theta}_{(s,k)}, \phi^{-1}I_{n_{(s,k)}}),
+%$$
+
+
+%where $\bf{y}_{(s,k)}$ is a vector of score differentials, $\tilde{\theta}_{(s,k)}$ is a vector containing the team strengths and the home advantage parameters, $\phi$ is the precision, and $n_{(s,k)}$ is the number of games played in week $k$ during season $s$.  The matrix $\tilde{X}_{(s,k)}$ consists of $n_{(s,k)}$ rows and $2t$ columns.  The first $t$ columns contain the values $\{1, 0, -1\}$ where a 1/-1 in the $i^{th}$ column indicates that team $i$ was the home/away team for the game corresponding to that row and a $0$ otherwise.  The second set of $t$ columns (i.e. $t+1$ to $2t$) contains a 1 in the $i^{th}$ column (i.e column $t+i$) if team $i$ is playing at home and 0 otherwise.  
+
+%The model of \cite{glickman1998state} allows for team strength parameters to vary stochastically in two distinct ways: 1) from the last week of season $s$ to the first week of season $s+1$, and 2) from week $k$ of season $s$ to week $k+1$ of season $s$.  
+
+%The variation from the last week of one season to the first week of the next season is expressed as: 
+
+%$$
+%\theta_{(s+1,1)} | \gamma_{seas}, \bf{\theta_{(s,g_{s})}}, \phi, \omega_{seas} \sim N (\gamma_{seas}\bf{G}\bf{\theta_{(s,g_{s})}},(\phi\omega_{seas})^{-1}I_{t})
+%$$
+
+%where $\bf{G}$ is the matrix that transforms $\bf{\theta_{(s,g_{s})}}$ to $\bf{\theta_{(s,g_{s})}} - \bar{\bf{\theta}}_{(s,g_{s})}$ and $g_{s}$ is the number of weeks in season $s$.  
+
+%Team strength parameters also vary from week-to-week as follows: 
+%$$
+%\theta_{(s,k+1)} | \gamma_{week}, \bf{\theta}_{(s,k)}, \phi, \omega_{week} \sim N (\gamma_{week}\bf{G}\bf{\theta}_{(s,k)},(\phi\omega_{week})^{-1}I_{t})
+%$$
+
+%$Y_{ij}$ is the number of times that team $i$ beats team $j$ and $p_{ij}$ is the probability that team $i$ beats team $j$.  
+
+%$$
+%Y_{ij}\sim B(n_{ij},p_{ij})
+%$$
+
+%$$
+%logit(p_{ij}) = \beta_{i} - \beta_{j}
+%$$
+
+
+%Alternative specifications to the original state-space model have been proposed. \cite{knorr2000dynamic} considered time-dependent team abilities in soccer and basketball using a first-order random walk. \cite{baker2015time} assumed a dynamic, non mean-reverting model of team strength to answer the question of who was the `best team ever.' An exponentially-weighted moving average of team strength was suggested by \cite{cattelan2013dynamic}, who found roughly similar performances when comparing weighted and unweighted versions. Most recently, \cite{manner2015modeling} combined predictions from a state-space model (with an AR(1) assumption) to those from betting markets. These authors also found differences in the variability of team strength parameters, although those levels of variability appeared to operate independent of team strength (e.g. low variances were possible for both good and bad teams). Interestingly, errors were random and normally distributed (e.g., no streakiness). \mike{Cut this down?}
+
+%As additional and related BTM resources, team-specific home advantages (HFA) using a BTM were compared to a constant HFA model by \cite{tutz2015extended} in soccer and \cite{koopmeiners2012comparison} in football. \cite{matthews2005improving} considered data transformations of NFL score outcomes to account for blowouts in BTM's, and \cite{owen2011dynamic} used dynamic Bayesian models in association football with evolution variance parameters. \cite{koopmeiners2012comparison} explicitly modeled the variance parameters of team strength in football, finding little change over time. 
+
+
+
+
+
+\section{HA plots}
+
+```{r}
+## Home advantage plots
+load("data/tidy_alphas.rda")
+library(ggplot2)
+datbetas.null <- tidy_alphas %>%
+  mutate(sport = toupper(sport)) %>%
+  group_by(sport) %>%
+  arrange(alpha.team.overall) %>%
+  mutate(rank.within = 1:n()) 
+datbetas.empty <- datbetas.null %>% ungroup() %>% select(-sport)
+
+gg <- ggplot(datbetas.null)  + ggtitle("Who has the best home advantage? Increased log-odds of winning at home, by team") 
+gg1 <- gg + geom_point(data = datbetas.empty, colour = "grey", 
+                       aes(y=alpha.team.overall, x=rank.within, group = team)) + 
+  geom_errorbar(data = datbetas.empty, colour = "grey", 
+                aes(x=rank.within, ymax = alpha.team.upper, 
+                    ymin=alpha.team.lower, group = team), width=0.2) 
+
+for (i in 1:nrow(datbetas.null)){
+  df.temp <- slice(ungroup(datbetas.null), i)
+  df.plot <- data.frame(x = rep(df.temp$rank.within, 2), y = c(df.temp$alpha.team.lower, df.temp$alpha.team.upper), 
+                        z = df.temp$alpha.team.overall, sport = df.temp$sport, lab = df.temp$team)
+  df.text <- data.frame(x = df.temp$rank.within, y = -0.21, team = df.temp$team, sport = df.temp$sport)
+  gg1 <- gg1 + geom_line(data = df.plot,
+                         aes(x = x, y = y), linetype=1, lwd=1.5, colour=df.temp$primary) 
+  gg1 <- gg1 + geom_line(data = df.plot,
+                         aes(x = x, y = y), linetype=2, lwd=1.5, colour=df.temp$secondary) 
+  gg1 <- gg1 + geom_point(data = df.plot,
+                          aes(x = x, y = z), colour=df.temp$secondary, size = 1.5) 
+  gg1 <- gg1 + geom_text(data = df.text, aes(x = x, y = y, label = team, hjust = "left"), 
+                         colour=df.temp$primary, size = 3)
+}
+@
+
+<<ha-plot-full>>=
+gg2 <- gg1  + coord_flip() + facet_wrap(~sport) + 
+  xlab("") + ylab("") +
+  theme_grey(base_size = 12)  +  
+  theme(axis.line=element_blank(),
+       axis.text.y=element_blank(), 
+       axis.ticks.y=element_blank(),
+       axis.title.y=element_blank()) + 
+  scale_y_continuous(labels = c("0.00", "0.25", "0.50", "0.75"), breaks = c(0:3)/4) + 
+  scale_x_continuous()
+@
+
+<<ha-plot-summary>>=
+## Alternative plot
+load("data/tidy_alphas.rda")
+tidy_alphas <- tidy_alphas %>%
+  mutate(sport = toupper(sport)) 
+
+tidy_alphas$sport <- factor(tidy_alphas$sport,
+    levels = c("MLB", "NHL", "NFL", "NBA"), ordered = TRUE)
+
+library(stringr)
+tidy_alphas.limits <- tidy_alphas %>%
+  mutate(team.name = word(team, -1)) %>%
+   group_by(sport) %>%
+  arrange(alpha.team) %>%
+   filter(alpha.team.overall > 0.6|team.name == "Rockies")
+
+exp.fun <- function(x){log(x/(1-x))}
+breaks <- c(exp.fun(0.5), exp.fun(0.55), exp.fun(0.6), exp.fun(0.65),
+            exp.fun(0.7))
+labels <- paste0(seq(50, 70, by = 5), "%")
+
+gg3 <- ggplot(tidy_alphas, aes(sport, alpha.team.overall)) + 
+  geom_dotplot(binaxis = "y", stackdir = "center", binwidth = 0.005) + 
+  coord_flip() + geom_point(data = tidy_alphas.limits, 
+                  aes(sport, alpha.team.overall), size = 0.5) +
+  geom_text(data = tidy_alphas.limits, 
+                  aes(sport, alpha.team.overall, label = team.name), 
+            angle = 45, hjust = 1, vjust = 1, size = 3) +
+  scale_y_continuous(lim = c(0, 0.7), breaks = breaks, 
+                     labels = labels, "") + 
+  xlab("") + 
+  scale_colour_brewer(palette = "Set1", "League") +
+  labs(title = "Probability of beating an equal caliber opponent at home")
+```
 
 \section{Appendix}
 

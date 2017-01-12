@@ -243,7 +243,8 @@ markets_plot <- ggplot(data = bigfour,
                      labels = scales::percent, limits = c(0,1)) + 
   scale_y_continuous("Observed Probability of Home Win", 
                      labels = scales::percent, limits = c(0,1)) + 
-  facet_wrap(~sport)
+  scale_colour_brewer(palette = "Set1", "League")+
+  facet_wrap(~sport) 
 #  facet_grid(sport ~ season)
 markets_plot + theme_grey(base_size = 16) 
 # ggsave(filename = "figure/betting_markets.pdf", plot = markets_plot, width = 10, height = 10)
@@ -624,101 +625,21 @@ Like \cite{glickman1998state}, we also observe an inverse link in posterior draw
 Figure~\ref{fig:alphaAll} shows the 2.5th percentile, median, and 97.5th percentile draws of each team's estimated home advantage parameter, presented on the probability scale. These are calculated by summing draws of $\alpha_{q_0}$ and $\alpha_{(q)i^\star}$ for all $i$. HAs are shown in descending order to provide a sense of the magnitude of differences between the home advantage provided in MLB (league-wide, a 54.0\% probability of beating a team of equal strength at home), NHL (55.5\%), NFL (58.8\%), and NBA (62.0\%). The two franchises that have relocated in the last decade, the Atlanta Thrashers (NHL) and Seattle Supersonics (NBA), are also included for the games played in those respective cities. 
 
 
-<<ha-plot>>=
-## Home advantage plots
-load("data/tidy_alphas.rda")
-library(ggplot2)
-datbetas.null <- tidy_alphas %>%
-  mutate(sport = toupper(sport)) %>%
-  group_by(sport) %>%
-  arrange(alpha.team.overall) %>%
-  mutate(rank.within = 1:n()) 
-datbetas.empty <- datbetas.null %>% ungroup() %>% select(-sport)
-
-gg <- ggplot(datbetas.null)  + ggtitle("Who has the best home advantage? Increased log-odds of winning at home, by team") 
-gg1 <- gg + geom_point(data = datbetas.empty, colour = "grey", 
-                       aes(y=alpha.team.overall, x=rank.within, group = team)) + 
-  geom_errorbar(data = datbetas.empty, colour = "grey", 
-                aes(x=rank.within, ymax = alpha.team.upper, 
-                    ymin=alpha.team.lower, group = team), width=0.2) 
-
-for (i in 1:nrow(datbetas.null)){
-  df.temp <- slice(ungroup(datbetas.null), i)
-  df.plot <- data.frame(x = rep(df.temp$rank.within, 2), y = c(df.temp$alpha.team.lower, df.temp$alpha.team.upper), 
-                        z = df.temp$alpha.team.overall, sport = df.temp$sport, lab = df.temp$team)
-  df.text <- data.frame(x = df.temp$rank.within, y = -0.21, team = df.temp$team, sport = df.temp$sport)
-  gg1 <- gg1 + geom_line(data = df.plot,
-                         aes(x = x, y = y), linetype=1, lwd=1.5, colour=df.temp$primary) 
-  gg1 <- gg1 + geom_line(data = df.plot,
-                         aes(x = x, y = y), linetype=2, lwd=1.5, colour=df.temp$secondary) 
-  gg1 <- gg1 + geom_point(data = df.plot,
-                          aes(x = x, y = z), colour=df.temp$secondary, size = 1.5) 
-  gg1 <- gg1 + geom_text(data = df.text, aes(x = x, y = y, label = team, hjust = "left"), 
-                         colour=df.temp$primary, size = 3)
-}
-@
-
-<<ha-plot-full>>=
-gg2 <- gg1  + coord_flip() + facet_wrap(~sport) + 
-  xlab("") + ylab("") +
-  theme_grey(base_size = 12)  +  
-  theme(axis.line=element_blank(),
-       axis.text.y=element_blank(), 
-       axis.ticks.y=element_blank(),
-       axis.title.y=element_blank()) + 
-  scale_y_continuous(labels = c("0.00", "0.25", "0.50", "0.75"), breaks = c(0:3)/4) + 
-  scale_x_continuous()
-@
-
-<<ha-plot-summary>>=
-## Alternative plot
-load("data/tidy_alphas.rda")
-tidy_alphas <- tidy_alphas %>%
-  mutate(sport = toupper(sport)) 
-
-tidy_alphas$sport <- factor(tidy_alphas$sport,
-    levels = c("MLB", "NHL", "NFL", "NBA"), ordered = TRUE)
-
-library(stringr)
-tidy_alphas.limits <- tidy_alphas %>%
-  mutate(team.name = word(team, -1)) %>%
-   group_by(sport) %>%
-  arrange(alpha.team) %>%
-   filter(alpha.team.overall > 0.6|team.name == "Rockies")
-
-exp.fun <- function(x){log(x/(1-x))}
-breaks <- c(exp.fun(0.5), exp.fun(0.55), exp.fun(0.6), exp.fun(0.65),
-            exp.fun(0.7))
-labels <- paste0(seq(50, 70, by = 5), "%")
-
-gg3 <- ggplot(tidy_alphas, aes(sport, alpha.team.overall)) + 
-  geom_dotplot(binaxis = "y", stackdir = "center", binwidth = 0.005) + 
-  coord_flip() + geom_point(data = tidy_alphas.limits, 
-                  aes(sport, alpha.team.overall), size = 0.5) +
-  geom_text(data = tidy_alphas.limits, 
-                  aes(sport, alpha.team.overall, label = team.name), 
-            angle = 45, hjust = 1, vjust = 1, size = 3) +
-  scale_y_continuous(lim = c(0, 0.7), breaks = breaks, 
-                     labels = labels, "") + 
-  xlab("") + 
-  scale_colour_brewer(palette = "Set1", "League") +
-  labs(title = "Probability of beating an equal caliber opponent at home")
-@
-
 <<ha-plot-simple>>=
+load("data/tidy_alphas.rda")
 tidy_alpha_prob <- tidy_alphas %>%
   mutate(alpha_prob = mosaic::ilogit(alpha.team.overall), 
          top_half = alpha_prob < 0.58)
 tidy_alpha_summary <- tidy_alpha_prob %>%
   group_by(sport) %>%
-  summarize(N = n(), median_ha = median(alpha_prob))
+  summarize(N = n(), median_ha = median(alpha_prob)) %>% ungroup()
 
 gg4 <- ggplot(data = tidy_alpha_prob, 
               aes(y = alpha_prob, 
                   x = reorder(team, alpha_prob), 
-                  color = sport)) + 
+                  color = toupper(sport))) + 
   geom_hline(data = tidy_alpha_summary, alpha = 0.5,
-             aes(yintercept = median_ha, color = sport)) + 
+             aes(yintercept = median_ha, color = toupper(sport))) + 
   geom_errorbar(aes(ymin = mosaic::ilogit(alpha.team.lower), 
                     ymax = mosaic::ilogit(alpha.team.upper))) +
   geom_point() + 
