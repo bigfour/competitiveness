@@ -14,13 +14,13 @@ nbaJAGS<-z
 rm(z)
 
 ### sigma
-sigma.nba <- data.frame(tau.game = 1/sqrt(nbaJAGS[[6]][,,1])); sigma.nba$sport <- "NBA"
-sigma.nhl <- data.frame(tau.game = 1/sqrt(nhlJAGS[[6]][,,1])); sigma.nhl$sport <- "NHL"
-sigma.mlb <- data.frame(tau.game = 1/sqrt(mlbJAGS[[6]][,,1])); sigma.mlb$sport <- "MLB"
-sigma.nfl <- data.frame(tau.game = 1/sqrt(nflJAGS[[6]][,,1])); sigma.nfl$sport <- "NFL"
+sigma.nba <- data.frame(sigma.game = 1/sqrt(nbaJAGS[[6]][,,1])); sigma.nba$sport <- "NBA"
+sigma.nhl <- data.frame(sigma.game = 1/sqrt(nhlJAGS[[6]][,,1])); sigma.nhl$sport <- "NHL"
+sigma.mlb <- data.frame(sigma.game = 1/sqrt(mlbJAGS[[6]][,,1])); sigma.mlb$sport <- "MLB"
+sigma.nfl <- data.frame(sigma.game = 1/sqrt(nflJAGS[[6]][,,1])); sigma.nfl$sport <- "NFL"
 
 sigma <- rbind(sigma.nba, sigma.nhl, sigma.mlb, sigma.nfl)
-ggplot(sigma, aes(tau.game, colour = sport)) +
+ggplot(sigma, aes(sigma.game, colour = sport)) +
   geom_density() + ggtitle("Average game-level error") + xlab("")
 
 
@@ -46,9 +46,9 @@ param_names <- list(
   'alpha' = expression(alpha[q[o]]),
   'gammaSeason' = expression(gamma[season]),
   'gammaWeek' = expression(gamma[week]),
-  'sigma' = expression(tau[game]),
-  'sigmab' = expression(tau[week]),
-  'sigmabSeason' = expression(tau[season])
+  'sigma' = expression(sigma[game]),
+  'sigmab' = expression(sigma[week]),
+  'sigmabSeason' = expression(sigma[season])
 )
 
 ## Check the parameter names

@@ -255,7 +255,9 @@ markets_plot + theme_grey(base_size = 16)
 
 Our model below builds on the state-space specification provided by \cite{glickman1998state} to provide a unified framework for contrasting the four major North American sports leagues.
 
-Let $p_{(q,s,k)ij}$ be the probability that team $i$ will beat team $j$ in season $s$ during week $k$ of sports league $q$, for $q \in \{MLB, NBA, NFL, NHL\}$. In this notation, $i,j = 1, \ldots, t_{q}$, where $t_q$ is the number of teams such that $t_{MLB} = t_{NBA} = t_{NHL} = 30$ and $t_{NFL} = 32$. Additionally, $s = 1, \ldots, S_q$ and $k = 1, \ldots, K_q$, where $S_q$ and $K_q$ are the number of seasons and weeks, respectively in league $q$. In our data, $K_{NFL} = 17$, $K_{NBA} = 25$, $K_{MLB} = K_{NHL} = 28$, with $S_{NFL} = 10$ and $S_{MLB} = S_{NBA} = S_{NHL} = 11$. The $p_{(q,s,k)ij}$'s are assumed to be known, calculated using sportsbook odds via Equation (\ref{eqn:moneyline}). In using the log-odds of victory, we have a cross-sport outcome that provides more information than only knowing which team won the game or what the score was. 
+Let $p_{(q,s,k)ij}$ be the probability that team $i$ will beat team $j$ in season $s$ during week $k$ of sports league $q$, for $q \in \{MLB, NBA, NFL, NHL\}$. The $p_{(q,s,k)ij}$'s are assumed to be known, calculated using sportsbook odds via Equation (\ref{eqn:moneyline}). In using the log-odds of victory, we have a cross-sport outcome that provides more information than only knowing which team won the game or what the score was. 
+
+In our notation, $i,j = 1, \ldots, t_{q}$, where $t_q$ is the number of teams such that $t_{MLB} = t_{NBA} = t_{NHL} = 30$ and $t_{NFL} = 32$. Additionally, $s = 1, \ldots, S_q$ and $k = 1, \ldots, K_q$, where $S_q$ and $K_q$ are the number of seasons and weeks, respectively in league $q$. In our data, $K_{NFL} = 17$, $K_{NBA} = 25$, $K_{MLB} = K_{NHL} = 28$, with $S_{NFL} = 10$ and $S_{MLB} = S_{NBA} = S_{NHL} = 11$.
 
 Our next step in building a model specifies the home advantage, and one immediate hurdle is that in addition to having different numbers of teams in each league, certain franchises may relocate from one city to another over time. In our data set, there were two relocations, Seattle to Oklahoma City (NBA, 2008) and Atlanta to Winnipeg (NHL, 2011). Let $\alpha_{q_{0}}$ be the league-wide home advantage (HA) in $q$, and let $\alpha_{(q) i^{\star}}$ be the extra effect (positive or negative) for team $i$ among game's played in city $i^{\star}$, for $i^{\star} = 1, \ldots,  t^{\star}_{q}$. Here, $t^{\star}_{q}$ is the total number of home cities; in our data, $t^{\star}_{MLB} = 30$, $t^{\star}_{NBA} = t^{\star}_{NHL} = 31$, and $t^{\star}_{NFL} = 32$.
 
@@ -267,40 +269,35 @@ $$
 
 where $\text{logit}(.)$ is the log-odds transform.
 
-Let ${\bf p}_{(q,s,k)}$ represent the vector of length $g_{(q,s,k)}$ containing all of league $q$'s probabilities in week $k$ of season $s$. Our first model of game outcomes, henceforth referred to as the indvidiaul home advantage model (Model IFA), assumes that
+Let ${\bf p}_{(q,s,k)}$ represent the vector of length $g_{(q,s,k)}$ containing all of league $q$'s probabilities in week $k$ of season $s$. Our first model of game outcomes, henceforth referred to as the individual home advantage model (Model IFA), assumes that
 \begin{eqnarray}
-\text{logit}({\bf p}_{(q,s,k)}) \sim N(\mathbf{\theta_{(q,s,k)}}\mathbf{X}_{(q,s,k)} + \alpha_{q_0}\mathbf{J}_{g_{(q,s,k)}} + \balpha_{q}\mathbf{Z}_{(q,s,k)}, \sigma^{2}_{q,game}\mathbf{I}_{g_{(q,s,k)}}),   \nonumber
+\text{logit}({\bf p}_{(q,s,k)}) \sim N(\mathbf{\theta}_{(q,s,k)}\mathbf{X}_{(q,s,k)} + \alpha_{q_0}\mathbf{J}_{g_{(q,s,k)}} + \balpha_{q}\mathbf{Z}_{(q,s,k)}, \sigma^{2}_{q,game}\mathbf{I}_{g_{(q,s,k)}}),   \nonumber
 \end{eqnarray}
 
-where $\mathbf{\theta_{(q,s,k)}}$ is a vector of length $t_{q}$ (the number of teams in league $q$) containing the team strength parameters in season $s$ during week $k$ and $\balpha_{q} = \left\{\alpha_{(q) 1^{\star}}, \cdots \alpha_{(t^{\star}_{q}) 1^{\star}}    \right\}$ is a vector of venue-specific home effect parameters for league $q$. Note that $\balpha_{q}$ does not vary over time (i.e. HA is assumed to be constant for a team over weeks and seasons). $\mathbf{X}_{(q,s,k)}$ and $\mathbf{Z}_{(q,s,k)}$ contain $g_{(q,s,k)}$---the number of games in league $q$ during week $k$ of season $s$---rows and $t_{q}$ and $t^{\star}_{q}$ columns, respectively.   The matrix $\mathbf{X}_{(q,s,k)}$ contains the values $\{1, 0, -1\}$ where for a given row (i.e. one game) the value of $i^{th}$ column in that row is a 1/-1 if the $i^{th}$ team played at home/away in the given game and 0 otherwise. $\mathbf{Z}_{(q,s,k)}$ is a matrix containing a 1 in column $i^{\star}$ if the corresponding game was played in venue $i^{\star}$, and 0 otherwise. Finally, $\sigma^{2}_{q,game}$ is the variance, $\tau^{2}_{q,game} = 1 / \sigma^{2}_{q,game}$ is the precision, $\mathbf{J}_{g_{(q,s,k)}}$ is a column vector of length $g_{(q,s,k)}$ containing all 1's, and $\mathbf{I}_{g_{(q,s,k)}}$ is an identity matrix with dimension ${g_{(q,s,k)}} \times {g_{(q,s,k)}}$. \\
+where $\mathbf{\theta}_{(q,s,k)}$ is a vector of length $t_{q}$ containing the team strength parameters in season $s$ during week $k$ and $\balpha_{q} = \left\{\alpha_{(q) 1^{\star}}, \cdots \alpha_{(q) t^{\star}_{q}}    \right\}$. Note that $\balpha_{q}$ does not vary over time (i.e. HA is assumed to be constant for a team over weeks and seasons). $\mathbf{X}_{(q,s,k)}$ and $\mathbf{Z}_{(q,s,k)}$ contain $g_{(q,s,k)}$---the number of games in league $q$ during week $k$ of season $s$---rows and $t_{q}$ and $t^{\star}_{q}$ columns, respectively.   The matrix $\mathbf{X}_{(q,s,k)}$ contains the values $\{1, 0, -1\}$ where for a given row (i.e. one game) the value of $i^{th}$ column in that row is a 1/-1 if the $i^{th}$ team played at home/away in the given game and 0 otherwise. $\mathbf{Z}_{(q,s,k)}$ is a matrix containing a 1 in column $i^{\star}$ if the corresponding game was played in city $i^{\star}$, and 0 otherwise. Finally, $\sigma^{2}_{q,game}$ is the game-level variance, $\tau^{2}_{q,game} = 1 / \sigma^{2}_{q,game}$ is the game-level precision, $\mathbf{J}_{g_{(q,s,k)}}$ is a column vector of length $g_{(q,s,k)}$ containing all 1's, and $\mathbf{I}_{g_{(q,s,k)}}$ is an identity matrix with dimension ${g_{(q,s,k)}} \times {g_{(q,s,k)}}$. \\
 
-In addition, we propose a simplified version of Model IFA, the constant home advantage model (Model CFA), which assumes that the HA within each sport is identical for each franchise, such that
-
+In addition, we propose a simplified version of Model IFA, the constant home advantage model (labelled as Model CFA), which assumes that the HA within each sport is identical for each franchise, such that
 \begin{eqnarray}
-\text{logit}({\bf p}_{(q,s,k)}) &\sim& N(\mathbf{\theta}_{(q,s,k)}\mathbf{X}_{(q,s,k)} + \alpha_{q_0}\mathbf{J}_{g_{(q,s,k)}}, \tau^{2}_{q,game}\mathbf{I}_{g_{(q,s,k)}}). \nonumber
+\text{logit}({\bf p}_{(q,s,k)}) &\sim& N(\mathbf{\theta}_{(q,s,k)}\mathbf{X}_{(q,s,k)} + \alpha_{q_0}\mathbf{J}_{g_{(q,s,k)}}, \sigma^{2}_{q,game}\mathbf{I}_{g_{(q,s,k)}}). \nonumber
 \end{eqnarray}
 
-\noindent For Model CFA, matrices ${\bf p}_{(q,s,k)}$, $\mathbf{X}_{(q,s,k)}$, $\mathbf{J}_{g_{(q,s,k)}}$, and $\mathbf{I}_{g_{(q,s,k)}}$ are specified identically to Model IFA, and it is straightforward to show that for a game between home team $i$ and away team $j$ during week $k$ of season $s$, $E[logit(p_{(q,s,k) ij})] = \theta_{(q,s,k) i} - \theta_{(q, s, k) j} + \alpha_{q_0}$. 
+\noindent In Model CFA, matrices ${\bf p}_{(q,s,k)}$, $\mathbf{X}_{(q,s,k)}$, $\mathbf{J}_{g_{(q,s,k)}}$, and $\mathbf{I}_{g_{(q,s,k)}}$ are specified identically to Model IFA. As a result, for a game between home team $i$ and away team $j$ during week $k$ of season $s$, $E[\text{logit}(p_{(q,s,k) ij})] = \theta_{(q,s,k) i} - \theta_{(q, s, k) j} + \alpha_{q_0}$. 
 
 Similar to \cite{glickman1998state}, we allow the strength parameters of the teams to vary auto-regressively from week-to-week and from season-to-season. In general, this entails that team strength parameters are shrunk towards the league average over time in expectation. Formally,
 
 $$
-\theta_{(q,s+1,1)} | \gamma_{q,season}, \mathbf{\theta}_{q,s,K_q}, \sigma^{2}_{q,season} \sim N (\gamma_{q, season}\mathbf{\theta}_{(q,s,K_q)}, \sigma^{2}_{q,season}I_{t_{q}})
+\theta_{(q,s+1,1)} |  {\bf \theta}_{q,s,K_q}, \gamma_{q,season}, \sigma^{2}_{q,season} \sim N (\gamma_{q, season}\mathbf{\theta}_{(q,s,K_q)}, \sigma^{2}_{q,season}\mathbf{I}_{t_{q}}) \text{ for $s \in 2, \ldots, S_q$, and }
 $$
 
-for $s = 2, \ldots, S_q$, and 
-
 $$
-\theta_{(q,s,k+1)} | \gamma_{q,week}, \mathbf{\theta}_{(q,s,k)}, \sigma^{2}_{q,week}  \sim N (\gamma_{q, week}\mathbf{\theta}_{(q,s,k)},\sigma^{2}_{q,week}I_{t_{q}})
+\theta_{(q,s,k+1)} | \mathbf{\theta}_{(q,s,k)}, \gamma_{q,week}, \sigma^{2}_{q,week}  \sim N (\gamma_{q, week}\mathbf{\theta}_{(q,s,k)},\sigma^{2}_{q,week}\mathbf{I}_{t_{q}}) \text{ for $s \in 1, \ldots, S_q$ and $k = 2, \ldots, K_q$.}
 $$
 
-for $s = 1, \ldots, S_q$ and $k = 2, \ldots, K_q$. 
-
-where $\gamma_{q,week}$ is the autoregressive parameter from week-to-week and $\gamma_{q,season}$ is the autoregressive parameter from season-to-season.  
+In this specificaiton, $\gamma_{q,week}$ is the autoregressive parameter from week-to-week, $\gamma_{q,season}$ is the autoregressive parameter from season-to-season, with $\mathbf{I}_{t_{q}}$ identity matrix of dimension $t_{q} \times t_{q}$.
 
 Given the time-varying nature of our specification, we use a Bayesian approach to obtain model estimates. For sport $q$, the team strength parameters for week $k=1$ and season $s=1$ have a prior distribution of
 $$
-\theta_{(q,1,1)i} \sim N(0, \sigma^{2}_{q,season}) \,, \qquad \text{for all} i \in 1, \ldots, t_{q}.
+\theta_{(q,1,1)i} \sim N(0, \sigma^{2}_{q,season}) \,, \qquad \text{for all } i \in 1, \ldots, t_{q}.
 $$
 
 Team specific home advantage parameters have a similar prior, namely, 
@@ -308,7 +305,7 @@ $$
 \alpha_{(q)i^\star}\sim N(0, \sigma^{2}_{q,\alpha}) \,, \qquad \text{for } i \in 1, \ldots, t^{\star}_{q}.
 $$
 
-Finally, we assume the following prior distributions: 
+Finally, letting $\tau^{2}_{q,season} = 1/\sigma^{2}_{q,season}$, $\tau^{2}_{q,week} = 1/\sigma^{2}_{q,week}$, and $\tau^{2}_{q,\alpha} = 1/\sigma^{2}_{q,\alpha}$ we assume the following prior distributions: 
 \begin{align*}
 \tau^{2}_{q,game} &\sim \Gamma(0.0001,0.0001) &\qquad
   \alpha_{q_0} &\sim N(0,10000) \\
@@ -319,7 +316,7 @@ Finally, we assume the following prior distributions:
 \tau^{2}_{q,\alpha} &\sim \Gamma(0.0001,0.0001) && \\
 \end{align*}
 
-Our primary interest lies in three levels of variability with respect to the $\theta_{(q,s,k)}$'s. First, there is variability at any fixed time $s$ and $k$ across $i$. This reflects the between-team variability in team strength; in other words, how equivalent are the teams to one another at a given snapshot in time? Second, there is variability across $k$, reflected in the week-to-week autoregressive parameter, $\gamma_{q,week}$. This generalizes to how teams can improve or worsen over the course of a season. Third, there is variability across $s$, corresponding to the season-to-season autoregressive parameter, $\gamma_{q,season}$. This accounts for larger changes to team ability that can occur between seasons. 
+Our primary interest lies in three levels of variability with respect to the $\mathbf{\theta}_{(q,s,k)}$'s. First, there is variability at any fixed time $s$ and $k$ across $i$. This reflects the between-team variability in team strength; in other words, how equivalent are the teams to one another at a given snapshot in time? Second, there is variability across $k$, reflected in the week-to-week autoregressive parameter, $\gamma_{q,week}$. This generalizes to how teams can improve or worsen over the course of a season. Third, there is variability across $s$, corresponding to the season-to-season autoregressive parameter, $\gamma_{q,season}$. This accounts for larger changes to team ability that can occur between seasons. 
 
 Posterior distributions of each parameter are estimated using Markov Chain Monte Carlo (MCMC) methods. We used Gibbs sampling via the \pkg{rjags} package \citep{rjags} in the \R statistical computing environment to obtain posterior distributions, done separately for each $q$. Three chains---using 40,000 iterations after a burn-in of 2,000 draws, fit with a thin of 5 to reduce the autocorrelation within chains---yielded 8,000 posterior samples in each $q$. Visual inspection of trace plots with parallel chains are used to confirm convergence. Comparisons of Models IHA and CHA are made using the Deviance Information Criterion (DIC, \cite{spiegelhalter2002bayesian}).
 
@@ -328,11 +325,11 @@ While we are unable to share our betting market data due to licensing restrictio
 
 \section{Results}
 
-In this section we present our results. We begin by validating and comparing the fits of Models IHA and CHA. We discuss the implications of our estimates of team strength and home advantage, as well as the interpretation of our variance and autoregressive parameters. We validate our team strength parameters, and illustrate how they can be used to build a league parity metric.  
+In this section we present our results. We begin by validating and comparing the fits of Models IHA and CHA. We discuss the implications of our estimates of team strength and home advantage, as well as the interpretation of our variance and autoregressive parameters. We conclude by evaluating our team strength parameters and illustrating how they could be used to build a league parity metric.  
 
 \subsection{Model fit}
 
-We identified no concerns with the fit of Models IHA and CHA. Trace plots of $\alpha_{q_0}$, $\gamma_{q, season}$, $\gamma_{q, week}$ $\sigma{q, game}$, $\sigma{q, season}$, and $\sigma{q, week}$ are shown for each $q$ in Figures \ref{fig:MLBtrace}--\ref{fig:NHLtrace} in the Appendix. Visual inspection of these plots does not provide evidence of a lack of convergence or of autocorrelation between draws. These trace plots stem from Model IHA; conclusions are similar when plotting draws from Model CHA. 
+We identified no concerns with the fit of Models IHA and CHA. Trace plots of $\alpha_{q_0}$, $\gamma_{q, season}$, $\gamma_{q, week}$, $\sigma_{q, game}$, $\sigma_{q, season}$, and $\sigma_{q, week}$ are shown for each $q$ in Figures \ref{fig:MLBtrace}--\ref{fig:NHLtrace} in the Appendix. Visual inspection of these plots does not provide evidence of a lack of convergence or of autocorrelation between draws. These trace plots stem from Model IHA; conclusions are similar when plotting draws from Model CHA. 
 
 Table~\ref{tab:DIC} shows the deviance information criterion (DIC) for each fit in each league, along with the difference in DIC values and the associated standard error (SE). In each of the leagues, fits with a team-specific HA (Model IHA) yielded lower DIC's (lower is better) by a statistically significant margin, with the most noticeable difference in fit improvement in the NBA.
 
@@ -348,14 +345,14 @@ NHL & -18335  & -18148 & -187.6 (20.7)\\
 \hline
 \end{tabular}
 }
-\caption{Deviance information criterion (DIC) by sport and model, along with the difference in DIC and the associated standard errors (SE) (in parentheses). IHA: individual home advantage, CHA: constant home advantage \label{tab:DIC}}
+\caption{Deviance information criterion (DIC) by sport and model, along with the difference in DIC and the associated standard errors (SE, in parentheses). IHA: individual home advantage, CHA: constant home advantage \label{tab:DIC}}
 \end{table}
 
 These results suggest that chance along likely does not account for observed differences in the home advantage among teams in each league, with the NBA showing the largest team-to-team differences in home advantage. As such, results that follow use model estimates from Model IHA. 
 
 \subsection{Team strength}
 
-Table \ref{tab:betas} shows summary statistics of the team strength estimates from posterior draws. Overall, there tends to be larger variability in team strength parameters at any given point in time in both the NFL and NBA, with posterior team strength coefficients tending to vary between -1 and 1 (on the logit scale). For reference, a team-strength of 1.0 on the log-odds scale implies an $\frac{e^{1.0}}{1+e^{1.0}} = 73.1$\% chance of beating a league average team in a game played at a neutral site. The standard deviation of team strength is smallest in MLB, suggesting that---relative to the other leagues---team talent is more tightly packed. Relative to MLB, spread of team strengths are about 1.3, 3.0, and 3.6 times wider in the NHL, NFL, and NBA, respectively.
+Table \ref{tab:betas} shows summary statistics of the team strength estimates from posterior draws. Overall, there tends to be larger variability in team strength parameters at any given point in time in both the NFL and NBA, with posterior team strength coefficients tending to vary between -1 and 1 (on the logit scale). For reference, a team-strength of 1.0 on the log-odds scale implies a $\frac{e^{1.0}}{1+e^{1.0}} = 73.1$\% chance of beating a league average team in a game played at a neutral site. The standard deviation of team strength is smallest in MLB, suggesting that---relative to the other leagues---team talent is more tightly packed. Relative to MLB, spread of team strengths are about 1.3, 3.0, and 3.6 times wider in the NHL, NFL, and NBA, respectively.
 
 
 <<echo=FALSE, results='asis'>>=
@@ -533,7 +530,7 @@ spag_sport <- function(sport_name) {
 }
 @
 
-Our findings with respect to the relative equivalence of teams in each league stands somewhat in contrast to competitive balance as measured using Noll-Scully. As an example, under Null-Scully, the NFL is considered to be more competitively balanced than MLB \citep{WagesWins}. Meanwhile, as shown in Figure~\ref{fig:spaghetti} and Table~\ref{tab:betas}, there is actually a much larger talent gap between teams in the NFL than those in MLB, implying that the NFL is less competitively balanced. One likely explanation is Null-Scully's link to number of games played, which would make MLB (162) appear less balanced than it actually is and the NFL (16 games) appear more balanced. Like Noll-Scully, we conclude that the NBA does not show competitive balance relative to other leagues.
+Our findings with respect to the relative equivalence of teams in each league stands somewhat in contrast to competitive balance as measured using Noll-Scully. As an example, under Null-Scully, the NFL is considered to be more competitively balanced than MLB \citep{WagesWins}. Meanwhile, as shown in Figure~\ref{fig:spaghetti} and Table~\ref{tab:betas}, there is actually a much larger talent gap between teams in the NFL than those in MLB, implying that the NFL is less competitively balanced. One likely explanation is Null-Scully's link to number of games played, which artificially makes MLB (162) appear less balanced than it actually is and the NFL (16 games) appear more balanced. Like Noll-Scully, we conclude that the NBA does not show competitive balance relative to other leagues.
 
 Our figures also illustrate several other interesting observations. For example, the New England Patriots of the NFL stand out as having the top performance in the last decade, with an average team strength of \Sexpr{max.beta} on the log-odds scale, observed during Week 11 of 2007. In that season, New England finished the regular season 16-0 before eventually losing in the Super Bowl. The worst performance belongs to the NBA's Miami Heat, who during week 23 of the 2007--08 season had a posterior mean team strength of \Sexpr{min.beta}.  That Heat team finished with an overall record of 15-67, at one point losing 15 consecutive games. Related, it is interesting that the team strength estimates of bad teams in the NBA (e.g. the Heat in 2007--08) lie further from 0 than the estimates for good teams. This possibly reveals the tendency for teams in this league to ``tank"---a strategy of fielding a weak team intentionally to improve the chances of having better selection preference in the upcoming player draft \citep{soebbing2013gamblers}.
 
@@ -553,7 +550,7 @@ tidy_betas_division %>%
 \subsection{Variance and autoregressive parameters}
 
 
-Table \ref{tab:params} shows the median posterior draw, along with 95\% credible intervals, for $\gamma_{q, season}$, $\gamma_{q, week}$ $\sigma{q, game}$, $\sigma{q, season}$, and $\sigma{q, week}$ for each $q$.
+Table \ref{tab:params} shows the mean and standard deviation of posterior draws for $\gamma_{q, season}$, $\gamma_{q, week}$ $\sigma_{q, game}$, $\sigma_{q, season}$, and $\sigma_{q, week}$ for each $q$.
 
 <<echo=FALSE, results='asis'>>=
 load("data/params.rda")
@@ -564,7 +561,7 @@ params %>%
   tidyr::gather(key = "param", value = "val", -sport) %>%
   group_by(sport, param) %>%
   summarize(mean.sport = mean(val), lb = quantile(val, 0.025), ub = quantile(val, 0.975), 
-            se = sd(val)) %>%
+            sd = sd(val)) %>%
   mutate(output = paste(round(mean.sport, 3), " (", round(se, 3), ")", sep = "")) %>% 
   select(sport, param, output) %>%
   tidyr::spread(param, output) %>%
@@ -574,16 +571,14 @@ params %>%
          `$\\sigma_{q, season}$` = sigma_s, 
          `$\\sigma_{q, game}$` = sigma_g, 
          `League ($q$)` = sport) %>%
-  xtable(caption = "Mean posterior draw (SE) by league.", 
+  xtable(caption = "Mean posterior draw (standard deviation) by league.", 
          digits = 3, label = "tab:params") %>%
   print(include.rownames = FALSE, sanitize.text.function = identity)
 @
 
-Posterior draws of $\sigma_{q, game}$ suggest that the highest game-level errors in our log-odds probability estimates occur in the NBA (median posterior draw of $\sigma_{NBA, game}$ = 0.273), followed in order by the NFL, MLB, and the NHL. Interestingly, although Figure \ref{fig:spaghetti} identifies that the average talent gap between teams is smallest in MLB, $\sigma_{MLB, game} > \sigma_{NHL, game}$. We posit that this additional game-level error in MLB is a function of the league's pitching match-ups, in which teams rotate through a handful of starting pitchers of varying calibers. 
+Posterior draws of $\sigma_{q, game}$ suggest that the highest game-level errors in our log-odds probability estimates occur in the NBA (median posterior draw of $\sigma_{NBA, game}$ = 0.273), followed in order by the NFL, MLB, and the NHL. Interestingly, although Figure \ref{fig:spaghetti} identifies that the average talent gap between teams is smallest in MLB, $\sigma_{MLB, game} \approx 2 \times \sigma_{NHL, game}$. We posit that this additional game-level error in MLB is a function of the league's pitching match-ups, in which teams rotate through a handful of starting pitchers of varying calibers. 
 
-We also examine the joint distribution of the variability in team strength on a season-to-season ($\sigma_{q,season}$) and week-to-week ($\sigma_{q,week}$) basis via the contour plot in Figure~\ref{fig:contourSigma}, using separate colors for each $q$. 
-
-Figure~\ref{fig:contourSigma} reveals that the highest uncertainty with respect to team strength occurs in the NBA, followed in order by the NFL, NHL, and MLB. There are a couple of plausible explanations regarding the increased uncertainty in NBA team strength on a weekly basis. Injuries, the resting of starters, and in-season trades would seemingly have a larger impact in a sport like basketball where fewer players are participating at a single point in time. In particular, our model cannot precisely gauge team strength when star players, who could play, are rested in favor of inferior players. Relative to the other professional leagues, star players take on a more important role in the NBA \citep{berri2006road}, an observation undoubtedly known in betting markets. That said, while there is increased variability in our estimate of NBA team strengths, when considering differences in team talent to begin with, these absolute differences are not as extreme (e.g., a difference in team strength of 0.05 means less in the NBA than in the NHL). 
+We also examine the joint distribution of the variability in team strength on a season-to-season ($\sigma_{q,season}$) and week-to-week ($\sigma_{q,week}$) basis via the contour plot in Figure~\ref{fig:contourSigma}, using separate colors for each $q$. Figure~\ref{fig:contourSigma} reveals that the highest uncertainty with respect to team strength occurs in the NBA, followed in order by the NFL, NHL, and MLB. There are a couple of plausible explanations regarding the increased uncertainty in NBA team strength on a weekly basis. Injuries, the resting of starters, and in-season trades would seemingly have a larger impact in a sport like basketball where fewer players are participating at a single point in time. In particular, our model cannot precisely gauge team strength when star players, who could play, are rested in favor of inferior players. Relative to the other professional leagues, star players take on a more important role in the NBA \citep{berri2006road}, an observation undoubtedly known in betting markets. That said, while there is increased variability in our estimate of NBA team strengths, when considering differences in team talent to begin with, these absolute differences are not as extreme (e.g., a difference in team strength of 0.05 means less in the NBA than in the NHL). 
 
 
 <<contourSigma, fig.cap="Contour plot of the estimated season-to-season and week-to-week variability across all four major sports leagues. By both measures, uncertainty is lowest in MLB and highest in the NBA.">>=
@@ -617,17 +612,17 @@ ggplot(params, aes(x = gamma_w, y = gamma_s, color = toupper(sport))) +
 @
 
 
-Similarly, Figure~\ref{fig:contourGamma} displays the joint posterior distribution of $\gamma_{q, season}$ and $\gamma_{q, week}$ via contour plots for each $q$. On a season-to-season basis, team strengths in each of the leagues tend to revert towards the league average of zero as all draws of $\gamma_{q, season} < 1$ for all $q$. Reversion towards the mean is largest in the NHL (estimated $\gamma_{NHL, season}$ = 0.54, implying 46\% reversion), followed by the NBA (38\%), MLB (38\% reversion), and the NFL (31\%). However, the only pair of leagues with non-overlapping credible intervals are the NFL and NHL. As a result, these observed differences in the season-to-season behavior of team strength among the other pairs of leagues are not significant.
+Similarly, Figure~\ref{fig:contourGamma} displays the joint posterior distribution of $\gamma_{q, season}$ and $\gamma_{q, week}$ via contour plots for each $q$. On a season-to-season basis, team strengths in each of the leagues tend to revert towards the league average of zero as all draws of $\gamma_{q, season} < 1$ for all $q$. Reversion towards the mean is largest in the NHL (estimated $\gamma_{NHL, season}$ = 0.54, implying 46\% reversion), followed by the NBA (38\%), MLB (38\% reversion), and the NFL (31\%). However, the only pair of leagues with non-overlapping credible intervals are the NFL and NHL. 
 
-For each of the NHL, NBA, and NFL, posterior estimates of $\gamma_{q, week}$ (as well as 95\% credible intervals) imply an autoregressive nature to team strength within each season. Interestingly, the NBA and NFL are the least consistent leagues on a week-to-week basis. In MLB however, team strength estimates quite possibly follow a random walk (i.e., $\gamma_{MLB, week} = 1$), in which the succession of team strength estimates is random and unpredictable.
+For each of the NHL, NBA, and NFL, posterior estimates of $\gamma_{q, week}$ (as well as 95\% credible intervals) imply an autoregressive nature to team strength within each season. Interestingly, the NBA and NFL are the least consistent leagues on a week-to-week basis. In MLB however, team strength estimates quite possibly follow a random walk (i.e., $\gamma_{MLB, week} = 1$), in which the succession of team strength estimates is unpredictable.
 
-Finally, it is worth noting that our estimates for $\gamma_{NFL,week}$ and $\gamma_{NFL,season}$---\Sexpr{nfl.sum$mean.week} and \Sexpr{nfl.sum$mean.season}, respectively---do not substantially diverge from the estimates observed by \cite{glickman1998state} (0.99 and 0.82). Further, our estimates are more precise. For example, our 95\% credible interval for $\gamma_{NFL,season}$ of (\Sexpr{nfl.sum$low.bound}, \Sexpr{nfl.sum$upp.bound}) is entirely contained with the interval of $(0.52, 1.28)$ reported by \cite{glickman1998state}. In fairness, it is unclear if this increased precision is a function of our model specification (using log-odds of the probability of a win as the outcome as opposed to point differential) or because we used a larger sample of seasons (10 compared to 5). 
+Finally, it is worth noting that our estimates for $\gamma_{NFL,week}$ and $\gamma_{NFL,season}$ --- \Sexpr{nfl.sum$mean.week} and \Sexpr{nfl.sum$mean.season}, respectively --- do not substantially diverge from the estimates observed by \cite{glickman1998state} (0.99 and 0.82). Further, our estimates are more precise. For example, our 95\% credible interval for $\gamma_{NFL,season}$ of (\Sexpr{nfl.sum$low.bound}, \Sexpr{nfl.sum$upp.bound}) is entirely contained with the interval of $(0.52, 1.28)$ reported by \cite{glickman1998state}. In fairness, it is unclear if this increased precision is a function of our model specification (using log-odds of the probability of a win as the outcome as opposed to point differential) or because we used a larger sample of seasons (10 compared to 5). 
 
 Like \cite{glickman1998state}, we also observe an inverse link in posterior draws of $\gamma_{NFL,week}$ and $\gamma_{NFL,season}$. Given that total shrinkage across time is the composite of within- and between-season shrinkage, such an association is not surprising~\citep{glickman1998state}. If one source of reversion towards the average were to increase, the other would likely compensate by decreasing. 
 
 \subsection{The home advantage}
 
-Figure~\ref{fig:alphaAll} shows the 2.5th percentile, median, and 97.5th percentile draws of each team's estimated home advantage parameter, presented on the probability scale. These are calculated by summing draws of $\alpha_{q_0}$ with $\alpha_{(q)i^\star}$ for all $i$. HAs are shown in descending order to provide a sense of the magnitude of differences between the home advantage provided in MLB (league-wide, a 54.0\% probability of beating a team of equal strength), NHL (55.5\%), NFL (58.8\%), and NBA (62.0\%). The two franchises that have relocated in the last decade, the Atlanta Thrashers (NHL) and Seattle Supersonics (NBA), are also included for the games played in those respective cities. 
+Figure~\ref{fig:alphaAll} shows the 2.5th percentile, median, and 97.5th percentile draws of each team's estimated home advantage parameter, presented on the probability scale. These are calculated by summing draws of $\alpha_{q_0}$ and $\alpha_{(q)i^\star}$ for all $i$. HAs are shown in descending order to provide a sense of the magnitude of differences between the home advantage provided in MLB (league-wide, a 54.0\% probability of beating a team of equal strength at home), NHL (55.5\%), NFL (58.8\%), and NBA (62.0\%). The two franchises that have relocated in the last decade, the Atlanta Thrashers (NHL) and Seattle Supersonics (NBA), are also included for the games played in those respective cities. 
 
 
 <<ha-plot>>=
@@ -763,14 +758,14 @@ Figure~\ref{fig:alphaAll} depicts substantial between-franchise differences with
 
 In the NBA, the league's best HA is found in Denver, with the worst shown in Brooklyn. The extreme home advantage provided to Denver (and to Utah, which ranks second) matches the results of \cite{Jazz}, who found significantly better performances when comparing Denver and Utah to the rest of the league with respect to home and road point differential. In MLB, the Colorado Rockies stand out for having the highest home advantage, while the remaining 29 teams boast overlapping credible intervals. We note that teams playing at home in Denver have the largest home advantages in MLB and the NBA, the 3rd-highest in the NFL, and the 8th-highest in the NHL. We speculate that this consistent advantage across sports is related to the home team's acclimation to the city's notably high altitude.  
 
-Such distinctions have plausible impacts on league standings. An NBA team with a typical home advantage can expect to win \Sexpr{100*league.ave}\% of home games against a like-caliber opponent. Yet for Brooklyn, the corresponding figure is \Sexpr{100*league.low}\%, while for Denver, it is \Sexpr{100*league.high}\%. Across 41 games (the number each team plays at home), this implies that Denver's home advantage is worth an extra \Sexpr{round(41*(league.high-league.ave), 2)} wins in a single season, relative to a league average team. Compared to Brooklyn, Denver's home advantage is worth an estimated \Sexpr{round(41*(league.high-league.low), 2)} wins per year. 
+Such distinctions have plausible impacts on league standings. An NBA team with a typical home advantage can expect to win 62.0\% of home games against a like-caliber opponent. Yet for Brooklyn, the corresponding figure is \Sexpr{100*league.low}\%, while for Denver, it is \Sexpr{100*league.high}\%. Across 41 games (the number each team plays at home), this implies that Denver's home advantage is worth an extra \Sexpr{round(41*(league.high-62.0), 2)} wins in a single season, relative to a league average team. Compared to Brooklyn, Denver's home advantage is worth an estimated \Sexpr{round(41*(league.high-league.low), 2)} wins per year. 
 
 As one important caveat, our model estimates do not account for varying line-up and injury information. If opposing teams were to rest their star players at Denver, for example, our model would artificially inflate Denver's home advantage. 
 
 
 \subsection{Evaluation of team strength estimates}
 
-Ultimately, estimates from Model~(\ref{model.full}) are designed to estimate team quality at any given point in a season. If these estimates more properly assess team quality than other metrics of team success (e.g., won-loss percentage or point differential), they should more accurately assess future performance, such as how well teams will perform over the remainder of the season.  
+Ultimately, estimates from Model IFA are designed to estimate team quality at any given point in a season in the absence of factors such as the home advantage and opponent caliber. If these estimates more properly assess team quality than other metrics of team success (e.g., won-loss percentage or point differential), they should more accurately assess future performance, such as how well teams will perform over the remainder of the season.  
 
 Figure~\ref{fig:R2} shows the coefficient of determination ($R^2$) between each team's future won-loss percentage in a season and each team's (i) week-level team strength estimates, (ii) season-to-date cumulative point differential, and (iii) season-to-date won-loss percentage. Within each sport, this is computed by game number, which helps to account for league-level differences in season length. For purposes of using our team strength estimates, we took the mean posterior draw for each team in each week a particular contest was played. The lockout-shortened seasons in the NBA (2012) and NHL (2013) were dropped.
 
@@ -942,37 +937,39 @@ Across each sport, our estimates of team strength consistently outperform past t
 
 \subsection{How often does the best team win?  A new measure of league parity}
 
-We conclude by addressing our initial question about the inherent randomness of game outcomes. The simplest to compare one league to the next would be to contrast the observed distribution of $p_{(q,s,k) ij}$'s between each $q$. However, while sportsbook odds can approximate the probability of each team winning, these odds are only provided for scheduled games. As a result, any between-league comparisons using sportsbook odds alone would be contingent upon each league's actual schedule, and they may not accurately reflect differences that would be observed were all teams were to play one another.
+We conclude by addressing our initial question about the inherent randomness of game outcomes. 
 
-A second option would be to contrast our posterior draws of $\theta_{(q,s,k) i}$ for all $i$, either across time periods or at a fixed point in time, as these estimates account for league particulars such as strength of schedule. While possible with our team strength estimates, which are presented on identical scales, such a procedure would not scale to other sports or leagues where betting market data may be unavailable.
+One simple way to compare the leagues would be to contrast the observed distribution of $p_{(q,s,k) ij}$'s between each $q$. However, while sportsbook odds can be used to approximate the probability of each team winning, these odds are only provided for scheduled games. As a result, any between-league comparisons using sportsbook odds alone would be contingent upon each league's actual schedule, and they may not accurately reflect differences that would be observed if all teams were to play one another.
 
-Instead, to better assess the equivalence of all teams in each league, we consider the likelihood that---given any pair of teams chosen at random---the better team wins, by simulating estimates of $p_{(q,s,k) ij}$ using posterior draws of team strength, home advantage, and game level error. For our purposes, we define the \emph{better} team to be the one, \emph{a priori}, with a higher probability of winning that game. If a contest has no inherent randomness (consider chess), then the better team \emph{always} wins. Conversely, if game-level variability is large relative to the difference in team strength, then even the inferior team might win nearly half the time.  
+A second option would be to contrast our posterior draws of $\theta_{(q,s,k) i}$ for all $i$, either across time periods or at a fixed point in time, as these estimates account for league particulars such as strength of schedule. While possible with our team strength estimates, which are presented on identical scales, such a procedure would not scale to other sports or leagues where betting market data may not be unavailable.
+
+Instead, to assess the equivalence of all teams in each league, we consider the likelihood that---given any pair of teams chosen at random---the better team wins, by simulating estimates of $p_{(q,s,k) ij}$ using posterior draws of team strength, home advantage, and game level error. For our purposes, we define the \emph{better} team to be the one, \emph{a priori}, with a higher probability of winning that game. If a contest has no inherent randomness (consider chess), then the better team \emph{always} wins. \mike{Is this true?} Conversely, if game-level variability is large relative to the difference in team strength, then even the inferior team might win nearly half the time.  
 
 Using our posterior draws, we approximate the distribution of game-level probabilities between two randomly chosen teams using the following steps.
 
-Given sport $q$ with season length $k^{\star}_{q}$, number of seasons $s^{\star}_{q}$, and number of teams $t_{q}$, 
+Given sport $q$ with season length $K_{q}$, number of seasons $S_{q}$, and number of teams $t_{q}$, 
 
 \begin{enumerate}
-\item Draw season $\tilde{s}$ from $\left\{1, \ldots, s^{\star}_{q} \right \}$.
-\item Draw week $\tilde{k}$ from $\left\{1, \ldots , k^{\star}_{q} \right \}$.
+\item Draw season $\tilde{s}$ from $\left\{1, \ldots, S_{q} \right \}$, and week $\tilde{k}$ from $\left\{1, \ldots , K_{q} \right \}$.
 \item Draw teams $\tilde{i}$ and $\tilde{j}$ from $\left \{1, \ldots , t_{q} \right \}$ without replacement.
 \item Sample one posterior draw of team strength for $\tilde{i}$ and $\tilde{j}$, $\tilde{\theta}_{(q,\tilde{s},\tilde{k}) \tilde{i}}$ and $\tilde{\theta}_{(q,\tilde{s},\tilde{k}) \tilde{j}}$, respectively, from the posterior distributions of $\tilde{i}$ and $\tilde{j}$'s team strength estimates during season $\tilde{s}$ at week $\tilde{k}$.
 \item Sample one posterior draw of the HA, $\tilde{\alpha}_{q_0}$, from the posterior distribution of $\alpha_{q_0}$.
-\item Sample one posterior draw of the game-level variance parameter, $\tilde{\sigma^2}_{q, game}$, and assign a game-level error, $\tilde{\epsilon}_{q, game}$, such that $\tilde{\epsilon}_{q, game} \sim N(0, \tilde{\sigma}_{q, game})$
-\item Impute simulated log-odds of the better team winning between $\tilde{i}$ beating $\tilde{j}$, $\text{logit}(p_{(q,\tilde{s},\tilde{k}) \tilde{i}\tilde{j}}) = \tilde{\alpha}_{q_0} + |\tilde{\theta}_{(q,\tilde{s},\tilde{k}) \tilde{i}} - \tilde{\theta}_{(q,\tilde{s},\tilde{k}) \tilde{j}} + \tilde{\epsilon}_{q, game}|$, where the $better$ team's log-odds are based on $\tilde{\theta}_{(q,\tilde{s},\tilde{k}) \tilde{i}}$, $\tilde{\theta}_{(q,\tilde{s},\tilde{k}) \tilde{j}}$, and $\tilde{\epsilon}_{q, game}$. The home advantage is always assigned to the team considered to be better for any given contest.
+\item Sample one posterior draw of the game-level variance parameter, $\tilde{\sigma}^2_{q, game}$, and draw a game-level error, $\tilde{\epsilon}_{q, game}$, from $\tilde{\epsilon}_{q, game} \sim N(0, \tilde{\sigma}_{q, game})$
+\item Impute the simulated log-odds of the better team winning between $\tilde{i}$ and $\tilde{j}$, $\text{logit}(\tilde{p}_{(q,\tilde{s},\tilde{k}) \tilde{i}\tilde{j}}) = \tilde{\alpha}_{q_0} + |\tilde{\theta}_{(q,\tilde{s},\tilde{k}) \tilde{i}} - \tilde{\theta}_{(q,\tilde{s},\tilde{k}) \tilde{j}} + \tilde{\epsilon}_{q, game}|$, where the $better$ team's log-odds are based on $\tilde{\theta}_{(q,\tilde{s},\tilde{k}) \tilde{i}}$, $\tilde{\theta}_{(q,\tilde{s},\tilde{k}) \tilde{j}}$, and $\tilde{\epsilon}_{q, game}$. The home advantage is always assigned to the team considered to be better for any given contest.
 \item Transform $\text{logit}(\tilde{p}_{(q,\tilde{s},\tilde{k}) \tilde{i}\tilde{j}})$ into a probability to obtain a simulated estimate, $\tilde{p}_{q, sim}$, where  $\tilde{p}_{q, sim} = \tilde{p}_{(q,\tilde{s},\tilde{k}) \tilde{i}\tilde{j}}$
 \item Repeat the above steps $n_{sim}$ times to obtain $\mathbf{\tilde{p}_{q}} = \left\{\tilde{p}_{q, 1}, \ldots, \tilde{p}_{q, n_{sim}}\right\}$.
 \end{enumerate}
 
-For each $q$, we simulated with $n_{sim} = 1000$. Additionally, to remove the effect of each league's HA on simulated probabilities, we repeated the process using after fixing $\tilde{\alpha}_{q_0} = 0$ for each league, reflecting the probability of the game being played at a neutral site.
-Figure \ref{fig:BestWin} shows the cumulative distribution functions (CDFs) for each set of probabilities in each league. 
+For each $q$, we simulated with $n_{sim} = 1000$. Additionally, to remove the effect of each league's HA on simulated probabilities, we repeated the process using after fixing $\tilde{\alpha}_{q_0} = 0$ for each league, reflecting the game's probability were it to be played at a neutral site.
+
 
 \begin{figure}[h]
 \includegraphics{figure/BestWin.pdf}
 \caption{Cumulative distribution function (CDF) of 1000 simulated game-level probabilities in each league, for both neutral site and home games, with the better team (on average) used as the reference and given the home advantage.\label{fig:BestWin}}
 \end{figure}
 
-The median probability of the best team winning a neutral site game is highest in the NBA (67\%), followed in order by the NFL (65\%), NHL (57\%), and MLB (56\%). The spread of these probabilities are of great interest. Nearly every simulated MLB and NHL game played at neutral site is less than a 3:1 proposition with respect to the best team winning (75\%). Meanwhile, roughly 28\% of NBA and 20\% of NFL neutral site match-ups are greater than this 3:1 threshold. 
+
+Figure \ref{fig:BestWin} shows the cumulative distribution functions (CDFs) for each set of probabilities in each league. The median probability of the best team winning a neutral site game is highest in the NBA (67\%), followed in order by the NFL (65\%), NHL (57\%), and MLB (56\%). The spread of these probabilities are of great interest. Nearly every simulated MLB and NHL game played at neutral site is less than a 3:1 proposition with respect to the best team winning (75\%). Meanwhile, roughly 28\% of NBA and 20\% of NFL neutral site match-ups are greater than this 3:1 threshold. 
 
 Factoring in each league's home advantage works to exaggerate league-level differences. When the best team plays at home in the NBA, they are always favored to win at least 60\% of the time, with the middle 50\% of games ranging from a 68\% probability to an 84\% probability. Meanwhile, even with a home advantage, it is rare that the best MLB team is \emph{ever} given a 70\% probability of winning, with the middle 50\% of games ranging from 57\% to 63\%. 
 
@@ -980,7 +977,7 @@ Finally, we use the CDFs displayed above to quantify the cumulative difference b
 
 $$Parity_q = 2 \int_{0.5}^1 P(\mathbf{\tilde{p}_{q}} \leq x) dx \, ,$$
 
-where we multiply by 2 in order to scale so that $0 \leq Parity_q \leq 1$, where 1 represents complete parity (every game a coin flip) and 0 represents no parity (every game outcome predetermined) 
+where we multiply by 2 in order to scale so that $0 \leq Parity_q \leq 1$, where 1 represents complete parity (every game a coin flip) and 0 represents no parity (every game outcome predetermined). 
 
 For games with no home advantage, $Parity_{MLB} = 0.86$, followed by the NHL (0.83), NFL (0.69), and NBA (0.66). When the best team has a home advantage, parity is again the greatest in the MLB (0.79), followed by the NHL (0.73), NFL (0.54), and NBA (0.46). These results suggest that when the best team is playing at home, the NBA is closer to a world where every game outcome is predetermined than to one where every game outcome is a coin flip. Meanwhile, even when giving the best team a HA, MLB game outcomes remain lightly-weighted coin flips. 
 
@@ -991,13 +988,11 @@ For games with no home advantage, $Parity_{MLB} = 0.86$, followed by the NHL (0.
 
 Using a modified Bayesian state-space model, we estimate both time-varying team strength and league-level variance parameters in order to better understand the underlying randomness in the four major North American professional sporting leagues, the NBA, NFL, NHL, and MLB. 
 
-Our first finding relates to the relative equivalence of the four leagues. At a single point in time, team strength estimates diverge substantially more in the NBA and NFL than in the NHL and MLB. In the latter two leagues, contests between two randomly chosen teams are closer to a coin-flip, in which each team has a reasonable shot at winning. 
-
-Understanding this underlying randomness and the proper evaluation of team talent is crucial for decision makers in these leagues. At critical moments in a team's evolution, such as the a trade deadline, free agency period, or the decision to fire a coach, we recommend that team officials look past wins and losses to better understand team strength in the context of their league. As one easy example, it is insufficient to evaluate a baseball or hockey team based on their performance in the postseason alone, given that so many of those contests are nearly 50-50 outcomes. 
+Our first finding relates to the relative equivalence of the four leagues. At a single point in time, team strength estimates diverge substantially more in the NBA and NFL than in the NHL and MLB. In the latter two leagues, contests between two randomly chosen teams are closer to a coin-flip, in which each team has a reasonable shot at winning. Understanding this underlying randomness and the proper evaluation of team talent is crucial for decision makers in these leagues. At critical moments in a team's evolution, such as the a trade deadline, free agency period, or the decision to fire a coach, we recommend that team officials look past wins and losses to better understand team strength in the context of their league. As one easy example, it is insufficient to evaluate a baseball or hockey team based on their performance in the postseason alone, given that so many of those contests are nearly 50-50 outcomes. 
 
 Our second set of findings relates to the autoregressive nature of team strengths. Within a season, posterior estimates suggest that teams in each of the NBA (largest reversion), NFL, and NHL tend to revert towards the league average in the long term on a week-to-week basis, while trends of team strength in MLB are indistinguishable from a random walk. On a season-to-season basis, NHL teams exhibit the largest reversion (nearly 50\%) towards the league average, with the other three leagues falling somewhere between roughly 25\% and 40\%. 
 
-Our next finding relates to the relative equivalence of the home advantage in each league, with the NBA well ahead of the pack, showing, on average, a \Sexpr{round(leagues$mean.sport[2], 3)} increase on the log-odds of a home win (which corresponds to a win probability of \Sexpr{100*round(exp(leagues$mean.sport[2])/(1+exp(leagues$mean.sport[2])), 3)}\% against a like-caliber opponent). We also show that the home advantage varies most significantly between arenas within each of the NBA and the NHL. In the NBA, for example, the league's best team home advantage is worth a few wins per year, in expectation, over the league's worst home advantage. Moreover, with the exception of the Colorado Rockies it is not clear that any MLB or NFL team has a statistically significant persistent home effect. 
+Our next finding relates to the relative equivalence of the home advantage in each league, with the NBA well ahead of the pack, with teams averaging a 62.0\% chance of winning versus a like-caliber opponent. We also show that the home advantage varies most significantly between arenas within each of the NBA and the NHL. In the NBA, for example, the league's best team home advantage is worth a few wins per year, in expectation, over the league's worst home advantage. Moreover, with the exception of the Colorado Rockies it is not clear that any MLB or NFL team has a statistically significant home effect. 
 
 Finally, we identify that incorporating information from betting markets can help to more accurately gauge the caliber of each league's teams, as shown by an improved ability to predict future team performance. Unlike wins and losses or point differential, our estimates of team strength account for league characteristics such as unbalanced schedules and season length. We conclude by using these team strength draws to propose a parity metric that can compare team equivalence without being affected by league-level characteristics like unbalanced schedules. 
 
