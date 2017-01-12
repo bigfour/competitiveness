@@ -274,7 +274,7 @@ Let ${\bf p}_{(q,s,k)}$ represent the vector of length $g_{(q,s,k)}$ containing 
 \text{logit}({\bf p}_{(q,s,k)}) \sim N(\mathbf{\theta}_{(q,s,k)}\mathbf{X}_{(q,s,k)} + \alpha_{q_0}\mathbf{J}_{g_{(q,s,k)}} + \balpha_{q}\mathbf{Z}_{(q,s,k)}, \sigma^{2}_{q,game}\mathbf{I}_{g_{(q,s,k)}}),   \nonumber
 \end{eqnarray}
 
-where $\mathbf{\theta}_{(q,s,k)}$ is a vector of length $t_{q}$ containing the team strength parameters in season $s$ during week $k$ and $\balpha_{q} = \left\{\alpha_{(q) 1^{\star}}, \cdots \alpha_{(q) t^{\star}_{q}}    \right\}$. Note that $\balpha_{q}$ does not vary over time (i.e. HA is assumed to be constant for a team over weeks and seasons). $\mathbf{X}_{(q,s,k)}$ and $\mathbf{Z}_{(q,s,k)}$ contain $g_{(q,s,k)}$---the number of games in league $q$ during week $k$ of season $s$---rows and $t_{q}$ and $t^{\star}_{q}$ columns, respectively.   The matrix $\mathbf{X}_{(q,s,k)}$ contains the values $\{1, 0, -1\}$ where for a given row (i.e. one game) the value of $i^{th}$ column in that row is a 1/-1 if the $i^{th}$ team played at home/away in the given game and 0 otherwise. $\mathbf{Z}_{(q,s,k)}$ is a matrix containing a 1 in column $i^{\star}$ if the corresponding game was played in city $i^{\star}$, and 0 otherwise. Finally, $\sigma^{2}_{q,game}$ is the game-level variance, $\tau^{2}_{q,game} = 1 / \sigma^{2}_{q,game}$ is the game-level precision, $\mathbf{J}_{g_{(q,s,k)}}$ is a column vector of length $g_{(q,s,k)}$ containing all 1's, and $\mathbf{I}_{g_{(q,s,k)}}$ is an identity matrix with dimension ${g_{(q,s,k)}} \times {g_{(q,s,k)}}$. \\
+where $\mathbf{\theta}_{(q,s,k)}$ is a vector of length $t_{q}$ containing the team strength parameters in season $s$ during week $k$ and $\balpha_{q} = \left\{\alpha_{(q) 1^{\star}}, \cdots \alpha_{(q) t^{\star}_{q}}    \right\}$. Note that $\balpha_{q}$ does not vary over time (i.e. HA is assumed to be constant for a team over weeks and seasons). $\mathbf{X}_{(q,s,k)}$ and $\mathbf{Z}_{(q,s,k)}$ contain $g_{(q,s,k)}$---the number of games in league $q$ during week $k$ of season $s$---rows and $t_{q}$ and $t^{\star}_{q}$ columns, respectively.   The matrix $\mathbf{X}_{(q,s,k)}$ contains the values $\{1, 0, -1\}$ where for a given row (i.e. one game) the value of $i^{th}$ column in that row is a 1/-1 if the $i^{th}$ team played at home/away in the given game and 0 otherwise. $\mathbf{Z}_{(q,s,k)}$ is a matrix containing a 1 in column $i^{\star}$ if the corresponding game was played in city $i^{\star}$, and 0 otherwise. Finally, $\sigma^{2}_{q,game}$ is the game-level variance, $\mathbf{J}_{g_{(q,s,k)}}$ is a column vector of length $g_{(q,s,k)}$ containing all 1's, and $\mathbf{I}_{g_{(q,s,k)}}$ is an identity matrix with dimension ${g_{(q,s,k)}} \times {g_{(q,s,k)}}$. \\
 
 In addition, we propose a simplified version of Model IFA, the constant home advantage model (labelled as Model CFA), which assumes that the HA within each sport is identical for each franchise, such that
 \begin{eqnarray}
@@ -284,11 +284,10 @@ In addition, we propose a simplified version of Model IFA, the constant home adv
 \noindent In Model CFA, matrices ${\bf p}_{(q,s,k)}$, $\mathbf{X}_{(q,s,k)}$, $\mathbf{J}_{g_{(q,s,k)}}$, and $\mathbf{I}_{g_{(q,s,k)}}$ are specified identically to Model IFA. As a result, for a game between home team $i$ and away team $j$ during week $k$ of season $s$, $E[\text{logit}(p_{(q,s,k) ij})] = \theta_{(q,s,k) i} - \theta_{(q, s, k) j} + \alpha_{q_0}$. 
 
 Similar to \cite{glickman1998state}, we allow the strength parameters of the teams to vary auto-regressively from week-to-week and from season-to-season. In general, this entails that team strength parameters are shrunk towards the league average over time in expectation. Formally,
-
 $$
-\theta_{(q,s+1,1)} |  {\bf \theta}_{q,s,K_q}, \gamma_{q,season}, \sigma^{2}_{q,season} \sim N (\gamma_{q, season}\mathbf{\theta}_{(q,s,K_q)}, \sigma^{2}_{q,season}\mathbf{I}_{t_{q}}) \text{ for $s \in 2, \ldots, S_q$, and }
+\theta_{(q,s+1,1)} |  {\bf \theta}_{q,s,K_q}, \gamma_{q,season}, \sigma^{2}_{q,season} \sim N (\gamma_{q, season}\mathbf{\theta}_{(q,s,K_q)}, \sigma^{2}_{q,season}\mathbf{I}_{t_{q}}) \text{ for $s \in 2, \ldots, S_q$}
 $$
-
+\noindent and
 $$
 \theta_{(q,s,k+1)} | \mathbf{\theta}_{(q,s,k)}, \gamma_{q,week}, \sigma^{2}_{q,week}  \sim N (\gamma_{q, week}\mathbf{\theta}_{(q,s,k)},\sigma^{2}_{q,week}\mathbf{I}_{t_{q}}) \text{ for $s \in 1, \ldots, S_q$ and $k = 2, \ldots, K_q$.}
 $$
@@ -305,7 +304,7 @@ $$
 \alpha_{(q)i^\star}\sim N(0, \sigma^{2}_{q,\alpha}) \,, \qquad \text{for } i \in 1, \ldots, t^{\star}_{q}.
 $$
 
-Finally, letting $\tau^{2}_{q,season} = 1/\sigma^{2}_{q,season}$, $\tau^{2}_{q,week} = 1/\sigma^{2}_{q,week}$, and $\tau^{2}_{q,\alpha} = 1/\sigma^{2}_{q,\alpha}$ we assume the following prior distributions: 
+Finally, letting $\tau^{2}_{q,game} = 1 / \sigma^{2}_{q,game}, $\tau^{2}_{q,season} = 1/\sigma^{2}_{q,season}$, $\tau^{2}_{q,week} = 1/\sigma^{2}_{q,week}$, and $\tau^{2}_{q,\alpha} = 1/\sigma^{2}_{q,\alpha}$ we assume the following prior distributions: 
 \begin{align*}
 \tau^{2}_{q,game} &\sim \Gamma(0.0001,0.0001) &\qquad
   \alpha_{q_0} &\sim N(0,10000) \\
@@ -562,7 +561,7 @@ params %>%
   group_by(sport, param) %>%
   summarize(mean.sport = mean(val), lb = quantile(val, 0.025), ub = quantile(val, 0.975), 
             sd = sd(val)) %>%
-  mutate(output = paste(round(mean.sport, 3), " (", round(se, 3), ")", sep = "")) %>% 
+  mutate(output = paste(round(mean.sport, 3), " (", round(sd, 3), ")", sep = "")) %>% 
   select(sport, param, output) %>%
   tidyr::spread(param, output) %>%
   rename(`$\\gamma_{q, week}$` = gamma_w, 
@@ -758,7 +757,7 @@ Figure~\ref{fig:alphaAll} depicts substantial between-franchise differences with
 
 In the NBA, the league's best HA is found in Denver, with the worst shown in Brooklyn. The extreme home advantage provided to Denver (and to Utah, which ranks second) matches the results of \cite{Jazz}, who found significantly better performances when comparing Denver and Utah to the rest of the league with respect to home and road point differential. In MLB, the Colorado Rockies stand out for having the highest home advantage, while the remaining 29 teams boast overlapping credible intervals. We note that teams playing at home in Denver have the largest home advantages in MLB and the NBA, the 3rd-highest in the NFL, and the 8th-highest in the NHL. We speculate that this consistent advantage across sports is related to the home team's acclimation to the city's notably high altitude.  
 
-Such distinctions have plausible impacts on league standings. An NBA team with a typical home advantage can expect to win 62.0\% of home games against a like-caliber opponent. Yet for Brooklyn, the corresponding figure is \Sexpr{100*league.low}\%, while for Denver, it is \Sexpr{100*league.high}\%. Across 41 games (the number each team plays at home), this implies that Denver's home advantage is worth an extra \Sexpr{round(41*(league.high-62.0), 2)} wins in a single season, relative to a league average team. Compared to Brooklyn, Denver's home advantage is worth an estimated \Sexpr{round(41*(league.high-league.low), 2)} wins per year. 
+Such distinctions have plausible impacts on league standings. An NBA team with a typical home advantage can expect to win 62.0\% of home games against a like-caliber opponent. Yet for Brooklyn, the corresponding figure is \Sexpr{100*league.low}\%, while for Denver, it is \Sexpr{100*league.high}\%. Across 41 games (the number each team plays at home), this implies that Denver's home advantage is worth an extra \Sexpr{round(41*(league.high-.62), 2)} wins in a single season, relative to a league average team. Compared to Brooklyn, Denver's home advantage is worth an estimated \Sexpr{round(41*(league.high-league.low), 2)} wins per year. 
 
 As one important caveat, our model estimates do not account for varying line-up and injury information. If opposing teams were to rest their star players at Denver, for example, our model would artificially inflate Denver's home advantage. 
 
