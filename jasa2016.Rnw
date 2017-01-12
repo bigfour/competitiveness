@@ -304,7 +304,7 @@ $$
 \alpha_{(q)i^\star}\sim N(0, \sigma^{2}_{q,\alpha}) \,, \qquad \text{for } i \in 1, \ldots, t^{\star}_{q}.
 $$
 
-Finally, letting $\tau^{2}_{q,game} = 1 / \sigma^{2}_{q,game}$, $\tau^{2}_{q,season} = 1/\sigma^{2}_{q,season}$, $\tau^{2}_{q,week} = 1/\sigma^{2}_{q,week}$, and $\tau^{2}_{q,\alpha} = 1/\sigma^{2}_{q,\alpha}$ we assume the following prior distributions: 
+Finally, letting $\tau^{2}_{q,game} = 1 / \sigma^{2}_{q,game}$, $\tau^{2}_{q,season} = 1/\sigma^{2}_{q,season}$, $\tau^{2}_{q,week} = 1/\sigma^{2}_{q,week}$, and $\tau^{2}_{q,\alpha} = 1/\sigma^{2}_{q,\alpha}$, we assume the following prior distributions: 
 \begin{align*}
 \tau^{2}_{q,game} &\sim \Gamma(0.0001,0.0001) &\qquad
   \alpha_{q_0} &\sim N(0,10000) \\
