@@ -136,7 +136,8 @@ p <- ggplot(cdf.all) + stat_ecdf(aes(probs, colour = sport)) +
   labs(subtitle = "Solid: neutral site, Dashed: home game for better team") +
   xlab("Simulated win probability") + ylab("CDF") + xlim(0.5, 1.0) + 
   annotate("text", x = .51, y = 1,  hjust = 0, vjust = 1, label = paste("All games \n coin flips"))+ 
-  annotate("text", x = .99, y = 0,  hjust = 1, vjust = 0, label = paste("All games \n pre-determined"))
+  annotate("text", x = .99, y = 0,  hjust = 1, vjust = 0, label = paste("All games \n pre-determined")) + 
+  scale_colour_brewer(palette = "Spectral", "League")
 p
 ggsave(plot = p, width = 6, height = 3.5, filename = "figure/BestWin.pdf")
 
