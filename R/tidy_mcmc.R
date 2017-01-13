@@ -16,7 +16,7 @@ get_sport <- function(sport) {
   ) %>%
     mutate(sport = sport)
   alphaInd <- z$alphaInd
-  theta <- z$beta
+  theta <- z$theta
   rm(z)
   return(list(out = out, theta = theta, alphaInd = alphaInd))
 }

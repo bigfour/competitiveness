@@ -10,9 +10,9 @@ get_sport <- function(sport) {
   ) %>%
     mutate(sport = sport)
   alphaInd <- z$alphaInd
-  beta <- z$beta
+  theta <- z$theta
   rm(z)
-  return(list(out = out, beta = beta, alphaInd = alphaInd))
+  return(list(out = out, theta = theta, alphaInd = alphaInd))
 }
 
 # Extract the values we will need
@@ -23,8 +23,8 @@ params <- lapply(dat, function(x) { return(x[["out"]]) } ) %>%
 
 head(params)
 
-betas <- lapply(dat,function(x){return(x[["beta"]])})  
-names(betas) <-  sports
+thetas <- lapply(dat,function(x){return(x[["theta"]])})  
+names(thetas) <-  sports
 
 alphaInds <- lapply(dat, function(x) {return(x[["alphaInd"]])})
 names(alphaInds) <- sports
@@ -45,7 +45,7 @@ rm(dat)
 
 ## Step 1a: Required for function
 
-fun.bestwin <- function(sport, betas.sport){
+fun.bestwin <- function(sport, thetas.sport){
 
 ## Step 1b: functions of sport
 season.max <- ifelse(sport == "nfl", 10, 11)
@@ -69,13 +69,13 @@ teams <- sample(1:teams.list, 2, replace = FALSE)
 
 ## Step 5a
 
-betas1 <- betas.sport[season, week, teams[1],sample(1:4000, 1),sample(1:3, 1)]
-betas2 <- betas.sport[season, week, teams[2],sample(1:4000, 1),sample(1:3, 1)]
+thetas1 <- thetas.sport[season, week, teams[1],sample(1:4000, 1),sample(1:3, 1)]
+thetas2 <- thetas.sport[season, week, teams[2],sample(1:4000, 1),sample(1:3, 1)]
 
 ## Step 5b: ensure team1 is better team
 
-#team1.mean <- mean(betas.sport[season, week, teams[1],,])
-#team2.mean <- mean(betas.sport[season, week, teams[2],,])
+#team1.mean <- mean(thetas.sport[season, week, teams[1],,])
+#team2.mean <- mean(thetas.sport[season, week, teams[2],,])
 
 
 ## Step 6
@@ -96,7 +96,7 @@ epsilon <- rnorm(1, 0, sigma)
 
 ## Log odds would be positive if Team 1 better on that draw, negative if Team 2 better on that draw
 ## Take the absolute value to ensure all probabilities start at 0.5 to reflect the "Favorite"
-log.odds <- abs(betas1 - betas2 + epsilon)
+log.odds <- abs(thetas1 - thetas2 + epsilon)
 
 
 prob.sim <- exp(0 + log.odds)/
@@ -112,10 +112,10 @@ probs.sportHA <- c(probs.sportHA, prob.simHA)
 return(list(Probs = probs.sport, ProbsHA = probs.sportHA))
 }
 set.seed(0)
-nba <- fun.bestwin("nba", betas$nba)
-nhl <- fun.bestwin("nhl", betas$nhl)
-mlb <- fun.bestwin("mlb", betas$mlb)
-nfl <- fun.bestwin("nfl", betas$nfl)
+nba <- fun.bestwin("nba", thetas$nba)
+nhl <- fun.bestwin("nhl", thetas$nhl)
+mlb <- fun.bestwin("mlb", thetas$mlb)
+nfl <- fun.bestwin("nfl", thetas$nfl)
 
 df.nba <- data.frame(sport = "NBA", probs = nba$Probs, probsH = nba$ProbsHA)
 df.nfl <- data.frame(sport = "NFL", probs = nfl$Probs, probsH = nfl$ProbsHA)

@@ -1,11 +1,11 @@
 model { 
 for (i in 1:n) {
   y[i] ~ dnorm(mu[i], sigma)
-  mu[i] <- alpha + alphaInd[z[i]] + inprod(beta[s[i],w[i],],x[i,])
+  mu[i] <- alpha + alphaInd[z[i]] + inprod(theta[s[i],w[i],],x[i,])
 }
 
 for (j in 1:nTeams) {
-  beta[1,1,j] ~ dnorm(0, sigmabSeason)
+  theta[1,1,j] ~ dnorm(0, sigmabSeason)
 }
 
 for (j in 1:nHFAs) {
@@ -14,18 +14,18 @@ for (j in 1:nHFAs) {
 
 for (www in 2:nWeeks) {  
   for (j in 1:nTeams) {
-    beta[1,www,j] ~ dnorm(gammaWeek*beta[1,www-1,j], sigmab)
+    theta[1,www,j] ~ dnorm(gammaWeek*theta[1,www-1,j], sigmab)
   }
 }
 
 for (sss in 2:nSeas) {
   for (j in 1:nTeams) {
-    beta[sss,1,j] ~ dnorm(gammaSeason*beta[sss-1,nWeeks,j], sigmabSeason)
+    theta[sss,1,j] ~ dnorm(gammaSeason*theta[sss-1,nWeeks,j], sigmabSeason)
   }
 
   for (www in 2:nWeeks) {  
     for (j in 1:nTeams) {
-      beta[sss,www,j] ~ dnorm(gammaWeek*beta[sss,www-1,j], sigmab)
+      theta[sss,www,j] ~ dnorm(gammaWeek*theta[sss,www-1,j], sigmab)
     }
   }
 }

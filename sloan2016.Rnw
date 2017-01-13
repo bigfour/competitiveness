@@ -23,7 +23,7 @@
 \newcommand{\mike}[1]{\sethlcolor{cyan}\hl{[ML]: #1}}
 
 \def\balpha{\pmb{\alpha}}
-\def\bbeta{\pmb{\beta}}
+\def\btheta{\pmb{\theta}}
 \def\bgamma{\pmb{\gamma}}
 \def\btheta{\pmb{\theta}}
 \def\bphi{\pmb{\phi}}
@@ -255,7 +255,7 @@ Our model below builds on the state-space specification provided by \cite{glickm
 
 Let $p_{(q,s,k)ij}$ be the probability that team $i$ will beat team $j$ in season $s$ during week $k$ of sports league $q$, where $q \in \{MLB, NBA, NFL, NHL\}$. Our model makes the assumption that 
 
-%Note: Change to betas to avoid confusion with our notation?
+%Note: Change to thetas to avoid confusion with our notation?
 $$
 E[logit(p_{(q,s,k) ij})] = \theta_{(q,s,k) i} - \theta_{(q, s, k) j} + \alpha_{(q) i}, \label{model.full}
 $$
@@ -276,39 +276,39 @@ While we are unable to share our betting market data due to licensing restrictio
 Figure~\ref{fig:spaghetti} shows estimated team coefficients over time, approximated using posterior mean draws for all weeks $k$ and seasons $s$ across all four sports. Figures~\ref{fig:spaghetti-mlb}, \ref{fig:spaghetti-nba}, \ref{fig:spaghetti-nfl}, and \ref{fig:spaghetti-nhl} (shown in the Appendix) provide an individual plot for each sport, which include divisional facets to allow easier identification of individual teams. Teams in Figures~\ref{fig:spaghetti}, \ref{fig:spaghetti-mlb}, \ref{fig:spaghetti-nba}, \ref{fig:spaghetti-nfl}, and \ref{fig:spaghetti-nhl} are depicted using their two primary colors, scraped from \url{http://jim-nielsen.com/teamcolors/} via the \pkg{teamcolors} package (\url{https://github.com/beanumber/teamcolors}) in \R.
 
 <<echo=FALSE, results='asis'>>=
-load("data/tidy_betas.rda")
+load("data/tidy_thetas.rda")
 library(xtable)
-tidy_betas %>%
+tidy_thetas %>%
   mutate(sport = toupper(sport)) %>%
   group_by(sport) %>%
   summarize(N = n(), 
-            min = min(beta),
-            CIL = quantile(beta, probs = 0.05),
-            Q1 = quantile(beta, probs = 0.25),
-            mean = mean(beta), 
-            Q3 = quantile(beta, probs = 0.75),
-            CIR = quantile(beta, probs = 0.95),
-            max = max(beta),
-            sd = sd(beta)) %>%
+            min = min(theta),
+            CIL = quantile(theta, probs = 0.05),
+            Q1 = quantile(theta, probs = 0.25),
+            mean = mean(theta), 
+            Q3 = quantile(theta, probs = 0.75),
+            CIR = quantile(theta, probs = 0.95),
+            max = max(theta),
+            sd = sd(theta)) %>%
   rename(`$5^{th}$` = CIL, `$95^{th}$` = CIR) %>%
   xtable(caption = "Summary of team strength parameters.", 
-         digits = 3, label = "tab:betas") %>%
+         digits = 3, label = "tab:thetas") %>%
   print(include.rownames = FALSE, sanitize.text.function = identity)
 @
 
 <<echo=FALSE>>=
 library(dplyr)
-load(file.path(root, "data", "tidy_betas.rda"))
-tidy_betas <- tidy_betas %>%
+load(file.path(root, "data", "tidy_thetas.rda"))
+tidy_thetas <- tidy_thetas %>%
   mutate(sport = toupper(sport),
          annotation = "",
-         annotation = ifelse(beta == max(beta), 
+         annotation = ifelse(theta == max(theta), 
                              paste0("Strongest team (", name, ")"), 
                              annotation),
-         annotation = ifelse(beta == min(beta), 
+         annotation = ifelse(theta == min(theta), 
                              paste0("Weakest team (", name, ")"), 
                              annotation))
-colors <- tidy_betas %>%
+colors <- tidy_thetas %>%
   select(name, primary, secondary) %>%
   unique()
 primary <- colors$primary
@@ -319,10 +319,10 @@ names(secondary) <- colors$name
 
 <<spaghetti, fig.height=13.5, fig.cap="Team strengths over time for all four sports.">>=
 library(ggplot2)
-tidy_betas <- mutate(tidy_betas, time_val = 
+tidy_thetas <- mutate(tidy_thetas, time_val = 
         ifelse(sport == "NFL"|sport == "MLB", time_val + 1, time_val))
-spag <- ggplot(data = tidy_betas, 
-       aes(x = time_val, y = beta, 
+spag <- ggplot(data = tidy_thetas, 
+       aes(x = time_val, y = theta, 
            color = name, fill = name)) +
   geom_line(alpha = 0.5) + 
   geom_point(shape = 21, size = 0.5, alpha = 0.8) + 
@@ -397,7 +397,7 @@ year.max <- 2016
 if (sport == "NFL"){year.max = 2015}
 
 sport1 <- eval(sport)
-sportcolors <- subset(tidy_betas, sport == sport1)
+sportcolors <- subset(tidy_thetas, sport == sport1)
 sportcolors <- sportcolors %>%
   select(name, primary, secondary) %>%
   unique()
@@ -406,24 +406,24 @@ if (sport == "NFL"){sportcolors$division <- div.teams.NFL}
 if (sport == "NHL"){sportcolors$division <- div.teams.NHL}
 if (sport == "NBA"){sportcolors$division <- div.teams.NBA}
 if (sport == "MLB"){sportcolors$division <- div.teams.MLB}
-datbetas3 <- inner_join(tidy_betas, sportcolors, by = c("name" = "name"))
-datbetas.null <- select(datbetas3, -division)
-datbetas.null <- arrange(datbetas.null, time_val)
+datthetas3 <- inner_join(tidy_thetas, sportcolors, by = c("name" = "name"))
+datthetas.null <- select(datthetas3, -division)
+datthetas.null <- arrange(datthetas.null, time_val)
 
 
 ##### Generate plots
-lim <- max(abs(datbetas.null$beta))
+lim <- max(abs(datthetas.null$theta))
 gg <- ggplot()  + ggtitle(paste("Team strengths over time,", sport)) + xlab("Year")  + 
                             ylab("Log-odds of a win")
-gg <- gg + geom_path(data = datbetas.null, colour = "grey", 
-                     aes(x = time_val, y = beta, group = name)) +
+gg <- gg + geom_path(data = datthetas.null, colour = "grey", 
+                     aes(x = time_val, y = theta, group = name)) +
   scale_y_continuous(lim = c(-lim, lim)) +
   scale_x_continuous(breaks = c(2005:2016), labels = c(2005:2016)) 
 
 
 for (i in 1:nrow(sportcolors)){
-    gg <- gg + geom_line(data = filter(datbetas3,name==sportcolors$name[i]),aes(x = time_val, y = beta),linetype=1,lwd=1.5,colour=sportcolors$primary[i]) 
-    gg <- gg + geom_line(data = filter(datbetas3,name==sportcolors$name[i]),aes(x = time_val, y = beta),linetype=2,lwd=1.5,colour=sportcolors$secondary[i]) 
+    gg <- gg + geom_line(data = filter(datthetas3,name==sportcolors$name[i]),aes(x = time_val, y = theta),linetype=1,lwd=1.5,colour=sportcolors$primary[i]) 
+    gg <- gg + geom_line(data = filter(datthetas3,name==sportcolors$name[i]),aes(x = time_val, y = theta),linetype=2,lwd=1.5,colour=sportcolors$secondary[i]) 
   }
 gg1 <- gg +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
@@ -436,7 +436,7 @@ return(gg2)
 @
 
 
-Table \ref{tab:betas} shows summary statistics of the team strength estimates from the posterior draws. Overall, there tends to be larger variability in team strength parameters at any given point in time in both the NFL and NBA, with posterior team strength coefficients tending to vary between -1 and 1 (on the logit scale). For reference, a team-strength of 1.0 on the log-odds scale implies an $\frac{e^{1.0}}{1+e^{1.0}} = 73.1$\% chance of beating a league average team in a game played at a neutral site. Team-to-team level variability is substantially lower in MLB (roughly between -0.3 and 0.3) and the NHL (-0.4 to 0.4). The New England Patriots' 2007 season (NFL) stands out as the top individual performance of the last decade. In that season, New England finished the regular season 16-0 before eventually losing in the Super Bowl. Additionally, it is interesting to notice that the team strength estimates of the bad teams in the NBA (e.g. the Miami Heat in 2007--08) lie further from 0 than the the estimates for the good teams. This possibly reveals the tendency for teams in this league to ``tank"---a strategy of fielding a weak team intentionally to improve the chances of having better selection preference in the upcoming player draft \citep{soebbing2013gamblers}.
+Table \ref{tab:thetas} shows summary statistics of the team strength estimates from the posterior draws. Overall, there tends to be larger variability in team strength parameters at any given point in time in both the NFL and NBA, with posterior team strength coefficients tending to vary between -1 and 1 (on the logit scale). For reference, a team-strength of 1.0 on the log-odds scale implies an $\frac{e^{1.0}}{1+e^{1.0}} = 73.1$\% chance of beating a league average team in a game played at a neutral site. Team-to-team level variability is substantially lower in MLB (roughly between -0.3 and 0.3) and the NHL (-0.4 to 0.4). The New England Patriots' 2007 season (NFL) stands out as the top individual performance of the last decade. In that season, New England finished the regular season 16-0 before eventually losing in the Super Bowl. Additionally, it is interesting to notice that the team strength estimates of the bad teams in the NBA (e.g. the Miami Heat in 2007--08) lie further from 0 than the the estimates for the good teams. This possibly reveals the tendency for teams in this league to ``tank"---a strategy of fielding a weak team intentionally to improve the chances of having better selection preference in the upcoming player draft \citep{soebbing2013gamblers}.
 
 In the NHL (and only the NHL), there seems to be a possible convergence of team strength estimates towards 0 over time, perhaps implying that team talent is less variable in recent years. Alternatively, the league's point system, which changed before the 2005-06 season and encouraged teams to play more overtime games \citep{lopez2013inefficiencies}, could be responsible. If teams were playing overtime contests more often, it could lead to different perceptions in how betting markets view team strenths, as overtime sessions and the resulting shootouts are, by and large, coin flips \citep{lopez2016predicting}. As a final point of clarification in Figures \ref{fig:spaghetti}, \ref{fig:spaghetti-nba}, and \ref{fig:spaghetti-nhl}, the periods with straight lines of team strength estimates in the 2013 season (NHL) and 2012 season (NBA) reflect games lost due to lockouts. 
 
@@ -471,22 +471,22 @@ Figure \ref{fig:alphaAll} shows the 2.5th, median, and 97.5th draws of each team
 ## Home advantage plots
 load("data/tidy_alphas.rda")
 library(ggplot2)
-datbetas.null <- tidy_alphas %>%
+datthetas.null <- tidy_alphas %>%
   mutate(sport = toupper(sport)) %>%
   group_by(sport) %>%
   arrange(alpha.team.overall) %>%
   mutate(rank.within = 1:n()) 
-datbetas.empty <- datbetas.null %>% ungroup() %>% select(-sport)
+datthetas.empty <- datthetas.null %>% ungroup() %>% select(-sport)
 
-gg <- ggplot(datbetas.null)  + ggtitle("Who has the best home advantage? Increased log-odds of winning at home, by team") 
-gg1 <- gg + geom_point(data = datbetas.empty, colour = "grey", 
+gg <- ggplot(datthetas.null)  + ggtitle("Who has the best home advantage? Increased log-odds of winning at home, by team") 
+gg1 <- gg + geom_point(data = datthetas.empty, colour = "grey", 
                        aes(y=alpha.team.overall, x=rank.within, group = team)) + 
-  geom_errorbar(data = datbetas.empty, colour = "grey", 
+  geom_errorbar(data = datthetas.empty, colour = "grey", 
                 aes(x=rank.within, ymax = alpha.team.upper, 
                     ymin=alpha.team.lower, group = team), width=0.2) 
 
-for (i in 1:nrow(datbetas.null)){
-  df.temp <- slice(ungroup(datbetas.null), i)
+for (i in 1:nrow(datthetas.null)){
+  df.temp <- slice(ungroup(datthetas.null), i)
   df.plot <- data.frame(x = rep(df.temp$rank.within, 2), y = c(df.temp$alpha.team.lower, df.temp$alpha.team.upper), 
                         z = df.temp$alpha.team.overall, sport = df.temp$sport, lab = df.temp$team)
   df.text <- data.frame(x = df.temp$rank.within, y = -0.21, team = df.temp$team, sport = df.temp$sport)
