@@ -245,7 +245,8 @@ markets_plot <- ggplot(data = bigfour,
   scale_y_continuous("Observed Probability of Home Win", 
                      labels = scales::percent, limits = c(0,1)) + 
   scale_colour_brewer(palette = "Spectral", "League")+
-  facet_wrap(~sport) 
+  facet_wrap(~sport)  +
+   scale_colour_discrete(guide = FALSE) 
 #  facet_grid(sport ~ season)
 markets_plot + theme_grey(base_size = 16) 
 # ggsave(filename = "figure/betting_markets.pdf", plot = markets_plot, width = 10, height = 10)
