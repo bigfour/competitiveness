@@ -885,13 +885,6 @@ Given sport $q$ with season length $K_{q}$, number of seasons $S_{q}$, and numbe
 
 For each $q$, we simulated with $n_{sim} = 1000$. Additionally, to remove the effect of each league's HA on simulated probabilities, we repeated the process fixing $\tilde{\alpha}_{q_0} = 0$ for each league to reflect game probabilities played at neutral sites.
 
-
-load(file.path("data", "tidy_alphas.rda"))
-
-
-
-
-
 <<bestwin-plot>>=
 load(file.path("data", "bestwin.rda"))
 
