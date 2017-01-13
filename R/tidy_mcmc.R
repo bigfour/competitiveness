@@ -88,7 +88,7 @@ colors <- teamcolors %>%
   mutate(team_id = 1:n())
 
 # check to make sure that names all match up
-load("data/bigfour.rda")
+load(file.path("data", "bigfour_public.rda"))
 teams <- bigfour %>%
   group_by(sport, home_team) %>%
   summarize(N = n()) %>%

@@ -1,9 +1,6 @@
 source("config.R")
 library(rjags)
-load(file.path(root, "data", "bigfour.rda"))
-
-bigfour <- bigfour.final
-
+load(file.path(data_raw, "bigfour.rda"))
 
 logit <- function(p){out <- log(p/(1-p));return(out)}
 
@@ -104,7 +101,7 @@ for (league in leagues) {
                posteriorDraws = posteriorDraws,
                n.adapt = num_adapt, n.update = num_update, 
                n.draws = num_draws, n.chains = 3, thin = 5)
-  filename <- paste0(mcmc_dir, "/", league, "_9_23_constantHFA.RData")
+  filename <- paste0(mcmc_dir, paste0(league, "_9_23_constantHFA.RData"))
   save(z, file = filename, compress = "xz")
 }  
 
@@ -119,7 +116,7 @@ for (league in leagues) {
                posteriorDraws = posteriorDraws,
                n.adapt = num_adapt, n.update = num_update, 
                n.draws = num_draws, n.chains = 3, thin = 5)
-  filename <- paste0(mcmc_dir, "/", league, "_9_23_teamHFA.RData")
+  filename <- file.path(mcmc_dir, paste0(league, "_9_23_teamHFA.RData"))
   save(z, file = filename, compress = "xz")
 }  
 
