@@ -5,7 +5,7 @@ sports <- c("mlb", "nba", "nfl", "nhl")
 
 get_sport <- function(sport) {
   message(paste("reading", sport, "data..."))
-  load(file.path(mcmc_dir, paste0(sport, "_9_23_teamHFA.RData")))
+  load(file.path(mcmc_dir, paste0(sport, "_8_23_teamHFA.RData")))
   out <- data.frame(
     sigma_g = 1/z$sigma[,,1],
     sigma_w = 1/z$sigmab[,,1],
@@ -16,9 +16,9 @@ get_sport <- function(sport) {
   ) %>%
     mutate(sport = sport)
   alphaInd <- z$alphaInd
-  beta <- z$beta
+  theta <- z$beta
   rm(z)
-  return(list(out = out, beta = beta, alphaInd = alphaInd))
+  return(list(out = out, theta = theta, alphaInd = alphaInd))
 }
 
 # Extract the values we will need
@@ -31,8 +31,8 @@ save(params, file = file.path(root, "data", "params.rda"), compress = "xz")
 
 
 
-betas <- lapply(dat,function(x){return(x[["beta"]])})  
-names(betas) <-  sports
+thetas <- lapply(dat,function(x){return(x[["theta"]])})  
+names(thetas) <-  sports
 
 alphaInds <- lapply(dat, function(x) {return(x[["alphaInd"]])})
 names(alphaInds) <- sports
@@ -40,16 +40,16 @@ names(alphaInds) <- sports
 # to save memory!
 rm(dat)
 
-n_sports <- sapply(betas, length) / 12000
+n_sports <- sapply(thetas, length) / 12000
 
-# tidy up the betas mcarray
+# tidy up the thetas mcarray
 library(broom)
 tidy.mcarray <- function(x, ...) {
   avgs <- apply(x, c(1,2,3), mean)
   dims <- dim(avgs)
   names(dims) <- c("nseasons", "nweeks", "nteams")
   out <- data.frame(
-    beta = as.vector(avgs),
+    theta = as.vector(avgs),
     season = rep(1:dims["nseasons"]),
     week = rep(1:dims["nweeks"], each = dims["nseasons"]), 
     team_id = rep(1:dims["nteams"], each = dims["nseasons"] * dims["nweeks"])
@@ -58,7 +58,7 @@ tidy.mcarray <- function(x, ...) {
   return(out)
 }
 
-tidy_betas <- lapply(betas, tidy) %>%
+tidy_thetas <- lapply(thetas, tidy) %>%
   bind_rows() %>%
   mutate(sport = rep(sports, times = n_sports), 
          max.week = ifelse(sport == "nfl", 17, ifelse(sport == "nba", 24, 28))) %>%
@@ -69,9 +69,9 @@ tidy_betas <- lapply(betas, tidy) %>%
 
 # crosscheck
 # the means should all be relatively close to 0, right??
-tidy_betas %>%
+tidy_thetas %>%
   group_by(sport, season) %>%
-  summarize(N = n(), mean_beta = mean(beta), sd_beta = sd(beta)) %>%
+  summarize(N = n(), mean_theta = mean(theta), sd_theta = sd(theta)) %>%
   print(n = Inf)
 
 #  devtools::install_github("beanumber/teamcolors")
@@ -89,7 +89,7 @@ colors <- teamcolors %>%
 
 # check to make sure that names all match up
 load(file.path("data", "bigfour_public.rda"))
-teams <- bigfour %>%
+teams <- bigfour_public %>%
   group_by(sport, home_team) %>%
   summarize(N = n()) %>%
   arrange(sport, home_team) %>%
@@ -101,19 +101,21 @@ teams %>%
 
 
 
-tidy_betas <- tidy_betas %>%
+tidy_thetas <- tidy_thetas %>%
   inner_join(colors, by = c("sport" = "sport", "team_id" = "team_id"))
 
 # save the results so we don't have to do this everytime. 
-save(tidy_betas, file = file.path(root, "data", "tidy_betas.rda"), compress = "xz")
+save(tidy_thetas, file = file.path(root, "data", "tidy_thetas.rda"), compress = "xz")
 
 
 ### Alphas
 ## Overall sport estimate
-sport.est <- params %>% group_by(sport) %>% summarise(alpha.sport = mean(alpha))
+sport.est <- params %>% 
+  group_by(sport) %>% 
+  summarise(alpha.sport = mean(alpha))
 
 makeAlphas <- function(sport){
-  teamnames <- sort(t(unique(bigfour[bigfour$sport==sport,"home_team"])))
+  teamnames <- sort(t(unique(bigfour_public[bigfour_public$sport==sport,"home_team"])))
   if (sport == "nba"){teamnames[31] <- "Seattle Supersonics"}
   if (sport == "nhl"){teamnames[31] <- "Atlanta Thrashers"}
   out.med <- apply(alphaInds[[sport]],c(1),median)
