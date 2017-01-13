@@ -1,7 +1,5 @@
 source("config.R")
-library(ggplot2)
 library(rjags)
-library(dplyr)
 load(file.path(root, "data", "bigfour.rda"))
 
 bigfour <- bigfour.final

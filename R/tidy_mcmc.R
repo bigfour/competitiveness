@@ -1,7 +1,6 @@
 # tidy the MCMC output
 source("config.R")
 
-library(dplyr)
 sports <- c("mlb", "nba", "nfl", "nhl")
 
 get_sport <- function(sport) {
