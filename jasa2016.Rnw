@@ -901,7 +901,7 @@ gg5 <- ggplot(cdf.all) +
   scale_colour_brewer(palette = "Spectral", "League")
 @
 
-<<BestWin, fig.height = 6, fig.width = 3.5, fig.cap="Cumulative distribution function (CDF) of 1000 simulated game-level probabilities in each league, for both neutral site and home games, with the better team (on average) used as the reference and given the home advantage.">>=
+<<BestWin, fig.height = 3.5, fig.width = 6, fig.cap="Cumulative distribution function (CDF) of 1000 simulated game-level probabilities in each league, for both neutral site and home games, with the better team (on average) used as the reference and given the home advantage.">>=
 gg5 + theme(axis.text = element_text(size = 7))
 @
 
