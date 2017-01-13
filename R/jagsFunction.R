@@ -11,7 +11,7 @@ jagsModel <- function(data,
                       league, 
                       n.adapt = 100,
                       n.update = 2000,
-                      n.draws = 1000,
+                      n.draws = 10000,
                       thin = 5, 
                       n.chains = 3, 
                       bugFile = bugFile, 
@@ -91,7 +91,7 @@ jagsModel <- function(data,
 
 num_adapt <- 1000
 num_update <- 2000
-num_draws <- 2000
+num_draws <- 20000
 
 ## Runs JAGS in each league with constant HFA
 ## Note: update DIC to use more than 100 samples
