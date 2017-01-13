@@ -23,7 +23,7 @@
 \newcommand{\mike}[1]{\sethlcolor{cyan}\hl{[ML]: #1}}
 
 \def\balpha{\pmb{\alpha}}
-\def\bbeta{\pmb{\beta}}
+\def\btheta{\pmb{\theta}}
 \def\bgamma{\pmb{\gamma}}
 \def\btheta{\pmb{\theta}}
 \def\bphi{\pmb{\phi}}
@@ -354,27 +354,27 @@ These results suggest that chance along likely does not account for observed dif
 
 \subsection{Team strength}
 
-Table \ref{tab:betas} shows summary statistics of the team strength estimates from posterior draws. Overall, there tends to be a larger variability in team strength at any given point in time in both the NFL and NBA, with posterior coefficient estimates tending to vary between -1 and 1 (on the logit scale). For reference, a team-strength of 1.0 on the log-odds scale implies a $\frac{e^{1.0}}{1+e^{1.0}} = 73.1$\% chance of beating a league average team in a game played at a neutral site. The standard deviation of team strength is smallest in MLB, suggesting that---relative to the other leagues---team talent is more tightly packed. Relative to MLB, spread of team strengths are about 1.3, 3.0, and 3.6 times wider in the NHL, NFL, and NBA, respectively.
+Table \ref{tab:thetas} shows summary statistics of the team strength estimates from posterior draws. Overall, there tends to be a larger variability in team strength at any given point in time in both the NFL and NBA, with posterior coefficient estimates tending to vary between -1 and 1 (on the logit scale). For reference, a team-strength of 1.0 on the log-odds scale implies a $\frac{e^{1.0}}{1+e^{1.0}} = 73.1$\% chance of beating a league average team in a game played at a neutral site. The standard deviation of team strength is smallest in MLB, suggesting that---relative to the other leagues---team talent is more tightly packed. Relative to MLB, spread of team strengths are about 1.3, 3.0, and 3.6 times wider in the NHL, NFL, and NBA, respectively.
 
 
 <<echo=FALSE, results='asis'>>=
-load(file.path(root, "data", "tidy_betas.rda"))
+load(file.path(root, "data", "tidy_thetas.rda"))
 
-tidy_betas %>%
+tidy_thetas %>%
   mutate(sport = toupper(sport)) %>%
   group_by(sport) %>%
   summarize(N = n(), 
-            min = min(beta),
-            CIL = quantile(beta, probs = 0.025),
-            Q1 = quantile(beta, probs = 0.25),
-            mean = mean(beta), 
-            Q3 = quantile(beta, probs = 0.75),
-            CIR = quantile(beta, probs = 0.975),
-            max = max(beta),
-            sd = sd(beta)) %>%
+            min = min(theta),
+            CIL = quantile(theta, probs = 0.025),
+            Q1 = quantile(theta, probs = 0.25),
+            mean = mean(theta), 
+            Q3 = quantile(theta, probs = 0.75),
+            CIR = quantile(theta, probs = 0.975),
+            max = max(theta),
+            sd = sd(theta)) %>%
   rename(`N*` = N, `$2.5^{th}$` = CIL, `$97.5^{th}$` = CIR, `League ($q$)` = sport) %>%
   xtable(caption = "Summary of team strength parameters, taken on the log-odds scale. N*: number of unique team strength draws (teams $\\times$ seasons $\\times$ weeks)", 
-         digits = 3, label = "tab:betas") %>%
+         digits = 3, label = "tab:thetas") %>%
   print(include.rownames = FALSE, sanitize.text.function = identity)
 @
 \mike{Forgot from phone call: We want to keep Q1 and Q3, right?}
@@ -382,17 +382,17 @@ tidy_betas %>%
 Figure~\ref{fig:spaghetti} shows estimated team strength coefficients over time, approximated using posterior mean draws for all weeks $k$ and seasons $s$ across all four sports leagues. Figures~\ref{fig:spaghetti-mlb}--\ref{fig:spaghetti-nhl} (shown in the Appendix) provide an individual plot for each sport, which include divisional facets to allow easier identification of individual teams. Teams in Figures~\ref{fig:spaghetti} and \ref{fig:spaghetti-mlb}--\ref{fig:spaghetti-nhl} are depicted using their primary color, scraped from \url{http://jim-nielsen.com/teamcolors/} via the \pkg{teamcolors} package (\url{https://github.com/beanumber/teamcolors}) in \R. 
 
 <<set-colors, echo=FALSE>>=
-# load(file.path(root, "data", "tidy_betas.rda"))
-tidy_betas <- tidy_betas %>%
+# load(file.path(root, "data", "tidy_thetas.rda"))
+tidy_thetas <- tidy_thetas %>%
   mutate(sport = toupper(sport),
          annotation = "",
-         annotation = ifelse(beta == max(beta), 
+         annotation = ifelse(theta == max(theta), 
                              paste0("Strongest team (", name, ")"), 
                              annotation),
-         annotation = ifelse(beta == min(beta), 
+         annotation = ifelse(theta == min(theta), 
                              paste0("Weakest team (", name, ")"), 
                              annotation))
-colors <- tidy_betas %>%
+colors <- tidy_thetas %>%
   select(name, primary, secondary) %>%
   unique()
 primary <- colors$primary
@@ -487,18 +487,18 @@ teamcolors <- teamcolors %>%
 @
 
 <<>>=
-tidy_betas_division <- tidy_betas %>%
+tidy_thetas_division <- tidy_thetas %>%
   left_join(select(teamcolors, name, division), by = c("name" = "name")) %>%
   mutate(time_val = ifelse(sport == "NFL" | sport == "MLB", 
                            time_val + 1, time_val))
-max.beta <- round(max(tidy_betas_division$beta), 2)
-min.beta <- round(min(tidy_betas_division$beta), 2)
+max.theta <- round(max(tidy_thetas_division$theta), 2)
+min.theta <- round(min(tidy_thetas_division$theta), 2)
 @
 
 
 <<spaghetti-base>>=
-spag <- ggplot(data = tidy_betas_division, 
-       aes(x = time_val, y = beta, 
+spag <- ggplot(data = tidy_thetas_division, 
+       aes(x = time_val, y = theta, 
            color = name, fill = name)) +
   geom_line(alpha = 0.5) + 
   geom_point(shape = 21, size = 0.5, alpha = 0.8) + 
@@ -518,7 +518,7 @@ spag + facet_wrap(~sport, ncol = 1)
 
 <<spag_sport>>=
 spag_sport <- function(sport_name) {
-  x <- filter(tidy_betas_division, sport == sport_name)
+  x <- filter(tidy_thetas_division, sport == sport_name)
   spag %+% x + 
     geom_line(data = select(x, -division), color = "darkgray", alpha = 0.3) + 
     geom_line(alpha = 0.5) + 
@@ -529,18 +529,18 @@ spag_sport <- function(sport_name) {
 }
 @
 
-Our findings with respect to the relative equivalence of teams in each league stands somewhat in contrast to competitive balance as measured using Noll-Scully. As an example, under Null-Scully, the NFL is considered to be more competitively balanced than MLB \citep{WagesWins}. Meanwhile, as shown in Figure~\ref{fig:spaghetti} and Table~\ref{tab:betas}, there is actually a much larger talent gap between teams in the NFL than those in MLB, implying that the NFL is less competitively balanced. One likely explanation is Null-Scully's link to number of games played, which artificially makes MLB (162 games) appear less balanced than it actually is and the NFL (16) appear more balanced. Like Noll-Scully, we conclude that the NBA does not show competitive balance relative to other leagues.
+Our findings with respect to the relative equivalence of teams in each league stands somewhat in contrast to competitive balance as measured using Noll-Scully. As an example, under Null-Scully, the NFL is considered to be more competitively balanced than MLB \citep{WagesWins}. Meanwhile, as shown in Figure~\ref{fig:spaghetti} and Table~\ref{tab:thetas}, there is actually a much larger talent gap between teams in the NFL than those in MLB, implying that the NFL is less competitively balanced. One likely explanation is Null-Scully's link to number of games played, which artificially makes MLB (162 games) appear less balanced than it actually is and the NFL (16) appear more balanced. Like Noll-Scully, we conclude that the NBA does not show competitive balance relative to other leagues.
 
-Our figures also illustrate several other observations. For example, the New England Patriots of the NFL stand out as having the top performance in the last decade, with an average team strength of \Sexpr{max.beta} on the log-odds scale, observed during Week 11 of 2007. In that season, New England finished the regular season 16-0 before eventually losing in the Super Bowl. The worst performance belongs to the NBA's Miami Heat, who during week 23 of the 2007--08 season had a posterior mean team strength of \Sexpr{min.beta}.  That Heat team finished with an overall record of 15-67, at one point losing 15 consecutive games. Related, it is interesting that the team strength estimates of bad teams in the NBA (e.g. the Heat in 2007--08) lie further from 0 than the estimates for good teams. This possibly reveals the tendency for teams in this league to ``tank"---a strategy of fielding a weak team intentionally to improve the chances of having better selection preference in the upcoming player draft \citep{soebbing2013gamblers}.
+Our figures also illustrate several other observations. For example, the New England Patriots of the NFL stand out as having the top performance in the last decade, with an average team strength of \Sexpr{max.theta} on the log-odds scale, observed during Week 11 of 2007. In that season, New England finished the regular season 16-0 before eventually losing in the Super Bowl. The worst performance belongs to the NBA's Miami Heat, who during week 23 of the 2007--08 season had a posterior mean team strength of \Sexpr{min.theta}.  That Heat team finished with an overall record of 15-67, at one point losing 15 consecutive games. Related, it is interesting that the team strength estimates of bad teams in the NBA (e.g. the Heat in 2007--08) lie further from 0 than the estimates for good teams. This possibly reveals the tendency for teams in this league to ``tank"---a strategy of fielding a weak team intentionally to improve the chances of having better selection preference in the upcoming player draft \citep{soebbing2013gamblers}.
 
 Another observation is that in the NHL, top teams appear less dominant than a decade ago. For example, there are seven NHL team-seasons in which at least one team reached an average posterior strength estimate of 0.55 or greater; each of these came during or prior to the 2008--09 season.  In addition to increased parity, the league's point system change in 2005--06---which unintentionally encouraged teams to play more overtime games \citep{lopez2013inefficiencies}---could be responsible. More overtime contests could lead to different perceptions in how betting markets view team strengths, as overtime sessions and the resulting shootouts are roughly equivalent to coin flips \citep{lopez2016predicting}.
 
 As a final point of clarification in Figures \ref{fig:spaghetti}, \ref{fig:spaghetti-nba}, and \ref{fig:spaghetti-nhl}, the periods of time with straight lines of team strength estimates during the 2012--13 season (NHL) and 2011--12 season (NBA) reflect time lost due to lockouts. 
 
 <<include=FALSE>>=
-tidy_betas_division %>%
-  filter(sport == "NHL", beta > 0.55) %>% 
-  select(beta, time_val, season, name) %>% 
+tidy_thetas_division %>%
+  filter(sport == "NHL", theta > 0.55) %>% 
+  select(theta, time_val, season, name) %>% 
   mutate(team.seas = paste(season, name)) %>% 
   arrange(team.seas) %>% 
   print.data.frame() 
@@ -739,7 +739,7 @@ stack.game1 <- filter(stack.game1, !(season==2012&sport == "nba"),
 
 
 ####################################################
-## Next step: consider comparing wins and losses vs. betas at predicting 
+## Next step: consider comparing wins and losses vs. thetas at predicting 
 ## end of regular season wins and losses
 ##########################
 
@@ -791,14 +791,14 @@ all.sport.pdiff.remains <- rbind(mlb, nba, nhl, nfl)
 
 
 ############ Correlation of current team strength estimate with remaining win percentage
-tidy_betas <- filter(tidy_betas, !(season==7&sport == "nba"),
+tidy_thetas <- filter(tidy_thetas, !(season==7&sport == "nba"),
                       !(season==8 & sport == "nhl"), !(season==2 & sport == "nfl"))
 
-unique.weeks <- tidy_betas %>%
+unique.weeks <- tidy_thetas %>%
   rename(team = name) %>%
   mutate(time_val = time_val + 1, season = floor(time_val)) %>% 
   arrange(sport, season, team) %>%
-  select(sport, season, team, week, beta)
+  select(sport, season, team, week, theta)
 
 min.day <- stack.game1 %>%
   group_by(season, sport) %>%
@@ -815,7 +815,7 @@ func.sport3 <- function(sports, week){
   corr.grid <- expand.grid(day.season = 1:week, corr.day = NA)
   for (i in 1:week){
     day.sport <- subset(stack.game2, n.game == i & sport == sports)
-    corr.grid[i, 2] <- cor(day.sport$beta, day.sport$win.p.left, 
+    corr.grid[i, 2] <- cor(day.sport$theta, day.sport$win.p.left, 
                            use = "pairwise.complete.obs")^2
   }
   return(corr.grid)
@@ -830,12 +830,12 @@ nhl <- func.sport3("nhl", 82)
 mlb$sport <- "mlb"; nba$sport <- "nba"; nhl$sport <- "nhl"; nfl$sport <- "nfl"
 
 
-all.sport.beta.remains <- rbind(mlb, nba, nhl, nfl)
-all.sport.beta.remains$type <- "betas"
+all.sport.theta.remains <- rbind(mlb, nba, nhl, nfl)
+all.sport.theta.remains$type <- "thetas"
 all.sport.winp.remains$type <- "winp"
 all.sport.pdiff.remains$type <- "pdiff"
 
-all.sport.both <- rbind(all.sport.beta.remains, all.sport.winp.remains, all.sport.pdiff.remains)
+all.sport.both <- rbind(all.sport.theta.remains, all.sport.winp.remains, all.sport.pdiff.remains)
 
 
 
