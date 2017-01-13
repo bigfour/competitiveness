@@ -5,11 +5,11 @@ sports <- c("mlb", "nba", "nfl", "nhl")
 
 get_sport <- function(sport) {
   message(paste("reading", sport, "data..."))
-  load(file.path(mcmc_dir, paste0(sport, "_8_23_teamHFA.RData")))
+  load(file.path(mcmc_dir, paste0(sport, "_jasa_teamHFA.RData")))
   out <- data.frame(
-    sigma_g = 1/z$sigma[,,1],
-    sigma_w = 1/z$sigmab[,,1],
-    sigma_s = 1/z$sigmabSeason[,,1],
+    sigma_g = 1/z$tauGame[,,1],
+    sigma_w = 1/z$tauWeek[,,1],
+    sigma_s = 1/z$tauSeason[,,1],
     gamma_w = z$gammaWeek[,,1],
     gamma_s = z$gammaSeason[,,1],
     alpha = z$alpha[,,1]

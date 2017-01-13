@@ -2,18 +2,21 @@ source("config.R")
 library(rjags)
 load(file.path(data_raw, "bigfour.rda"))
 
-logit <- function(p){out <- log(p/(1-p));return(out)}
+logit <- function(p) { 
+  out <- log(p/(1 - p))
+  return(out)
+}
 
 jagsModel <- function(data,
                       league, 
                       n.adapt = 100,
                       n.update = 2000,
-                      n.draws = 10000,
+                      n.draws = 1000,
                       thin = 5, 
                       n.chains = 3, 
                       bugFile = bugFile, 
-                      posteriorDraws = c('alpha','beta','sigma','sigmab',
-                                         'sigmabSeason','gammaWeek','gammaSeason')){
+                      posteriorDraws = c('alpha','theta','tauGame','tauWeek',
+                                         'tauSeason','gammaWeek','gammaSeason')){
   
   
   test <- subset(bigfour, sport == league)
@@ -24,7 +27,7 @@ jagsModel <- function(data,
   
   test <- test %>%
     left_join(min.day) %>%
-    mutate(day = as.Date(gameDate) - as.Date(min.day), week = as.numeric(floor(day/7)+1))
+    mutate(day = as.Date(gameDate) - as.Date(min.day), week = as.numeric(floor(day/7) + 1))
   head(test)
   
   
@@ -35,7 +38,8 @@ jagsModel <- function(data,
   
   
   #create a design matrix 
-  Teams<-sort(as.character(unique(c(as.character(test$home_team),as.character(test$visitor_team)))))
+  Teams <- sort(as.character(unique(c(as.character(test$home_team),
+                                      as.character(test$visitor_team)))))
   
   #Defining the number of things
   nTeams <- length(Teams)
@@ -44,15 +48,15 @@ jagsModel <- function(data,
   n <- nrow(test)
   
   #Defining the design matrix
-  x<-matrix(0,nrow=dim(test)[1],ncol=length(Teams))
-  for (i in 1:dim(test)[1]){
-    x[i,which(as.character(test[i,"home_team"])==Teams)]<-(1)
-    x[i,which(as.character(test[i,"visitor_team"])==Teams)]<-(-1)
+  x <- matrix(0, nrow = dim(test)[1], ncol = length(Teams))
+  for (i in 1:dim(test)[1]) {
+    x[i, which(as.character(test[i,"home_team"]) == Teams)] <- (1)
+    x[i, which(as.character(test[i,"visitor_team"]) == Teams)] <- (-1)
   } 
   
   
   #HFA index
-  z <- apply(x,1,function(x){which(x==1)})
+  z <- apply(x, 1, function(x){ which(x == 1) })
   #z<-x
   #z[z==(-1)]<-0
   
@@ -70,14 +74,16 @@ jagsModel <- function(data,
   
   #bugFile <- file.path("R/jags_model_TeamHFA.bug")
   #bugFile <- file.path("R/jags_model_constantHFA.bug")
-  jags<-jags.model(bugFile,data=list('y'=y,'x'=x, 's'=s, 'w' = w, 'n' = n, 'z' = z, 'nTeams' = nTeams, 
-                                     'nWeeks' = nWeeks, 'nHFAs' = nHFAs, 'nSeas' = nSeas), 
-                                      n.chains=n.chains, n.adapt=n.adapt)
+  jags <- jags.model(bugFile,
+                     data = list('y' = y,'x' = x, 's' = s, 'w' = w, 'n' = n, 
+                                 'z' = z, 'nTeams' = nTeams, 
+                                 'nWeeks' = nWeeks, 'nHFAs' = nHFAs, 'nSeas' = nSeas), 
+                     n.chains = n.chains, n.adapt = n.adapt)
   
   update(jags, n.update)
   dic.pD <- dic.samples(jags, 2000, type = "pD") # Deviance Information Criterion
   #dic.popt <- dic.samples(jags, 100, type = "popt") # Penalized expected deviance
-  z<-jags.samples(jags,posteriorDraws,n.draws, thin = thin)
+  z <- jags.samples(jags, posteriorDraws, n.draws, thin = thin)
   z$dic <- dic.pD
   return(z)
 }
@@ -85,7 +91,7 @@ jagsModel <- function(data,
 
 num_adapt <- 1000
 num_update <- 2000
-num_draws <- 20000
+num_draws <- 2000
 
 ## Runs JAGS in each league with constant HFA
 ## Note: update DIC to use more than 100 samples
@@ -95,8 +101,8 @@ leagues <- c("nba", "nhl", "nfl", "mlb")
 for (league in leagues) {
   print(league)
   bugFile <- file.path("R", "jags_model_constantHFA.bug")
-  posteriorDraws = c('alpha','beta','sigma','sigmab',
-                     'sigmabSeason','gammaWeek','gammaSeason')
+  posteriorDraws = c('alpha','theta','tauGame','tauWeek',
+                     'tauSeason','gammaWeek','gammaSeason')
   z <- jagsModel(data = bigfour, league = league, bugFile = bugFile, 
                posteriorDraws = posteriorDraws,
                n.adapt = num_adapt, n.update = num_update, 
@@ -110,8 +116,8 @@ for (league in leagues) {
 for (league in leagues) {
   print(league)
   bugFile <- file.path("R", "jags_model_TeamHFA.bug")
-  posteriorDraws = c('alpha','beta','sigma','sigmab',
-                     'sigmabSeason','gammaWeek','gammaSeason', 'alphaInd', 'sigmaaInd')
+  posteriorDraws = c('alpha','theta','tauGame','tauWeek',
+                     'tauSeason','gammaWeek','gammaSeason', 'alphaInd', 'tauAlpha')
   z <- jagsModel(data = bigfour, league = league, bugFile = bugFile, 
                posteriorDraws = posteriorDraws,
                n.adapt = num_adapt, n.update = num_update, 
