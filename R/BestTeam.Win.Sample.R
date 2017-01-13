@@ -1,8 +1,4 @@
-library(dplyr)
-# tidy the MCMC output
 source("config.R")
-
-library(dplyr); library(ggplot2)
 sports <- c("mlb", "nba", "nfl", "nhl")
 
 get_sport <- function(sport) {
@@ -128,7 +124,8 @@ df.nhl <- data.frame(sport = "NHL", probs = nhl$Probs, probsH = nhl$ProbsHA)
 
 cdf.all <- rbind(df.mlb, df.nfl, df.nba, df.nhl)
 
-p <- ggplot(cdf.all) + stat_ecdf(aes(probs, colour = sport)) + 
+p <- ggplot(cdf.all) + 
+  stat_ecdf(aes(probs, colour = sport)) + 
   stat_ecdf(data = cdf.all, aes(probsH, colour = sport), lty = "dotted") + 
   ggtitle("How often does the best team win?") + 
   geom_vline(xintercept = 0.5, colour = "black", lty = 5) + 

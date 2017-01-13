@@ -22,3 +22,4 @@ library(knitr)
 opts_chunk$set(tidy = FALSE, highlight = TRUE, comment = NA, echo = FALSE,
                prompt = FALSE, fig.width = 10, fig.height = 5, 
                message = FALSE, warning = FALSE)
+library(tidyverse)
