@@ -722,7 +722,8 @@ stack.game <- rbind(date.vis, date.home)
 stack.game <- stack.game %>%
   arrange(sport, season, team, day) 
 
-n.season <- data.frame(sport = c("nhl", "nba", "mlb", "nfl"), season.n = c(82, 82, 162, 16))
+n.season <- data.frame(sport = c("nhl", "nba", "mlb", "nfl"), 
+                       season.n = c(82, 82, 162, 16))
 
 stack.game1 <- stack.game %>%
   group_by(season, team) %>%
@@ -839,7 +840,8 @@ all.sport.both <- rbind(all.sport.beta.remains, all.sport.winp.remains, all.spor
 
 
 gg.r2 <- ggplot(all.sport.both, aes(day.season, corr.day, lty = type)) +
-  geom_step() + scale_y_continuous(labels = scales::percent, "", lim = c(0, .8)) + 
+  geom_step() + 
+  scale_y_continuous(labels = scales::percent, "", lim = c(0, .8)) + 
   scale_x_continuous("Game of season") +
   scale_linetype_manual(labels = c("Our estimates", "Point differential", "Win %"), 
                         values = c(1, 2, 3), "Type") +
