@@ -226,7 +226,7 @@ We'll do this by using our results files, as well as some look-ups of recent sea
 
 
 ```{r}
-mlb_results <- read_csv("../data/MLB_results.csv")
+mlb_results <- read_csv(file.path(root, "data", "MLB_results.csv"))
 mlb.new <- data.frame(season = c(2015, 2016), 
                       min.date = parse_date_time(c("2015-04-05", "2016-04-03"), "ymd"), 
                       max.date = parse_date_time(c("2015-10-04", "2016-10-02"), "ymd"))
@@ -244,7 +244,7 @@ mlb_dates[mlb_dates$season == 2012,]$min.date <-
   parse_date_time("2012-04-04", "ymd")
 
 
-nhl_results <- read_csv("../data/NHL_results.csv")
+nhl_results <- read_csv(file.path(root, "data", "NHL_results.csv"))
 nhl.new <- data.frame(season = c(2016), 
                       min.date = parse_date_time(c("2015-10-07"), "ymd"), 
                       max.date = parse_date_time(c("2016-04-10"), "ymd"))
@@ -258,7 +258,7 @@ nhl_dates <- nhl_results[,c(2, 11)] %>%
   mutate(sport = "nhl")
 
 
-nba_results <- read_csv("../data/NBA_results.csv")
+nba_results <- read_csv(file.path(root, "data", "NBA_results.csv"))
 nba.new <- data.frame(season = c(2015, 2016), 
                       min.date = parse_date_time(c("2014-10-28", "2015-10-27"), "ymd"), 
                       max.date = parse_date_time(c("2015-04-15", "2016-04-16"), "ymd"))
@@ -273,7 +273,7 @@ nba_dates <- nba_results[,c(2,11)] %>%
   mutate(sport = "nba")
 
 
-nfl_results <- read_csv("../data/NFL_results.csv")
+nfl_results <- read_csv(file.path(root, "data", "NFL_results.csv"))
 nfl.new <- data.frame(season = 2015, 
                       min.date = parse_date_time("2015-09-10", "ymd"), 
                       max.date = parse_date_time("2016-01-03", "ymd"))
@@ -349,5 +349,5 @@ Save it!
 bigfour <- bigfour %>%
   mutate(home_win = home_score > visitor_score)
 
-save(bigfour, file = "../data/bigfour.rda", compress = "xz")
+save(bigfour, file = file.path(root, "data", "bigfour.rda"), compress = "xz")
 ```
