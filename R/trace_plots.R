@@ -1,15 +1,15 @@
 library(ggplot2)
 library(dplyr)
-load("~/Dropbox/Posterior_Draws/nhl_9_23_teamHFA.RData")
+load("~/Dropbox/Posterior_Draws/nhl_jasa_teamHFA.RData")
 nhlJAGS<-z
 
-load("~/Dropbox/Posterior_Draws/mlb_9_23_teamHFA.RData")
+load("~/Dropbox/Posterior_Draws/mlb_jasa_teamHFA.RData")
 mlbJAGS<-z
 
-load("~/Dropbox/Posterior_Draws/nfl_9_23_teamHFA.RData")
+load("~/Dropbox/Posterior_Draws/nfl_jasa_teamHFA.RData")
 nflJAGS<-z
 
-load("~/Dropbox/Posterior_Draws/nba_9_23_teamHFA.RData")
+load("~/Dropbox/Posterior_Draws/nba_jasa_teamHFA.RData")
 nbaJAGS<-z
 rm(z)
 

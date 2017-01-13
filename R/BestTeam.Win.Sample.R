@@ -3,7 +3,7 @@ sports <- c("mlb", "nba", "nfl", "nhl")
 
 get_sport <- function(sport) {
   message(paste("reading", sport, "data..."))
-  load(file.path(mcmc_dir, paste0(sport, "_9_23_teamHFA.RData")))
+  load(file.path(mcmc_dir, paste0(sport, "_jasa_teamHFA.RData")))
   out <- data.frame(
     sigma_game = 1/z$sigma[,,1],
     alpha = z$alpha[,,1]
