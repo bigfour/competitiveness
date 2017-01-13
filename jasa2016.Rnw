@@ -167,8 +167,9 @@ We are not aware of any published findings that have compared leagues using impl
 We begin by confirming the accuracy of betting market data with respect to game outcomes. Regular season game result and betting line data in the four major North American professional sports leagues (MLB, NBA, NFL, and NHL) were obtained for a nominal fee from Sports Insights (\url{https://www.sportsinsights.com}). Although these game results are not official, they are accurate and widely-used. The 2006--2016 seasons were included in our models, except for the NFL, which used only the 2006--2015 seasons.
 
 <<include=FALSE>>=
-load("data/bigfour.rda")
-bigfour <- bigfour %>% mutate(sport = toupper(sport)) %>% 
+load(file.path(data_raw, "bigfour.rda"))
+bigfour <- bigfour %>% 
+  mutate(sport = toupper(sport)) %>% 
   arrange(sport, Date)
 head(bigfour)
 mosaic::favstats(~vig, data = bigfour)
@@ -178,15 +179,16 @@ These data were more than 99.3\% complete in each league, in the sense that ther
 
 
 <<message=FALSE, results='asis'>>=
-bigfour <- bigfour %>% 
-  mutate(sport = toupper(sport))
 library(xtable)
 
 ## Point differential metrics used above
-pdiff <- bigfour %>% mutate(pdiff = visitor_score - home_score) %>% group_by(sport) %>%
+pdiff <- bigfour %>% 
+  mutate(pdiff = visitor_score - home_score) %>% 
+  group_by(sport) %>%
   summarise(ave.diff = mean(abs(pdiff), na.rm = TRUE))
 
-n.games <- data_frame(sport = c("MLB","NBA", "NFL", "NHL"), N_results = as.integer(c(26728, 13290, 2560, 13020)))
+n.games <- data_frame(sport = c("MLB","NBA", "NFL", "NHL"), 
+                      N_results = as.integer(c(26728, 13290, 2560, 13020)))
 #Use updated n.games with newer bigfour.
 bigfour %>%
   group_by(sport) %>%
@@ -381,7 +383,6 @@ Figure~\ref{fig:spaghetti} shows estimated team strength coefficients over time,
 
 <<set-colors, echo=FALSE>>=
 # load(file.path(root, "data", "tidy_betas.rda"))
-load("data/tidy_betas.rda")
 tidy_betas <- tidy_betas %>%
   mutate(sport = toupper(sport),
          annotation = "",
@@ -551,7 +552,7 @@ tidy_betas_division %>%
 Table \ref{tab:params} shows the mean and standard deviation of posterior draws for $\gamma_{q, season}$, $\gamma_{q, week}$, $\sigma_{q, game}$, $\sigma_{q, season}$, and $\sigma_{q, week}$ for each $q$.
 
 <<echo=FALSE, results='asis'>>=
-load("data/params.rda")
+load(file.path("data", "params.rda"))
 params %>%
   select(-alpha) %>%
   mutate(sport = toupper(sport), sigma_w = sqrt(sigma_w), sigma_g = sqrt(sigma_g), sigma_s = sqrt(sigma_s)) %>%
@@ -579,7 +580,6 @@ We also examine the joint distribution of the variability in team strength on a 
 
 
 <<contourSigma, fig.cap="Contour plot of the estimated season-to-season and week-to-week variability across all four major sports leagues. By both measures, uncertainty is lowest in MLB and highest in the NBA.">>=
-load("data/params.rda")
 nfl.sum <- params %>% 
   filter(sport == "nfl") %>% 
   summarise(mean.week = round(mean(gamma_w), 2), 
@@ -623,7 +623,7 @@ Figure~\ref{fig:alphaAll} shows the 2.5th percentile, median, and 97.5th percent
 
 
 <<ha-plot-simple>>=
-load("data/tidy_alphas.rda")
+load(file.path("data", "tidy_alphas.rda"))
 tidy_alpha_prob <- tidy_alphas %>%
   mutate(alpha_prob = mosaic::ilogit(alpha.team.overall), 
          top_half = alpha_prob < 0.58)
@@ -659,7 +659,6 @@ gg4 + theme(axis.text = element_text(size = 7))
 @
 
 <<include=FALSE>>=
-load("data/tidy_alphas.rda")
 leagues <- tidy_alphas %>% group_by(sport) %>% summarise(mean.sport = mean(alpha.sport))
 teams <- tidy_alphas %>% 
   filter(sport == "nba") %>% 
@@ -688,9 +687,10 @@ Ultimately, estimates from Model IFA are designed to estimate team quality at an
 Figure~\ref{fig:R2} shows the coefficient of determination ($R^2$) between each team's future won-loss percentage in a season and each team's (i) average team strength estimate from Model IFA, (ii) season-to-date cumulative point differential, and (iii) season-to-date won-loss percentage. Within each sport, this is computed by game number, which helps to account for league-level differences in season length. For purposes of using our team strength estimates, we took the mean posterior draw for each team in each week a particular contest was played. The lockout-shortened seasons in the NBA (2012) and NHL (2013) were dropped.
 
 <<validation>>=
-load("data/tidy_betas.rda")
-load("data/bigfour.rda")
-bigfour <- bigfour %>% arrange(sport, Date)
+# necessary to reload bigfour
+load(file.path(data_raw, "bigfour.rda"))
+bigfour <- bigfour %>% 
+  arrange(sport, Date)
 
 min.day <- bigfour %>%
   group_by(sport, season) %>%
