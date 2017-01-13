@@ -72,7 +72,7 @@ Smith College \\
 \texttt{bbaumer@smith.edu}
 }
 
-<<echo=FALSE>>=
+<<echo=FALSE, message=FALSE>>=
 source("config.R")
 @
 
@@ -167,7 +167,7 @@ We are not aware of any published findings that have compared leagues using impl
 We begin by confirming the accuracy of betting market data with respect to game outcomes. Regular season game result and betting line data in the four major North American professional sports leagues (MLB, NBA, NFL, and NHL) were obtained for a nominal fee from Sports Insights (\url{https://www.sportsinsights.com}). Although these game results are not official, they are accurate and widely-used. The 2006--2016 seasons were included in our models, except for the NFL, which used only the 2006--2015 seasons.
 
 <<include=FALSE>>=
-load("data/bigfour.rda"); library(dplyr)
+load("data/bigfour.rda")
 bigfour <- bigfour %>% mutate(sport = toupper(sport)) %>% 
   arrange(sport, Date)
 head(bigfour)
@@ -178,8 +178,8 @@ These data were more than 99.3\% complete in each league, in the sense that ther
 
 
 <<message=FALSE, results='asis'>>=
-bigfour <- bigfour %>% mutate(sport = toupper(sport))
-library(dplyr)
+bigfour <- bigfour %>% 
+  mutate(sport = toupper(sport))
 library(xtable)
 
 ## Point differential metrics used above
@@ -225,7 +225,7 @@ bigfour_binned <- bigfour %>%
   mutate(p_home_bin = round(p_home, 2)) %>%
   group_by(sport, p_home_bin) %>%
   summarize(N = n(), home_win_bin_pct = mean(home_win))
-library(ggplot2)
+
 markets_plot <- ggplot(data = bigfour, 
                        aes(x = p_home, y = as.numeric(home_win), 
                            color = sport)) + 
@@ -357,7 +357,7 @@ Table \ref{tab:betas} shows summary statistics of the team strength estimates fr
 
 <<echo=FALSE, results='asis'>>=
 load(file.path(root, "data", "tidy_betas.rda"))
-library(xtable)
+
 tidy_betas %>%
   mutate(sport = toupper(sport)) %>%
   group_by(sport) %>%
@@ -380,7 +380,6 @@ tidy_betas %>%
 Figure~\ref{fig:spaghetti} shows estimated team strength coefficients over time, approximated using posterior mean draws for all weeks $k$ and seasons $s$ across all four sports leagues. Figures~\ref{fig:spaghetti-mlb}--\ref{fig:spaghetti-nhl} (shown in the Appendix) provide an individual plot for each sport, which include divisional facets to allow easier identification of individual teams. Teams in Figures~\ref{fig:spaghetti} and \ref{fig:spaghetti-mlb}--\ref{fig:spaghetti-nhl} are depicted using their primary color, scraped from \url{http://jim-nielsen.com/teamcolors/} via the \pkg{teamcolors} package (\url{https://github.com/beanumber/teamcolors}) in \R. 
 
 <<set-colors, echo=FALSE>>=
-library(dplyr)
 # load(file.path(root, "data", "tidy_betas.rda"))
 load("data/tidy_betas.rda")
 tidy_betas <- tidy_betas %>%
@@ -497,7 +496,6 @@ min.beta <- round(min(tidy_betas_division$beta), 2)
 
 
 <<spaghetti-base>>=
-library(ggplot2)
 spag <- ggplot(data = tidy_betas_division, 
        aes(x = time_val, y = beta, 
            color = name, fill = name)) +
@@ -554,7 +552,6 @@ Table \ref{tab:params} shows the mean and standard deviation of posterior draws 
 
 <<echo=FALSE, results='asis'>>=
 load("data/params.rda")
-library(xtable)
 params %>%
   select(-alpha) %>%
   mutate(sport = toupper(sport), sigma_w = sqrt(sigma_w), sigma_g = sqrt(sigma_g), sigma_s = sqrt(sigma_s)) %>%
