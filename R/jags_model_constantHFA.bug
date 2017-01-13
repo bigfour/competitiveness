@@ -1,35 +1,35 @@
 model { 
 for (i in 1:n) {
-  y[i] ~ dnorm(mu[i], sigma)
+  y[i] ~ dnorm(mu[i], tauGame)
   mu[i] <- alpha + inprod(theta[s[i],w[i],],x[i,])
 }
 
 for (j in 1:nTeams){
-  theta[1,1,j] ~ dnorm(0, sigmabSeason)
+  theta[1,1,j] ~ dnorm(0, tauSeason)
 }
 
 for (www in 2:nWeeks) {  
   for (j in 1:nTeams) {
-    theta[1,www,j] ~ dnorm(gammaWeek*theta[1,www-1,j], sigmab)
+    theta[1,www,j] ~ dnorm(gammaWeek*theta[1,www-1,j], tauWeek)
   }
 }
 
 for (sss in 2:nSeas) {
   for (j in 1:nTeams) {
-    theta[sss,1,j] ~ dnorm(gammaSeason*theta[sss-1,nWeeks,j], sigmabSeason)
+    theta[sss,1,j] ~ dnorm(gammaSeason*theta[sss-1,nWeeks,j], tauSeason)
   }
 
-  for (www in 2:nWeeks) {  
+  for (www in 2:nWeeks) {
     for (j in 1:nTeams) {
-      theta[sss,www,j] ~ dnorm(gammaWeek*theta[sss,www-1,j], sigmab)
+      theta[sss,www,j] ~ dnorm(gammaWeek*theta[sss,www-1,j], tauWeek)
     }
   }
 }
 
 alpha ~ dnorm(0,0.0001)
-sigma ~ dgamma(0.0001,0.0001)
-sigmab ~ dgamma(0.0001,0.0001)
-sigmabSeason ~ dgamma(0.0001,0.0001)
+tauGame ~ dgamma(0.0001,0.0001)
+tauWeek ~ dgamma(0.0001,0.0001)
+tauSeason ~ dgamma(0.0001,0.0001)
 gammaWeek ~ dunif(0,2)
 gammaSeason ~ dunif(0,2)
 
