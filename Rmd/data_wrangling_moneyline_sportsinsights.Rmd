@@ -348,6 +348,13 @@ Save it!
 ```{r}
 bigfour <- bigfour %>%
   mutate(home_win = home_score > visitor_score)
-
 save(bigfour, file = file.path(root, "data", "bigfour.rda"), compress = "xz")
+```
+
+Create a public version of the data set
+
+```{r}
+bigfour_public <- bigfour %>%
+  select(gameDate, visitor_team, home_team, visitor_score, home_score, p_home)
+save(bigfour_public, file = file.path(root, "data", "bigfour_public.rda"), compress = "xz")
 ```
