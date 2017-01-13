@@ -1,6 +1,6 @@
 source("config.R")
 sports <- c("mlb", "nba", "nfl", "nhl")
-
+library(dplyr)
 get_sport <- function(sport) {
   message(paste("reading", sport, "data..."))
   load(file.path(mcmc_dir, paste0(sport, "_9_23_teamHFA.RData")))
@@ -123,6 +123,7 @@ df.mlb <- data.frame(sport = "MLB", probs = mlb$Probs, probsH = mlb$ProbsHA)
 df.nhl <- data.frame(sport = "NHL", probs = nhl$Probs, probsH = nhl$ProbsHA)
 
 cdf.all <- rbind(df.mlb, df.nfl, df.nba, df.nhl)
+save(cdf.all, file = file.path(root, "data", "bestwin.rda"))  
 
 p <- ggplot(cdf.all) + 
   stat_ecdf(aes(probs, colour = sport)) + 
@@ -135,12 +136,8 @@ p <- ggplot(cdf.all) +
   annotate("text", x = .51, y = 1,  hjust = 0, vjust = 1, label = paste("All games \n coin flips"))+ 
   annotate("text", x = .99, y = 0,  hjust = 1, vjust = 0, label = paste("All games \n pre-determined")) + 
   scale_colour_brewer(palette = "Spectral", "League")
-p
-ggsave(plot = p, width = 6, height = 3.5, filename = "figure/BestWin.pdf")
-
-
-
-
+#p
+#ggsave(plot = p, width = 6, height = 3.5, filename = "figure/BestWin.pdf")
 
 
 ### Note: preferred to sample with more games, but dotted lines don't work too well
