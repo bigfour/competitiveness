@@ -1,0 +1,75 @@
+---
+title: "JASA ACS Reproducibility Initiative - Author Contributions Checklist Form"
+date: "January 13, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+source("../config.R")
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Data
+
+### Abstract (Mandatory)
+Our raw data was purchased from Sports Insights. Each observation is a game in one of the four major North American sports leagues (MLB, NBA, NFL, NHL) between 2005-2016, and contains the game date, the two participating teams, the final score, and the betting lines taken by Sports Insights before the game. 
+
+We wrangled these raw data---stripping out duplicate entries, cleaning up team names, etc.---into a single master R `data.frame` called `bigfour.rda`. These data contain the betting lines and therefore cannot be shared. We have placed this file in a private directory denoted `data_raw`.
+
+```{r}
+load(file.path(data_raw, "bigfour.rda"))
+dim(bigfour)
+```
+
+There are `r format(nrow(bigfour), scientific = FALSE, big.mark = ",")` observations and `r ncol(bigfour)` variables in `bigfour`.
+
+A derivative public data frame with the same number of observations but many fewer variables is called `bigfour_public` and is available in our GitHub repository. 
+
+```{r}
+load(file.path("..", "data", "bigfour_public.rda"))
+glimpse(bigfour_public)
+```
+
+This data frame contains only the game result and the implied probability of the home team winning, based on the betting line. 
+
+### Availability (Mandatory)
+The raw data purchased from Sports Insights is proprietary and cannot be shared publicly. However, we have created a summarized version of these data that is publicly shared. 
+
+Description (Mandatory if data available)
+Permissions (demonstrate that author has legitimate access to data)
+Licensing information
+Link to data (e.g., dataverse.org, datadryad.org; this need not be the actual link at time of submission but if not, it should indicate where the data will be deposited if the manuscript is accepted)
+Data provenance, including identifier or link to original data if different than above
+File format
+Metadata (including data dictionary)
+Version information
+
+Optional Information (complete as necessary) 
+Unique identifier / DOI
+
+## Code
+Abstract (Mandatory)
+Short high level description
+
+Description (Mandatory)
+How delivered (R package, Shiny app, etc.)
+Licensing information (default is MIT License)
+Link to code/repository (e.g., github.com, bitbucket.org; this need not be the actual link at time of submission but if not, it should indicate where the code will be deposited if the manuscript is accepted)
+Version information (e.g., for a Git repository, the number or branch+commit)
+
+Optional Information (complete as necessary) 
+Hardware requirements (e.g., operating system with version number, access to cluster, GPUs, etc.)
+Supporting software requirements (e.g., libraries and dependencies, including version numbers)
+Unique identifier/DOI 
+
+## Instructions for Use
+Reproducibility (Mandatory)
+What is to be reproduced (e.g., "All tables and figure from paper", "Tables 1-4”, etc.)
+How to reproduce analyses (e.g., workflow information, makefile, wrapper scripts)
+
+Replication (Optional)
+How to use software in other settings (or links to such information, e.g., R package vignettes, demos or other examples)
+
+## Notes
+Other relevant information, in particular how to access the data and code if not yet made publicly available.

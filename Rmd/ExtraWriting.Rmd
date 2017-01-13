@@ -1,0 +1,256 @@
+---
+title: "Extra writing"
+author: "Michael Lopez"
+date: "January 6, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+\section{Glickman's model}
+
+
+
+%The distribution of the outcomes of games during season $s$ and week $k$ is:
+
+%$$
+%\bf{y}_{(s,k)}|\tilde{X}_{(s,k)}, \tilde{\theta}_{(s,k)},\phi \sim N(\tilde{X}_{(s,k)}\tilde{\theta}_{(s,k)}, \phi^{-1}I_{n_{(s,k)}}),
+%$$
+
+
+%where $\bf{y}_{(s,k)}$ is a vector of score differentials, $\tilde{\theta}_{(s,k)}$ is a vector containing the team strengths and the home advantage parameters, $\phi$ is the precision, and $n_{(s,k)}$ is the number of games played in week $k$ during season $s$.  The matrix $\tilde{X}_{(s,k)}$ consists of $n_{(s,k)}$ rows and $2t$ columns.  The first $t$ columns contain the values $\{1, 0, -1\}$ where a 1/-1 in the $i^{th}$ column indicates that team $i$ was the home/away team for the game corresponding to that row and a $0$ otherwise.  The second set of $t$ columns (i.e. $t+1$ to $2t$) contains a 1 in the $i^{th}$ column (i.e column $t+i$) if team $i$ is playing at home and 0 otherwise.  
+
+%The model of \cite{glickman1998state} allows for team strength parameters to vary stochastically in two distinct ways: 1) from the last week of season $s$ to the first week of season $s+1$, and 2) from week $k$ of season $s$ to week $k+1$ of season $s$.  
+
+%The variation from the last week of one season to the first week of the next season is expressed as: 
+
+%$$
+%\theta_{(s+1,1)} | \gamma_{seas}, \bf{\theta_{(s,g_{s})}}, \phi, \omega_{seas} \sim N (\gamma_{seas}\bf{G}\bf{\theta_{(s,g_{s})}},(\phi\omega_{seas})^{-1}I_{t})
+%$$
+
+%where $\bf{G}$ is the matrix that transforms $\bf{\theta_{(s,g_{s})}}$ to $\bf{\theta_{(s,g_{s})}} - \bar{\bf{\theta}}_{(s,g_{s})}$ and $g_{s}$ is the number of weeks in season $s$.  
+
+%Team strength parameters also vary from week-to-week as follows: 
+%$$
+%\theta_{(s,k+1)} | \gamma_{week}, \bf{\theta}_{(s,k)}, \phi, \omega_{week} \sim N (\gamma_{week}\bf{G}\bf{\theta}_{(s,k)},(\phi\omega_{week})^{-1}I_{t})
+%$$
+
+%$Y_{ij}$ is the number of times that team $i$ beats team $j$ and $p_{ij}$ is the probability that team $i$ beats team $j$.  
+
+%$$
+%Y_{ij}\sim B(n_{ij},p_{ij})
+%$$
+
+%$$
+%logit(p_{ij}) = \beta_{i} - \beta_{j}
+%$$
+
+
+%Alternative specifications to the original state-space model have been proposed. \cite{knorr2000dynamic} considered time-dependent team abilities in soccer and basketball using a first-order random walk. \cite{baker2015time} assumed a dynamic, non mean-reverting model of team strength to answer the question of who was the `best team ever.' An exponentially-weighted moving average of team strength was suggested by \cite{cattelan2013dynamic}, who found roughly similar performances when comparing weighted and unweighted versions. Most recently, \cite{manner2015modeling} combined predictions from a state-space model (with an AR(1) assumption) to those from betting markets. These authors also found differences in the variability of team strength parameters, although those levels of variability appeared to operate independent of team strength (e.g. low variances were possible for both good and bad teams). Interestingly, errors were random and normally distributed (e.g., no streakiness). \mike{Cut this down?}
+
+%As additional and related BTM resources, team-specific home advantages (HFA) using a BTM were compared to a constant HFA model by \cite{tutz2015extended} in soccer and \cite{koopmeiners2012comparison} in football. \cite{matthews2005improving} considered data transformations of NFL score outcomes to account for blowouts in BTM's, and \cite{owen2011dynamic} used dynamic Bayesian models in association football with evolution variance parameters. \cite{koopmeiners2012comparison} explicitly modeled the variance parameters of team strength in football, finding little change over time. 
+
+
+
+
+
+\section{HA plots}
+
+```{r}
+## Home advantage plots
+load("data/tidy_alphas.rda")
+library(ggplot2)
+datbetas.null <- tidy_alphas %>%
+  mutate(sport = toupper(sport)) %>%
+  group_by(sport) %>%
+  arrange(alpha.team.overall) %>%
+  mutate(rank.within = 1:n()) 
+datbetas.empty <- datbetas.null %>% ungroup() %>% select(-sport)
+
+gg <- ggplot(datbetas.null)  + ggtitle("Who has the best home advantage? Increased log-odds of winning at home, by team") 
+gg1 <- gg + geom_point(data = datbetas.empty, colour = "grey", 
+                       aes(y=alpha.team.overall, x=rank.within, group = team)) + 
+  geom_errorbar(data = datbetas.empty, colour = "grey", 
+                aes(x=rank.within, ymax = alpha.team.upper, 
+                    ymin=alpha.team.lower, group = team), width=0.2) 
+
+for (i in 1:nrow(datbetas.null)){
+  df.temp <- slice(ungroup(datbetas.null), i)
+  df.plot <- data.frame(x = rep(df.temp$rank.within, 2), y = c(df.temp$alpha.team.lower, df.temp$alpha.team.upper), 
+                        z = df.temp$alpha.team.overall, sport = df.temp$sport, lab = df.temp$team)
+  df.text <- data.frame(x = df.temp$rank.within, y = -0.21, team = df.temp$team, sport = df.temp$sport)
+  gg1 <- gg1 + geom_line(data = df.plot,
+                         aes(x = x, y = y), linetype=1, lwd=1.5, colour=df.temp$primary) 
+  gg1 <- gg1 + geom_line(data = df.plot,
+                         aes(x = x, y = y), linetype=2, lwd=1.5, colour=df.temp$secondary) 
+  gg1 <- gg1 + geom_point(data = df.plot,
+                          aes(x = x, y = z), colour=df.temp$secondary, size = 1.5) 
+  gg1 <- gg1 + geom_text(data = df.text, aes(x = x, y = y, label = team, hjust = "left"), 
+                         colour=df.temp$primary, size = 3)
+}
+@
+
+<<ha-plot-full>>=
+gg2 <- gg1  + coord_flip() + facet_wrap(~sport) + 
+  xlab("") + ylab("") +
+  theme_grey(base_size = 12)  +  
+  theme(axis.line=element_blank(),
+       axis.text.y=element_blank(), 
+       axis.ticks.y=element_blank(),
+       axis.title.y=element_blank()) + 
+  scale_y_continuous(labels = c("0.00", "0.25", "0.50", "0.75"), breaks = c(0:3)/4) + 
+  scale_x_continuous()
+@
+
+<<ha-plot-summary>>=
+## Alternative plot
+load("data/tidy_alphas.rda")
+tidy_alphas <- tidy_alphas %>%
+  mutate(sport = toupper(sport)) 
+
+tidy_alphas$sport <- factor(tidy_alphas$sport,
+    levels = c("MLB", "NHL", "NFL", "NBA"), ordered = TRUE)
+
+library(stringr)
+tidy_alphas.limits <- tidy_alphas %>%
+  mutate(team.name = word(team, -1)) %>%
+   group_by(sport) %>%
+  arrange(alpha.team) %>%
+   filter(alpha.team.overall > 0.6|team.name == "Rockies")
+
+exp.fun <- function(x){log(x/(1-x))}
+breaks <- c(exp.fun(0.5), exp.fun(0.55), exp.fun(0.6), exp.fun(0.65),
+            exp.fun(0.7))
+labels <- paste0(seq(50, 70, by = 5), "%")
+
+gg3 <- ggplot(tidy_alphas, aes(sport, alpha.team.overall)) + 
+  geom_dotplot(binaxis = "y", stackdir = "center", binwidth = 0.005) + 
+  coord_flip() + geom_point(data = tidy_alphas.limits, 
+                  aes(sport, alpha.team.overall), size = 0.5) +
+  geom_text(data = tidy_alphas.limits, 
+                  aes(sport, alpha.team.overall, label = team.name), 
+            angle = 45, hjust = 1, vjust = 1, size = 3) +
+  scale_y_continuous(lim = c(0, 0.7), breaks = breaks, 
+                     labels = labels, "") + 
+  xlab("") + 
+  scale_colour_brewer(palette = "Set1", "League") +
+  labs(title = "Probability of beating an equal caliber opponent at home")
+```
+
+\section{Appendix}
+
+
+\citep{humphreys2002alternative} derives the `Competitive Balance Ratio' to assess between season changes in standings.  CBR is a function of within team variation (over time) and between team variation (within a season), measured using win percentage. It can account for varying season lengths, and potentially boasts positive links to attendance. 
+
+\cite{lenten2015measurement} proposed measurements of competitive balance to account for conference and division-based unbalanced scheduling. Implementing on the NFL, it is suggested that teams with high win ratios have generally played easier schedules, and teams with low win ratios have tended to play more difficult schedules. `The Seahawks effectively had an advantage of more than 8.6 wins over 10 seasons distributed to them via mere virtue of the schedule.'
+
+Hirfindahl-Hirschman Indexes (HHI) measure of competitive balance looks at the concentration of championships or other related outcomes (such as finishing in first place in a division).
+
+Noll-Scully most common metric of assessing competitive balance \citep{noll1988professional, scully1989business}. N-S is the ratio of the observed standard deviation of number of wins and the idealized standard deviation, that which would have been observed under binomial distribution (Ex: ISD in NFL = 8/sqrt(16)). N-S is influence by season length (fluctuation of observed SD, and influence of ISD). In general, N-S increasing in terms of number of games played. 
+
+
+Gini coefficient as one measure of within season inequality of league outcomes, comparing proportion of the total wins of the population which has been cumulatively earned by the bottom proportion of teams, relative to idealized value. Issues with Gini given unbalanced schedule, inter-league play \citep{utt2002pitfalls}. 
+
+\cite{lee2009competitive} contrasts parity in the NFL before and after the 1993 collective bargaining agreement, finding interseasonal parity, as measured by looking at winning percentages, increased as a result. The author finds first-order autoregressive nature to winning percentages; with coefficients suggesting team win percentages will revert towards league average about 70\%. 
+
+\cite{fort2007structural} identify that most break points in the four major sports, including expansion and team relocation, have corresponded with increased competitive balance. As a result, leagues tend to be more balanced than in the past.
+
+\citep{owen2010limitations, owen2015competitive} uses simulations to identify that RSD is sensitive to changes in season length when there are imbalances in team strength. Team strength parameters for the simulations are estimated using BTM. ASD (RSD without dividing by ISD) less sensitive to changes in season length, although it tends to overestimate imbalance in shorter seasons. Additionally, RSD has an upper bound that is a function of games played \citep{owen2010limitations}. 
+
+
+\subsection{Additional notes}
+
+Points from \citep{glickman2016estimating}: 
+
+Restriction of $\rho$ so that stochastic process on $\theta_{jt}$ is stationary. Considered to be a normal linear state space model and is also example of the Kalman filter (see paper for citations). 
+
+
+
+
+Suggestion for varying HA in hockey: West coast teams more consistently awarded rest advantages (suggested by Mike's hockey people).  
+
+
+
+
+Notes on DIC \url{https://users.soe.ucsc.edu/~draper/rjags.pdf} The problem of determining what is a noteworthy difference in DIC (or other penalized deviance) between two models is currently unsolved. Following the results of Ripley (1996) on the Akaike Information Criterion, Plummer (2008) argues that there is no absolute scale for comparison of two penalized deviance statistics, and proposes that the difference should be calibrated with respect to the sample standard deviation of the individual contributions from each observed stochastic node.
+
+Gelman \url{http://andrewgelman.com/2011/06/22/deviance_dic_ai/} One of my practical problems with DIC is that it seems to take a lot of simulations to calculate it precisely. Long after we’ve achieved good mixing of the chains and good inference for parameters of interest and we’re ready to go on, it turns out that DIC is still unstable. In the example in our book we ran for a zillion iterations to make sure the DIC was ok.
+
+
+
+\subsection{Uncertainty of postseason tournaments}
+
+One application of our work extends estimated team strengths to explore the each league's respective postseason. The four leagues all use a knockout-style postseason tournament, in which teams with stronger regular season performances are matched against weaker teams, with the winner advancing to future rounds. In MLB, the NHL, and the NBA, match-ups use a series format, where the series winner is generally determined by which of the two participating teams wins the majority of games. Generally, series lengths are capped at seven games (MLB, for example, also uses five game series in earlier rounds), with the series winner being the first team to win four games. Informally, these are known as `best of 7' series. In these formats, one team is given a home advantage, which allows for one extra home game over the duration of the series. Traditionally, the team with the stronger regular season performance receives the extra home game, although leagues allow for slight adaptations of this requirement. In contrast to the other three leagues, NFL postseason tournaments have consisted only of compilations of one game competitions.
+
+Leagues also differ with respect to the number of teams eligible for postseason play. As of 2016, 10 (MLB), 12 (NFL), and 16 (NFL, NBA) teams make the postseason in each season, although for the duration of our data, MLB used only 8 teams each year. Given these general guidelines, we assess the randomness of postseason formats by comparing the top 8 teams in each league.
+
+Let $\theta_{q,s,k,i} | \bf{X}_{q,s,k}, \bf{J}_{g_{q,s,k}}$ be the posterior distribution of the estimated team strength of $i$ at week $k$, estimated using $\widehat{\theta}_{q,s,k,i}$ (the 8,000 posterior estimates drawn from our Bayesian model). Teams in league $q$ at season $s$ were ranked based on $\bar{\widehat{\theta}}_{q, s, i}$, where
+
+\begin{eqnarray} 
+\bar{\widehat{\theta}}_{q, s, i} = (\widehat{\theta}_{q,s,(k_q - 4), i} + \widehat{\theta}_{q,s,(k_q - 3), i} + \widehat{\theta}_{q,s,(k_q - 2), i} + \widehat{\theta}_{q,s,(k_q-1), i}+ \widehat{\theta}_{q,s,(k_q), i})/5, \nonumber
+\end{eqnarray}
+
+\noindent the average posterior team strength of $i$ over the last five weeks of the regular season. These draws are meant to roughly reflect team quality entering the postseason; five weeks are used in place of using $k_q$ alone to account for the possibility that top performing teams rest top players in the final few games, thereby lowering their perceived team quality.
+
+Next, let $\bar{\widehat{\theta}}_{q,s, |r|}$ be the $r^{th}$ ranked team strength in sport $q$ in season $s$. For example, $\bar{\widehat{\theta}}_{MLB,2005,|1|} = 0.499$ represents the average posterior draw of team strength for 2005 New York Yankees, which ranks first in MLB for that season. To simulate a `best of $n$' series between the first ranked team (team $i_1$, where $\bar{\widehat{\theta}}_{q,s,|i_1|}$ = $\bar{\widehat{\theta}}_{q,s,|1|}$) and the second ranked team ($i_2$), the following procedure was used in each $q$ and $s$. 
+
+\begin{enumerate}
+
+
+\item Draw $n$ samples from each of $\widehat{\theta}_{q,s, i_1}$ and $\widehat{\theta}_{q,s, i_2}$, respectively, labeled as $\widetilde{\theta}_{q,s, i_1}$ amd $\widetilde{\theta}_{q,s, i_2}$, respectively.
+
+\item Draw $n$ samples from the posterior distribution of $\alpha_q | \bf{X}_{q,s,k}, \bf{J}_{g_{q,s,k}}$, labeled as $\widetilde{\alpha}_q$. 
+
+\item Estimate $\widetilde{logit}(p_{q, s, i_1, i_2}) = \widetilde{\theta}_{q,s, i_1} - \widetilde{\theta}_{q,s, i_2} + \widetilde{\alpha}_q*\mathds{1^*}$, where $\mathds{1^*}$ is an $n$-dimensional vector of alternating 1's and -1's to account for rotating home advantages.  
+
+\item Sample from $exp\{\widetilde{logit}(p_{i_1, i_2, q, s})\}/(1+exp\{\widetilde{logit}(p_{i_1, i_2, q, s})\}$ to obtain 1's and 0's reflecting simulated postseason outcomes. If the sum of these simulations is greater than $n/2$, team $i_1$ wins the series. Otherwise, team $i_2$ wins the series.
+\item Repeat 10,000 times for each $q$ and $s$, and for teams ranked third ($i_2$) through eight ($i_8$). 
+\end{enumerate}
+
+Figure~\ref{fig:sevenSeries} shows a plot of the estimated probabilities that the top-ranked team beats opponents ranked No. 2--No. 8 in each sport, averaged over $s$. 
+
+
+<<sevenSeries, fig.cap="Probability top ranked team wins a postseason series by sport and opponent rank">>=
+probs <- read.csv("data/seven.simulations.final.csv")
+library(dplyr)
+library(ggplot2)
+probs.hfa <- probs %>%
+  group_by(sport, second.seed) %>%
+  summarise(mean.win = mean(better.winP.hfa)) %>% 
+  ungroup() %>%
+  mutate(sport = toupper(factor(sport, levels = c("nba", "nfl", "nhl", "mlb"))))
+
+probs.nohfa <- probs %>%
+  group_by(sport, second.seed) %>%
+  summarise(mean.win = mean(better.winP.nohfa)) %>% 
+  ungroup() %>%
+  mutate(sport = toupper(factor(sport, levels = c("nba", "nfl", "nhl", "mlb"))))
+
+
+ggplot(probs.hfa, aes(second.seed, mean.win, colour = sport))  + 
+  geom_point(aes(shape = sport), size = 2) + 
+  geom_line(size = 1) + 
+  #geom_point(data = probs.nohfa, aes(second.seed, mean.win, group = sport, colour = sport)) +
+  #geom_line(data = probs.nohfa, aes(second.seed, mean.win, group = sport, colour = sport)) +
+  ggtitle("Probability of No. 1 team winning in postseason") +
+  theme(legend.title = element_blank()) +
+  scale_x_continuous("Opponent rank", breaks = 2:8) + 
+  #scale_colour_grey(start = 0.1, end = .8) +
+  scale_y_continuous("", breaks = 11:16*5/100, labels = c("55%", "60%", "65%", "70%", "75%", "80%")) # + 
+  #facet_wrap(~sport)
+@
+
+% One extension - do this without the home advantage?  This was done, but not sure I love the plots
+
+In general, the probability that the better team wins is highest in the NBA, ranging from roughly 60\% (No. 1 over No. 2) to 80\% (No. 1 over No. 8). Most often, the top NFL team expects to win between 62\% and 72\% of its postseason match-ups, while those numbers are closer to between 55\% and 65\% in the MLB and NHL. Across seeds No. 3--No. 8, the MLB shows the most randomness; even in an average match-up between its top team and its eighth best team, the top team wins no more than 65\% of the time.
+
+A related question explores the number of games that other sports must play in order to match the frequency with which the best team in the NBA wins. To ensure an 81\% chance that the league's top team has defeated its eighth best team, as in the NBA, the NFL would require a ``Best of 9'", the NHL a ``Best of 51", and MLB a ``Best of 61". Thus, each league must each play a substantially larger number of games than current league standards allow in order to match the NBA's consistency of the best team advancing. 
+
+
+%Similar game thresholds must be reached when comparn to ensure a 72\% chance of Likewise, to ensure a 72\% chance that the league's top team has defeated its fourth best team, as is the NBA average, simlar game thresholds must be reached (9 games in the NFL, 41 in the NHL, and 55 in MLB). 
+
+%One likely reason that the NFL falls short of the NBA in this chart is that the NBA's series length gives the better team more chances to win. 
+
+This lends some credence to the expression that ``Billy Beane's stuff doesn't work in the playoffs." That is, analytic strategies designed to maximize winning percentage over a full MLB regular season are not effective in a short postseason series\footnote{Beane was the Oakland A's general manager during all ten years of our study. The A's have been famously successful in the regular season, but have not made a World Series appearance in Beane's tenure. We note that in Figure~\ref{fig:spaghetti-mlb}, the A's were by far the strongest team in baseball by the end of the 2014 season. They lost a one-game playoff to the eventual World Series runner-up Kansas City Royals.}. Furthermore, these results confirm our intuition that champions in the NBA are much more likely to be the ``true" strongest team. Conversely, the strongest baseball team in the regular season is quite likely to be derailed by MLB's short postseason series. As noted previously, while this is likely to frustrate team executives, coaches, and players, it might be a rational decision on MLB's part, as it likely increases fan interest in the postseason. 
