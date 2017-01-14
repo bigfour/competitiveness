@@ -690,6 +690,7 @@ Figure~\ref{fig:R2} shows the coefficient of determination ($R^2$) between each 
 <<validation>>=
 # necessary to reload bigfour
 load(file.path(data_raw, "bigfour.rda"))
+load(file.path(root, "data", "tidy_thetas.rda"))
 bigfour <- bigfour %>% 
   arrange(sport, Date)
 
@@ -837,15 +838,14 @@ all.sport.winp.remains$type <- "winp"
 all.sport.pdiff.remains$type <- "pdiff"
 
 all.sport.both <- rbind(all.sport.theta.remains, all.sport.winp.remains, all.sport.pdiff.remains)
-
-
+#pdiff is 1, thetas is 2, winp is 3
 
 gg.r2 <- ggplot(all.sport.both, aes(day.season, corr.day, lty = type)) +
   geom_step() + 
   scale_y_continuous(labels = scales::percent, "", lim = c(0, .8)) + 
   scale_x_continuous("Game of season") +
-  scale_linetype_manual(labels = c("Our estimates", "Point differential", "Win %"), 
-                        values = c(1, 2, 3), "Type") +
+  scale_linetype_manual(labels = c("Point differential", "Our estimates", "Win %"), 
+                        values = c(2, 1, 3), "Type") +
   facet_wrap(~toupper(sport), scales = "free")  + 
   labs(title = "Coefficient of determination with future in-season win %") 
 @
