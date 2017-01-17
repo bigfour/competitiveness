@@ -10,7 +10,7 @@
 \usepackage{graphicx}
 
 % for blinding
-\newcommand{\noblind}{\author{
+\newcommand{\noblind}{
 Michael J. Lopez\\
 %Department of Statistics \\ 
 Skidmore College\\
@@ -25,8 +25,8 @@ Benjamin S. Baumer \\
 Smith College \\
 %Northampton, MA 01063, USA \\
 \texttt{bbaumer@smith.edu}
-}}
-\newcommand{\blind}{\author{Three anonymous authors}}
+}
+\newcommand{\blind}{Three anonymous authors}
 
 \newcommand{\Ex}{\mathbb{E}}
 \newcommand{\Var}{\text{Var}}
@@ -70,7 +70,7 @@ Smith College \\
 \title{How often does the best team win? A unified approach
 to understanding randomness in North American sport}
 %
-\blind
+\author{\blind}
 
 <<echo=FALSE, message=FALSE>>=
 source("config.R")
