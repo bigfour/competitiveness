@@ -9,7 +9,26 @@
 \usepackage{xspace,soul}
 \usepackage{graphicx}
 
-
+% for blinding
+\newcommand{\noblind}{\author{
+Michael J. Lopez\\
+%Department of Statistics \\ 
+Skidmore College\\
+\texttt{mlopez1@skidmore.edu}
+\and
+Gregory J. Matthews\\
+Loyola University Chicago\\
+\texttt{gmatthews1@luc.edu}
+\and
+Benjamin S. Baumer \\
+%Department of Mathematics \& Statistics \\
+Smith College \\
+%Northampton, MA 01063, USA \\
+\texttt{bbaumer@smith.edu}
+}}
+\newcommand{\blind}{\author{Three anonymous authors}}
+%\newcommand{\Smith}{XXX\xspace}
+%\newcommand{\Smathies}{XXXies\xspace}
 
 \newcommand{\Ex}{\mathbb{E}}
 \newcommand{\Var}{\text{Var}}
@@ -55,22 +74,7 @@
 \title{How often does the best team win? A unified approach
 to understanding randomness in North American sport}
 %
-\author{
-Michael J. Lopez\\
-%Department of Statistics \\ 
-Skidmore College\\
-\texttt{mlopez1@skidmore.edu}
-\and
-Gregory J. Matthews\\
-Loyola University Chicago\\
-\texttt{gmatthews1@luc.edu}
-\and
-Benjamin S. Baumer \\
-%Department of Mathematics \& Statistics \\
-Smith College \\
-%Northampton, MA 01063, USA \\
-\texttt{bbaumer@smith.edu}
-}
+\blind
 
 <<echo=FALSE, message=FALSE>>=
 source("config.R")
