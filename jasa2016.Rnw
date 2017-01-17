@@ -888,6 +888,7 @@ For each $q$, we simulated with $n_{sim} = 1000$. Additionally, to remove the ef
 <<bestwin-plot>>=
 load(file.path("data", "bestwin.rda"))
 
+levels(cdf.all$sport) <- sort(levels(cdf.all$sport))
 gg5 <- ggplot(cdf.all) + 
   stat_ecdf(aes(probs, colour = sport)) + 
   stat_ecdf(data = cdf.all, aes(probsH, colour = sport), lty = "dotted") + 
