@@ -34,20 +34,31 @@ glimpse(bigfour_public)
 This data frame contains only the game result and the implied probability of the home team winning, based on the betting line. 
 
 ### Availability (Mandatory)
+
 The raw data purchased from Sports Insights is proprietary and cannot be shared publicly. However, we have created a summarized version of these data that is publicly shared. 
 
 ### Description (Mandatory if data available)
 
-- Permissions (demonstrate that author has legitimate access to data): **Mike to fill in**
-- Licensing information: **Mike to fill in**
+- Permissions (demonstrate that author has legitimate access to data): Permission to share a version of the Sports Insights data was obtained via email during January, 2017
+- Licensing information: Terms of use for Sports Insights data can be found at (https://www.sportsinsights.com/company/terms-of-use/
 - Link to data: (https://github.com/bigfour/competitiveness/data)
-- Data provenance, including identifier or link to original data if different than above: Sports Insights (http://www.sportsinsights.com) **Mike to fill in**
+- Data provenance, including identifier or link to original data if different than above: The historical database of data was purchased at (https://www.sportsinsights.com/get-historical-betting-odds/)
 - File format: CSV
-- Metadata (including data dictionary): **Argh, we should probably write this out...**
-```{r}
-glimpse(bigfour)
-```
-- Version information: **Mike to fill in**
+- Metadata (including data dictionary): Here's a snapshot of our variables:
+
+Variable | Description
+------------- | -------------
+`gameDate` | Day of the game
+`sport (q)` | League (MLB, NBA, NFL, or NHL)
+`visitor_team (j)` | Visiting team 
+`home_team (i)` | Home team 
+`visitor_score` | Final score, visiting team
+`home_score` | Final score, home team
+`p_home` | $p_{q,i,j}$
+
+where $p_{q,i,j}$ is the probability of team home team $i$ defeating away team $j$ in sport $q$. 
+
+- Version information: Data purchased on October 6, 2016
 
 ### Optional Information (complete as necessary) 
 
