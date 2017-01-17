@@ -35,15 +35,15 @@ This data frame contains only the game result and the implied probability of the
 
 ### Availability (Mandatory)
 
-The raw data purchased from Sports Insights is proprietary and cannot be shared publicly. However, we have created a summarized version of these data that is publicly shared. 
+The raw data purchased from Sports Insights (i.e., `bigfour`) is proprietary and cannot be shared publicly. However, we have created a summarized version of these data (i.e., `bigfour_public`) that is publicly shared. 
 
 ### Description (Mandatory if data available)
 
-- Permissions (demonstrate that author has legitimate access to data): Permission to share a version of the Sports Insights data was obtained via email during January, 2017
-- Licensing information: Terms of use for Sports Insights data can be found at (https://www.sportsinsights.com/company/terms-of-use/
+- Permissions: Permission to share a version of the Sports Insights data was obtained via email during January, 2017
+- Licensing information: Terms of use for Sports Insights data can be found at (https://www.sportsinsights.com/company/terms-of-use/)
 - Link to data: (https://github.com/bigfour/competitiveness/data)
 - Data provenance, including identifier or link to original data if different than above: The historical database of data was purchased at (https://www.sportsinsights.com/get-historical-betting-odds/)
-- File format: CSV
+- File format: `bigfour_public.rda` is an R data file
 - Metadata (including data dictionary): Here's a snapshot of our variables:
 
 Variable | Description
@@ -59,8 +59,6 @@ Variable | Description
 where $p_{q,i,j}$ is the probability of team home team $i$ defeating away team $j$ in sport $q$. 
 
 - Version information: Data purchased on October 6, 2016
-
-### Optional Information (complete as necessary) 
 
 ## Code
 
@@ -79,7 +77,7 @@ All of our code is hosted in a GitHub repository.
 - Supporting software requirements:
     - A recent version of R
     - [JAGS](http://mcmc-jags.sourceforge.net/)
-    - CRAN packages: `tidyverse`, `rjags`, `knitr`
+    - CRAN packages: `tidyverse`, `rjags`, `knitr`, `lubridate`, `stringr`, `xtable`, `XML`, `RCurl`, `zoo`
     - GitHub packages: [`beanumber/teamcolors`](https://github.com/beanumber/teamcolors)
     - `pdflatex`
 
@@ -102,4 +100,4 @@ Please see the [README](https://github.com/bigfour/competitiveness/blob/master/R
 
 ## Notes
 
-Other relevant information, in particular how to access the data and code if not yet made publicly available.
+Please do not hesitate to contact us for help reproducing our results. 
