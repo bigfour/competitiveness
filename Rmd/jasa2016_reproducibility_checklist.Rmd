@@ -36,40 +36,59 @@ This data frame contains only the game result and the implied probability of the
 ### Availability (Mandatory)
 The raw data purchased from Sports Insights is proprietary and cannot be shared publicly. However, we have created a summarized version of these data that is publicly shared. 
 
-Description (Mandatory if data available)
-Permissions (demonstrate that author has legitimate access to data)
-Licensing information
-Link to data (e.g., dataverse.org, datadryad.org; this need not be the actual link at time of submission but if not, it should indicate where the data will be deposited if the manuscript is accepted)
-Data provenance, including identifier or link to original data if different than above
-File format
-Metadata (including data dictionary)
-Version information
+### Description (Mandatory if data available)
 
-Optional Information (complete as necessary) 
-Unique identifier / DOI
+- Permissions (demonstrate that author has legitimate access to data): **Mike to fill in**
+- Licensing information: **Mike to fill in**
+- Link to data: (https://github.com/bigfour/competitiveness/data)
+- Data provenance, including identifier or link to original data if different than above: Sports Insights (http://www.sportsinsights.com) **Mike to fill in**
+- File format: CSV
+- Metadata (including data dictionary): **Argh, we should probably write this out...**
+```{r}
+glimpse(bigfour)
+```
+- Version information: **Mike to fill in**
+
+### Optional Information (complete as necessary) 
 
 ## Code
-Abstract (Mandatory)
-Short high level description
 
-Description (Mandatory)
-How delivered (R package, Shiny app, etc.)
-Licensing information (default is MIT License)
-Link to code/repository (e.g., github.com, bitbucket.org; this need not be the actual link at time of submission but if not, it should indicate where the code will be deposited if the manuscript is accepted)
-Version information (e.g., for a Git repository, the number or branch+commit)
+### Abstract (Mandatory)
+All of our code is hosted in a GitHub repository. 
 
-Optional Information (complete as necessary) 
-Hardware requirements (e.g., operating system with version number, access to cluster, GPUs, etc.)
-Supporting software requirements (e.g., libraries and dependencies, including version numbers)
-Unique identifier/DOI 
+### Description (Mandatory)
+
+- How delivered: GitHub repository
+- Licensing information: CC0
+- Link to code/repository: (https://github.com/bigfour/competitiveness)
+- Version information (e.g., for a Git repository, the number or branch+commit): **to be filled in just before submission**
+
+### Optional Information (complete as necessary) 
+
+- Supporting software requirements:
+    - A recent version of R
+    - [JAGS](http://mcmc-jags.sourceforge.net/)
+    - CRAN packages: `tidyverse`, `rjags`, `knitr`
+    - GitHub packages: [`beanumber/teamcolors`](https://github.com/beanumber/teamcolors)
+    - `pdflatex`
 
 ## Instructions for Use
-Reproducibility (Mandatory)
-What is to be reproduced (e.g., "All tables and figure from paper", "Tables 1-4”, etc.)
-How to reproduce analyses (e.g., workflow information, makefile, wrapper scripts)
 
-Replication (Optional)
-How to use software in other settings (or links to such information, e.g., R package vignettes, demos or other examples)
+### Reproducibility (Mandatory)
+
+Please see the [README](https://github.com/bigfour/competitiveness/blob/master/README.md) for complete instructions. The first step in reproducing the analysis is to clone the GitHub repository. 
+
+> Please note that none of these scripts will actually work without the original proprietary raw data. 
+
+- What is to be reproduced:
+    - to reproduce the paper, including nearly all figures and tables, type `make` or `make jasa2016.Rnw` at the command line
+    - to reproduce Table 2, **Mike to fill in**
+    - to reproduce the trace plots, run `Rscript 'R/trace_plots.R'`
+    - to rerun the MCMC chains, run `make mcmc`
+    - to redo the data wrangling, run `make bigfour`
+    - to recompile the game results, run `make results`
+
 
 ## Notes
+
 Other relevant information, in particular how to access the data and code if not yet made publicly available.
