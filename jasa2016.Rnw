@@ -27,8 +27,6 @@ Smith College \\
 \texttt{bbaumer@smith.edu}
 }}
 \newcommand{\blind}{\author{Three anonymous authors}}
-%\newcommand{\Smith}{XXX\xspace}
-%\newcommand{\Smathies}{XXXies\xspace}
 
 \newcommand{\Ex}{\mathbb{E}}
 \newcommand{\Var}{\text{Var}}
@@ -68,8 +66,6 @@ Smith College \\
 
 
 \begin{document}
-%\SweaveOpts{concordance=TRUE}
-%\SweaveOpts{concordance=TRUE}
 
 \title{How often does the best team win? A unified approach
 to understanding randomness in North American sport}
