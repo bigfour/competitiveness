@@ -82,7 +82,6 @@ source("config.R")
 \begin{abstract}
 
 Statistical applications in sports have long centered on how to best separate signal, such as team talent, from random noise. However, most of this work has concentrated on a single sport, and the development of meaningful cross-sport comparisons has been impeded by the difficulty of translating luck from one sport to another. In this manuscript, we use betting market data to develop a Bayesian state-space model that can be uniformly applied across sporting leagues to better understand the role that randomness plays in game outcomes. Our model can be used to extract estimates of team strength, the between-season, within-season, and game-to-game variability of team strengths, as well each team's home advantage. We implement our approach across roughly a decade of play in each of the National Football League (NFL), National Hockey League (NHL), National Basketball Association (NBA), and Major League Baseball (MLB), finding that the NBA demonstrates both the largest dispersion in talent and the largest home advantage among the four leagues. Additionally, the NHL and MLB stand out for their relative randomness in game outcomes. We conclude by proposing a new metric for judging league competitiveness that works in absence of factors outside of team control. 
-\mike{JASA wants you to cut to the chase in the abstract, so I moved some things around. Feel free to change.}\ben{This looks good to me.}
 Keywords: sports analytics, Bayesian modeling, competitive balance, MCMC
 \end{abstract}
 
@@ -355,7 +354,7 @@ These results suggest that chance alone likely does not account for observed dif
 
 \subsection{Team strength}
 
-Table \ref{tab:thetas} shows summary statistics of the team strength estimates, approximated using posterior mean draws for all weeks $k$ and seasons $s$ across all four sports leagues. Overall, there tends to be a larger variability in team strength at any given point in time in both the NFL and NBA, with posterior coefficient estimates tending to vary between -1 and 1 (on the logit scale). For reference, a team-strength of 1.0 on the log-odds scale implies a $\frac{e^{1.0}}{1+e^{1.0}} = 73.1$\% chance of beating a league average team in a game played at a neutral site. The standard deviation of team strength is smallest in MLB, suggesting that---relative to the other leagues---team talent is more tightly packed. Relative to MLB, spread of team strengths are about 1.3, 3.0, and 3.6 times wider in the NHL, NFL, and NBA, respectively.
+Table \ref{tab:thetas} shows summary statistics of the team strength estimates, approximated using posterior mean draws for all weeks $k$ and seasons $s$ across all four sports leagues. Overall, there tends to be a larger variability in team strength at any given point in time in both the NFL and NBA, with posterior coefficient estimates tending to vary between -1.3 and 1.2 in the NBA and -1.1 and 1.0 in the NFL (on the logit scale). For reference, a team-strength of 1.0 on the log-odds scale implies a $\frac{e^{1.0}}{1+e^{1.0}} = 73.1$\% chance of beating a league average team in a game played at a neutral site. The standard deviation of team strength is smallest in MLB, suggesting that---relative to the other leagues---team talent is more tightly packed. Relative to MLB, spread of team strengths are about 1.3, 3.0, and 3.6 times wider in the NHL, NFL, and NBA, respectively.
 
 
 <<echo=FALSE, results='asis'>>=
@@ -378,7 +377,7 @@ tidy_thetas %>%
          digits = 3, label = "tab:thetas") %>%
   print(include.rownames = FALSE, sanitize.text.function = identity)
 @
-\mike{Forgot from phone call: We want to keep Q1 and Q3, right?}\ben{I think so. One thing -- in the text above we reference that the NBA and NFL numbers are typically between -1 and 1. That was based on the narrow interval before. Should we change it to -1.2 to 1.2? Or restrict to the NFL and forget about the NBA?}
+
 
 Figure~\ref{fig:spaghetti} shows estimated team strength coefficients over time. Figures~\ref{fig:spaghetti-mlb}--\ref{fig:spaghetti-nhl} (shown in the Appendix) provide an individual plot for each sport, which include divisional facets to allow easier identification of individual teams. Teams in Figures~\ref{fig:spaghetti} and \ref{fig:spaghetti-mlb}--\ref{fig:spaghetti-nhl} are depicted using their two primary colors, scraped from \url{http://jim-nielsen.com/teamcolors/} via the \pkg{teamcolors} package (\url{https://github.com/beanumber/teamcolors}) in \R. 
 
@@ -866,7 +865,7 @@ One simple way to compare league randomness would be to contrast the observed di
 
 A second option would be to contrast our posterior draws of $\theta_{(q,s,k) i}$ for all $i$, either across time periods or at a fixed point in time, as these estimates account for league particulars such as strength of schedule. While possible with our team strength estimates, which are presented on identical scales, such a procedure would not generalize to other sports or leagues where betting market data may not be unavailable.
 
-Instead, to assess the equivalence of all teams in each league, we consider the likelihood that---given any pair of teams chosen at random---the better team wins, by simulating estimates of $p_{(q,s,k) ij}$ using posterior draws of team strength, home advantage, and game level error. For our purposes, we define the \emph{better} team to be the one, \emph{a priori}, with a higher probability of winning that game. If a contest has no inherent randomness (consider chess), then the better team \emph{always} wins. \mike{Is this true?}\ben{No. But it was the closest I could think of. I liked your phrasing of the better team "always" winning. Maybe switch to Harlem Globetrotters instead of chess?} Conversely, if game-level variability is large relative to the difference in team strength, then even the inferior team might win nearly half the time.  
+Instead, to assess the equivalence of all teams in each league, we consider the likelihood that---given any pair of teams chosen at random---the better team wins, by simulating estimates of $p_{(q,s,k) ij}$ using posterior draws of team strength, home advantage, and game level error. For our purposes, we define the \emph{better} team to be the one, \emph{a priori}, with a higher probability of winning that game. If a contest has no inherent randomness (consider the Harlem Globetrotters), then the better team \emph{always} wins.\footnote{The Harlem Globetrotters are an exhibition basketball team that plays hundreds of games in a year, rarely losing} Conversely, if game-level variability is large relative to the difference in team strength, then even the inferior team might win nearly half the time.  
 
 Using our posterior draws, we approximate the distribution of game-level probabilities between two randomly chosen teams using the following steps.
 
