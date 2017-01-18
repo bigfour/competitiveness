@@ -91,9 +91,9 @@ Please see the [README](https://github.com/bigfour/competitiveness/blob/master/R
 
 - What is to be reproduced:
     - to reproduce the paper, including nearly all figures and tables, type `make` or `make jasa2016.Rnw` at the command line
-    - to reproduce Table 2, **Mike to fill in**
     - to reproduce the trace plots, run `Rscript 'R/trace_plots.R'`
     - to rerun the MCMC chains, run `make mcmc`
+    - to reproduce Table 2, run `Rscript 'R/trace_plots.R'` (will only work after the `make mcmc` command)
     - to redo the data wrangling, run `make bigfour`
     - to recompile the game results, run `make results`
 
