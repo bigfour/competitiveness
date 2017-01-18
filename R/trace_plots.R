@@ -13,33 +13,6 @@ load("~/Dropbox/Posterior_Draws/nba_jasa_teamHFA.RData")
 nbaJAGS<-z
 rm(z)
 
-### sigma
-sigma.nba <- data.frame(sigma.game = 1/sqrt(nbaJAGS[[6]][,,1])); sigma.nba$sport <- "NBA"
-sigma.nhl <- data.frame(sigma.game = 1/sqrt(nhlJAGS[[6]][,,1])); sigma.nhl$sport <- "NHL"
-sigma.mlb <- data.frame(sigma.game = 1/sqrt(mlbJAGS[[6]][,,1])); sigma.mlb$sport <- "MLB"
-sigma.nfl <- data.frame(sigma.game = 1/sqrt(nflJAGS[[6]][,,1])); sigma.nfl$sport <- "NFL"
-
-sigma <- rbind(sigma.nba, sigma.nhl, sigma.mlb, sigma.nfl)
-ggplot(sigma, aes(sigma.game, colour = sport)) +
-  geom_density() + ggtitle("Average game-level error") + xlab("")
-
-
-## Team strengths - convergence?
-league <- nbaJAGS
-len <- length(league$gammaSeason)/3
-plot(1:len, league[[3]][3,10,15,,1], col = "red", type = "l")
-points(1:len, league[[3]][3,10,15,,2], col = "green", type = "l")
-points(1:len, league[[3]][3,10,15,,3], col = "blue", type = "l")
-#### Labels for ggplot
-
-
-# Team intercepts - convergence?
-league <- nbaJAGS
-len <- length(league$gammaSeason)/3
-plot(1:len, league[[2]][3,,1], col = "red", type = "l")
-points(1:len, league[[2]][3,,2], col = "green", type = "l")
-points(1:len, league[[2]][3,,3], col = "blue", type = "l")
-
 
 #### Labels for ggplot
 param_names <- list(
