@@ -16,7 +16,7 @@ get_sport <- function(sport) {
               sport = sport))
 }
 
-#Your code is so much better written than mine that I feel physical pain.  
+
 dat <- lapply(sports[1:4], get_sport) 
 dat
 names(dat) <- sports
