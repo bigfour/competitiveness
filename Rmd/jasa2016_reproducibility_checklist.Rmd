@@ -1,7 +1,9 @@
 ---
 title: "JASA ACS Reproducibility Initiative - Author Contributions Checklist Form"
+output:
+  pdf_document: default
+  html_document: default
 date: "January 13, 2017"
-output: html_document
 ---
 
 ```{r setup, include=FALSE}
@@ -70,7 +72,7 @@ All of our code is hosted in a GitHub repository.
 - How delivered: GitHub repository
 - Licensing information: CC0
 - Link to code/repository: (https://github.com/bigfour/competitiveness)
-- Version information (e.g., for a Git repository, the number or branch+commit): **to be filled in just before submission**
+- Version information (e.g., for a Git repository, the number or branch+commit): 
 
 ### Optional Information (complete as necessary) 
 
