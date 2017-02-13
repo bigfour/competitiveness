@@ -7,6 +7,8 @@
 \usepackage{xspace,soul}
 \usepackage{graphicx}
 
+\usepackage[margin=1.45in]{geometry}
+
 \startlocaldefs
 \newcommand{\blind}{Three anonymous authors}
 
@@ -228,7 +230,7 @@ bigfour_binned <- bigfour %>%
 markets_plot <- ggplot(data = bigfour, 
                        aes(x = p_home, y = as.numeric(home_win), 
                            color = sport)) + 
-  geom_point(alpha = 0.1) + 
+  #geom_point(alpha = 0.1) + 
   geom_point(data = bigfour_binned, 
              aes(x = p_home_bin, y = home_win_bin_pct, size = N), alpha = 0.5) + 
   geom_smooth() +
@@ -884,18 +886,18 @@ For each $q$, we simulated with $n_{sim} = 1000$. Additionally, to remove the ef
 <<bestwin-plot>>=
 load(file.path("data", "bestwin.rda"))
 
-levels(cdf.all$sport) <- sort(levels(cdf.all$sport))
+cdf.all$sport <- as.character(cdf.all$sport)
 gg5 <- ggplot(cdf.all) + 
   stat_ecdf(aes(probs, colour = sport)) + 
   stat_ecdf(data = cdf.all, aes(probsH, colour = sport), lty = "dotted") + 
   ggtitle("How often does the best team win?") + 
+  scale_colour_brewer(palette = "Spectral", "League")+ 
   geom_vline(xintercept = 0.5, colour = "black", lty = 5) + 
   geom_vline(xintercept = 1, colour = "black", lty = 5) + 
   labs(subtitle = "Solid: neutral site, Dashed: home game for better team") +
   xlab("Simulated win probability") + ylab("CDF") + xlim(0.5, 1.0) + 
   annotate("text", x = .51, y = 1,  hjust = 0, vjust = 1, label = paste("All games \n coin flips"))+ 
-  annotate("text", x = .99, y = 0,  hjust = 1, vjust = 0, label = paste("All games \n pre-determined")) + 
-  scale_colour_brewer(palette = "Spectral", "League")
+  annotate("text", x = .99, y = 0,  hjust = 1, vjust = 0, label = paste("All games \n pre-determined")) 
 @
 
 <<BestWin, fig.height = 3.5, fig.width = 6, fig.cap="Cumulative distribution function (CDF) of 1000 simulated game-level probabilities in each league, for both neutral site and home games, with the better team (on average) used as the reference and given the home advantage.">>=
