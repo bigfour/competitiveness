@@ -848,7 +848,7 @@ gg.r2 <- ggplot(all.sport.both, aes(day.season, corr.day, lty = type)) +
   labs(title = "Coefficient of determination with future in-season win %") 
 @
 
-<<R2, fig.height = 4, fig.width = 6, fig.cap="Coefficient of determination with future in-season win percentage. We note the improvement our team strength estimates offer over season-to-date win percentage and season-to-date point differential in all sports, especially early in the season. ">>=
+<<R2, fig.height = 3, fig.width = 6, fig.cap="Coefficient of determination with future in-season win percentage. We note the improvement our team strength estimates offer over season-to-date win percentage and season-to-date point differential in all sports, especially early in the season. ">>=
 gg.r2
 @
 
