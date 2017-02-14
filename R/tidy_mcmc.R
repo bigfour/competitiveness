@@ -1,5 +1,5 @@
 # tidy the MCMC output
-source("config.R")
+source("config.R") 
 
 sports <- c("mlb", "nba", "nfl", "nhl")
 
