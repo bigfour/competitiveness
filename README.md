@@ -42,8 +42,8 @@ make sloan2016.pdf
 
 Note that this requires `xelatex` and the Cambria family of fonts installed.
 
-To make the JASA paper:
+To make the journal paper:
 
 ``` bash
-make jasa2016.pdf
+make aoas2017.pdf
 ```
