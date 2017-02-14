@@ -77,7 +77,7 @@ Please see the [README](https://github.com/bigfour/competitiveness/blob/master/R
 > Please note that none of these scripts will actually work without the original proprietary raw data. 
 
 - What is to be reproduced:
-    - to reproduce the paper, including nearly all figures and tables, type `make` or `make jasa2016.Rnw` at the command line
+    - to reproduce the paper, including nearly all figures and tables, type `make` or `make aoas2017.pdf` at the command line
     - to reproduce the trace plots, run `Rscript 'R/trace_plots.R'`
     - to rerun the MCMC chains, run `make mcmc`
     - to reproduce Table 2, run `Rscript 'R/trace_plots.R'` (will only work after the `make mcmc` command)

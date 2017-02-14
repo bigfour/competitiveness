@@ -107,7 +107,7 @@ for (league in leagues) {
                posteriorDraws = posteriorDraws,
                n.adapt = num_adapt, n.update = num_update, 
                n.draws = num_draws, n.chains = 3, thin = 5)
-  filename <- file.path(mcmc_dir, paste0(league, "_jasa_constantHFA.RData"))
+  filename <- file.path(mcmc_dir, paste0(league, "_paper_constantHFA.RData"))
   save(z, file = filename, compress = "xz")
 }  
 
@@ -122,7 +122,7 @@ for (league in leagues) {
                posteriorDraws = posteriorDraws,
                n.adapt = num_adapt, n.update = num_update, 
                n.draws = num_draws, n.chains = 3, thin = 5)
-  filename <- file.path(mcmc_dir, paste0(league, "_jasa_teamHFA.RData"))
+  filename <- file.path(mcmc_dir, paste0(league, "_paper_teamHFA.RData"))
   save(z, file = filename, compress = "xz")
 }  
 
