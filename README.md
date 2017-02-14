@@ -11,7 +11,7 @@ To knit the paper:
 ``` bash
 make
 ```
-
+ 
 Data wrangling
 --------------
 
