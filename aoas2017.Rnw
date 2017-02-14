@@ -1,7 +1,7 @@
 \documentclass[aoas]{imsart}
-\usepackage{setspace}
+%\usepackage{setspace}
 
-\usepackage{ dsfont }
+\usepackage{dsfont}
 \usepackage{amsthm,amsmath,amssymb,natbib}
 \RequirePackage[colorlinks,citecolor=blue,urlcolor=blue]{hyperref}
 \usepackage{xspace,soul}
@@ -43,7 +43,7 @@
 
 \begin{frontmatter}
 
-\title{How often does the best team win? A unified approach
+\title{How often does the best team win?\\A unified approach
 to understanding randomness in North American sport}
 \runtitle{Randomness in sport}
 
