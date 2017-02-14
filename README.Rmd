@@ -4,7 +4,7 @@ output:
   github_document:
     html_preview: true
 ---
-
+ 
 A paper analyzing competitiveness across the four major sports.
 
 To knit the paper:
