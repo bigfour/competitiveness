@@ -3,7 +3,7 @@ title: "Reproducibility checklist"
 output:
   pdf_document: default
   html_document: default
-date: "February, 2017"
+date: "February 14, 2017"
 ---
 
 ```{r setup, include=FALSE}
@@ -64,11 +64,12 @@ where $p_{q,i,j}$ is the probability of team home team $i$ defeating away team $
 
 All of our code is hosted in a GitHub repository. The latest commit was made on February 13, 2017. 
 Here are supporting software requirements:
-    - A recent version of R
-    - [JAGS](http://mcmc-jags.sourceforge.net/)
-    - CRAN packages: `tidyverse`, `rjags`, `knitr`, `lubridate`, `stringr`, `xtable`, `XML`, `RCurl`, `zoo`
-    - GitHub packages: [`beanumber/teamcolors`](https://github.com/beanumber/teamcolors)
-    - `pdflatex`
+
+- A recent version of R
+- [JAGS](http://mcmc-jags.sourceforge.net/)
+- CRAN packages: `tidyverse`, `rjags`, `knitr`, `lubridate`, `stringr`, `xtable`, `XML`, `RCurl`, `zoo`
+- GitHub packages: [`beanumber/teamcolors`](https://github.com/beanumber/teamcolors)
+- `pdflatex`
 
 ## Instructions for Use
 
@@ -76,12 +77,11 @@ Please see the [README](https://github.com/bigfour/competitiveness/blob/master/R
 
 > Please note that none of these scripts will actually work without the original proprietary raw data. 
 
-- What is to be reproduced:
-    - to reproduce the paper, including nearly all figures and tables, type `make` or `make aoas2017.pdf` at the command line
-    - to reproduce the trace plots, run `Rscript 'R/trace_plots.R'`
-    - to rerun the MCMC chains, run `make mcmc`
-    - to reproduce Table 2, run `Rscript 'R/trace_plots.R'` (will only work after the `make mcmc` command)
-    - to redo the data wrangling, run `make bigfour`
-    - to recompile the game results, run `make results`
+- to reproduce the paper, including nearly all figures and tables, type `make` or `make aoas2017.pdf` at the command line
+- to reproduce the trace plots, run `Rscript 'R/trace_plots.R'`
+- to rerun the MCMC chains, run `make mcmc`
+- to reproduce Table 2, run `Rscript 'R/trace_plots.R'` (will only work after the `make mcmc` command)
+- to redo the data wrangling, run `make bigfour`
+- to recompile the game results, run `make results`
 
 Please do not hesitate to contact us for help reproducing our results. 
