@@ -357,7 +357,7 @@ Table \ref{tab:thetas} shows summary statistics of the team strength estimates, 
 
 
 <<echo=FALSE, results='asis'>>=
-load(file.path(root, "data", "tidy_thetas.rda"))
+load(file.path(root, "data", "tidy_thetas.R1.rda"))
 
 tidy_thetas %>%
   mutate(sport = toupper(sport)) %>%
@@ -551,7 +551,7 @@ tidy_thetas_division %>%
 Table \ref{tab:params} shows the mean and standard deviation of posterior draws for $\gamma_{q, season}$, $\gamma_{q, week}$, $\sigma_{q, game}$, $\sigma_{q, season}$, and $\sigma_{q, week}$ for each $q$.
 
 <<echo=FALSE, results='asis'>>=
-load(file.path("data", "params.rda"))
+load(file.path("data", "params.R1.rda"))
 params %>%
   select(-alpha) %>%
   mutate(sport = toupper(sport), sigma_w = sqrt(sigma_w), sigma_g = sqrt(sigma_g), sigma_s = sqrt(sigma_s)) %>%
@@ -624,7 +624,7 @@ Figure~\ref{fig:alphaAll} shows the 2.5th percentile, median, and 97.5th percent
 
 
 <<ha-plot-simple>>=
-load(file.path("data", "tidy_alphas.rda"))
+load(file.path("data", "tidy_alphas.R1.rda"))
 tidy_alpha_prob <- tidy_alphas %>%
   mutate(alpha_prob = mosaic::ilogit(alpha.team.overall), 
          top_half = alpha_prob < 0.58)
@@ -688,7 +688,7 @@ Figure~\ref{fig:R2} shows the coefficient of determination ($R^2$) between each 
 <<validation>>=
 # necessary to reload bigfour
 load(file.path(data_raw, "bigfour.rda"))
-load(file.path(root, "data", "tidy_thetas.rda"))
+load(file.path(root, "data", "tidy_thetas.R1.rda"))
 bigfour <- bigfour %>% 
   arrange(sport, Date)
 
