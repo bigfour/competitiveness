@@ -2,6 +2,8 @@ source("~/Dropbox/Compete/config.R")
 library(rjags)
 load(file.path(data_raw, "bigfour.rda"))
 
+### Here's the logit function
+
 logit <- function(p) { 
   out <- log(p/(1 - p))
   return(out)
