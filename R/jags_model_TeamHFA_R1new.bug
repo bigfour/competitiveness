@@ -1,0 +1,61 @@
+model { 
+for (i in 1:n) {
+  y[i] ~ dnorm(mu[i], tauGame)
+  mu[i] <- alpha + alphaInd[z[i]] + inprod(theta[s[i],w[i],],x[i,])
+}
+
+for (j in 1:nTeams) {
+  theta_star[1,1,j] ~ dnorm(0, tauSeason)
+  theta[1,1,j] <- theta_star[1,1,j] - mean(theta_star[1,1,])
+}
+  
+for (j in 1:nHFAs) {
+  alphaInd[j] ~ dnorm(0, tauAlpha)
+}
+
+for (www in 2:nWeeks) {  
+  for (j in 1:nTeams) {
+    theta_star[1,www,j] ~ dnorm(gammaWeek*theta[1,www-1,j], tauWeek)
+    theta[1,www,j] <- theta_star[1,www,j] - mean(theta_star[1,www,])
+  }
+}
+
+for (sss in 2:(nSeas - 1)) {
+  for (j in 1:nTeams) {
+    theta_star[sss,1,j] ~ dnorm(gammaSeason*theta[sss-1,nWeeks,j], tauSeason)
+    theta[sss,1,j] <- theta_star[sss,1,j] - mean(theta_star[sss,1,])
+  }
+    
+  for (www in 2:nWeeks) {  
+    for (j in 1:nTeams) {
+    theta_star[sss,www,j] ~ dnorm(gammaWeek*theta[sss,www-1,j], tauWeek)
+    theta[sss,www,j] <- theta_star[sss,www,j] - mean(theta_star[sss,www,])
+    }
+  }
+}
+
+for (sss in nSeas:nSeas) {
+  for (j in 1:nTeams) {
+    theta_star[sss,1,j] ~ dnorm(gammaSeason*theta[sss-1,nWeeks,j], tauSeason)
+    theta[sss,1,j] <- theta_star[sss,1,j] - mean(theta_star[sss,1,])
+  }
+    
+  for (www in 2:nWeeks.max) {  
+    for (j in 1:nTeams) {
+    theta_star[sss,www,j] ~ dnorm(gammaWeek*theta[sss,www-1,j], tauWeek)
+    theta[sss,www,j] <- theta_star[sss,www,j] - mean(theta_star[sss,www,])
+    }
+  }
+}
+
+
+
+alpha ~ dnorm(0,0.0001)
+tauGame ~ dunif(0,10000)
+tauWeek ~ dunif(0,10000)
+tauSeason ~ dunif(0,10000)
+tauAlpha ~ dunif(0, 10000)
+gammaWeek ~ dunif(0,1.5)
+gammaSeason ~ dunif(0,1)
+
+}
