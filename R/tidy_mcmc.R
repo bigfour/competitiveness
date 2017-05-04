@@ -40,7 +40,7 @@ names(alphaInds) <- sports
 # to save memory!
 rm(dat)
 
-n_sports <- sapply(thetas, length) / 12000
+n_sports <- sapply(thetas, length) / 1200
 
 # tidy up the thetas mcarray
 library(broom)
@@ -70,9 +70,11 @@ tidy_thetas <- lapply(thetas, tidy) %>%
 # crosscheck
 # the means should all be relatively close to 0, right??
 tidy_thetas %>%
-  group_by(sport, season) %>%
+  group_by(sport, season, week) %>%
   summarize(N = n(), mean_theta = mean(theta), sd_theta = sd(theta)) %>%
   print(n = Inf)
+
+
 
 #  devtools::install_github("beanumber/teamcolors")
 
