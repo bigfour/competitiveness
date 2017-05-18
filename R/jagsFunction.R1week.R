@@ -107,15 +107,16 @@ library(foreach)
 ### Initial
 num_adapt <- 100
 num_update <- 200
-num_draws <- 200
+num_draws <- 500
 bugFile <- file.path("~/Dropbox/Compete/R", "jags_model_teamHFA_R1new.bug")
 posteriorDraws = c('alpha','theta','tauGame','tauWeek',
                    'tauSeason','gammaWeek','gammaSeason', 'alphaInd', 'tauAlpha')
 
 
 ### Manual inputs
-league <- c("nfl")
-weekstodo <- 2:17
+league <- c("mlb")
+max.week = ifelse(league == "nfl", 17, ifelse(league == "nba", 24, 28))
+weekstodo <- 2:max.week
 
 
 ### Run the models across weeks within a single sport
@@ -134,6 +135,38 @@ jagsModel(data = bigfour, league = league, bugFile = bugFile,
 proc.time() - ptm
 stopCluster(cl)  
   
+
+
+
+### Manual inputs
+league <- c("nhl")
+max.week = ifelse(league == "nfl", 17, ifelse(league == "nba", 24, 28))
+weekstodo <- 2:max.week
+
+
+### Run the models across weeks within a single sport
+cl <- makeCluster(4)
+registerDoParallel(cl)
+
+ptm <- proc.time()
+foreach(j = weekstodo, .packages=c('dplyr', 'rjags')) %dopar% { 
+  
+  jagsModel(data = bigfour, league = league, bugFile = bugFile, 
+            posteriorDraws = posteriorDraws, nWeeks.max = j,
+            n.adapt = num_adapt, n.update = num_update, 
+            n.draws = num_draws, n.chains = 3, thin = 5)
+}
+
+proc.time() - ptm
+stopCluster(cl)  
+
+
+
+
+
+
+
+
 
 
 

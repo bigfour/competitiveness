@@ -1,9 +1,12 @@
 # tidy the MCMC output
 source("config.R") 
 sports <- c("nfl", "nba", "nhl", "mlb")
-sport <- "nfl"
 
-get_sport <- function(week) {
+#### This file will get the week by week theta's
+#### This file will also make a coefficient of determination plot with future win percentage comparing four methods
+#### This file will also compare log losses'
+
+get_sport <- function(week, sport) {
   message(paste("reading week", week, "data..."))
   load(file.path(mcmc_dir, paste0(sport, "_paper_teamHFA.R1.Week", week, ".RData")))
   out <- data.frame(
@@ -17,24 +20,58 @@ get_sport <- function(week) {
 
 # Extract the values we will need
 weeks <- 2:17
-dat <- lapply(weeks, get_sport)
-thetas <- lapply(dat,function(x){return(x[["theta"]])})  
+dat.nfl <- lapply(weeks, sport = "nfl", get_sport)
+
+weeks <- 2:24
+dat.nba <- lapply(weeks, sport = "nba", get_sport)
+
+weeks <- 2:28
+dat.nhl <- lapply(weeks, sport = "nhl", get_sport)
+
+weeks <- 2:28
+dat.mlb <- lapply(weeks, sport = "mlb", get_sport)
 
 
-fweek <- function(week){
-  week.temp <- thetas[[week-1]][10, week, , , ] ## contains estimates ending in given week of season 10
-  return(data.frame(theta = apply(week.temp, 1, "mean"), team_id = 1:32, week = week, season = 10, sport = "nfl")) ## average by team across iteration and chain
+thetas.nfl <- lapply(dat.nfl,function(x){return(x[["theta"]])})
+thetas.nba <- lapply(dat.nba,function(x){return(x[["theta"]])})
+thetas.nhl <- lapply(dat.nhl,function(x){return(x[["theta"]])})
+thetas.mlb <- lapply(dat.mlb,function(x){return(x[["theta"]])})
+
+
+## Format: 
+#thetas[[1]][season, week, team, iteration, chain] ## contains estimates ending in week 2
+
+## Exists: thetas[[2]][10, 3, 1, , ], thetas[[2]][10, 2, 1, , ], thetas[[2]][10, 1, 1, , ]
+## Does not exist: thetas[[2]][10, 4, 1, , ]
+
+fweek <- function(week, thetas, nteams, sport){
+  last.seas <- 11
+  if (sport == "nfl"){last.seas <- 10}
+  week.temp <- thetas[[week-1]][last.seas, week, , , ] ## contains estimates ending in given week of last season
+  return(data.frame(theta = apply(week.temp, 1, "mean"), team_id = 1:nteams, week = week, season = last.seas, sport = sport)) ## average by team across iteration and chain
 }
 
-nfl.avg <- lapply(weeks, fweek) %>%
-  bind_rows() 
+nfl.avg <- lapply(2:17, fweek, thetas = thetas.nfl, nteams = 32, sport = "nfl") %>%
+  bind_rows()
+nba.avg <- lapply(2:24, fweek, thetas = thetas.nba, nteams = 30, sport = "nba") %>%
+  bind_rows()  
+nhl.avg <- lapply(2:28, fweek, thetas = thetas.nhl, nteams = 30, sport = "nhl") %>%
+  bind_rows()  
+mlb.avg <- lapply(2:28, fweek, thetas = thetas.mlb, nteams = 30, sport = "mlb") %>%
+  bind_rows()  
 
-thetas[[1]][season, week, team, iteration, chain] ## contains estimates ending in week 2
 
 
 library(broom)
-tidy_thetas <- nfl.avg %>%
-  bind_rows() %>%
+tidy_thetas <- bind_rows(
+  nfl.avg %>%
+    bind_rows(), 
+  nba.avg %>% 
+    bind_rows(), 
+  nhl.avg %>% 
+    bind_rows(), 
+  mlb.avg %>% 
+    bind_rows()) %>%
   mutate(max.week = ifelse(sport == "nfl", 17, ifelse(sport == "nba", 24, 28))) %>% 
   mutate(time_val = 2004 + season + week / max.week)
 
@@ -80,6 +117,8 @@ save(tidy_thetas.week, file = file.path(root, "data", "tidy_thetas.R1.week.rda")
 
 load(file.path(data_raw, "bigfour.rda"))
 load(file.path(root, "data", "tidy_thetas.R1.rda"))
+
+
 bigfour <- bigfour %>% 
   arrange(sport, Date)
 
@@ -127,7 +166,7 @@ stack.game1 <- stack.game %>%
 
 stack.game1 <- filter(stack.game1, !(season==2012&sport == "nba"),
                       !(season==2013 & sport == "nhl"))
-stack.game1 <- filter(stack.game1, season == 2015, sport == "nfl")
+stack.game1 <- filter(stack.game1, (season == 2015 & sport == "nfl") | (season == 2016) )
 
 ####################################################
 ## Next step: consider comparing wins and losses vs. thetas at predicting 
@@ -147,12 +186,17 @@ func.sport2 <- function(sports, days){
 }
 
 nfl <- func.sport2("nfl", 16)
+nba <- func.sport2("nba", 82)
+nhl <- func.sport2("nhl", 82)
+mlb <- func.sport2("mlb", 162)
 
 
-#mlb$sport <- "mlb"; nba$sport <- "nba"; nhl$sport <- "nhl"; 
+
+mlb$sport <- "mlb"
+nba$sport <- "nba"
+nhl$sport <- "nhl"
 nfl$sport <- "nfl"
-#all.sport.winp.remains <- rbind(mlb, nba, nhl, nfl)
-all.sport.winp.remains <- rbind(nfl)
+all.sport.winp.remains <- rbind(mlb, nba, nhl, nfl)
 
 
 
@@ -168,16 +212,17 @@ func.sport2 <- function(sports, days){
   return(corr.grid)
 }
 
-#mlb <- func.sport2("mlb", 162)
+mlb <- func.sport2("mlb", 162)
 nfl <- func.sport2("nfl", 16)
-#nba <- func.sport2("nba", 82)
-#nhl <- func.sport2("nhl", 82)
+nba <- func.sport2("nba", 82)
+nhl <- func.sport2("nhl", 82)
 
 
-#mlb$sport <- "mlb"; nba$sport <- "nba"; nhl$sport <- "nhl"; 
+mlb$sport <- "mlb"; 
+nba$sport <- "nba" 
+nhl$sport <- "nhl" 
 nfl$sport <- "nfl"
-#all.sport.pdiff.remains <- rbind(mlb, nba, nhl, nfl)
-all.sport.pdiff.remains <- rbind(nfl)
+all.sport.pdiff.remains <- rbind(mlb, nba, nhl, nfl)
 
 
 
@@ -213,20 +258,26 @@ func.sport3 <- function(sports, week){
   return(corr.grid)
 }
 
-#mlb <- func.sport3("mlb", 162)
+mlb <- func.sport3("mlb", 162)
 nfl <- func.sport3("nfl", 16)
-#nba <- func.sport3("nba", 82)
-#nhl <- func.sport3("nhl", 82)
+nba <- func.sport3("nba", 82)
+nhl <- func.sport3("nhl", 82)
 
 
-#mlb$sport <- "mlb"; nba$sport <- "nba"; nhl$sport <- "nhl"; nfl$sport <- "nfl"
+mlb$sport <- "mlb"
+nba$sport <- "nba"
+nhl$sport <- "nhl"
 nfl$sport <- "nfl"
+all.sport.theta.remains <- rbind(nfl, nba, nhl, mlb)
+all.sport.theta.remains$type <- "est.theta"
 
 
 
 
 ### new files
-week.data <- tidy_thetas.week %>% select(sport, season, name.x, week, theta) %>% rename(team = name.x) %>% mutate(season = 2015)
+week.data <- tidy_thetas.week %>% 
+  select(sport, season, name, week, theta) %>% 
+  rename(team = name) %>% mutate(season = ifelse(sport == "nfl", 2015, 2016))
 
 
 min.day <- stack.game1 %>%
@@ -250,20 +301,21 @@ func.sport3 <- function(sports, week){
   return(corr.grid)
 }
 
-#mlb <- func.sport3("mlb", 162)
+mlb <- func.sport3("mlb", 162)
 nfl <- func.sport3("nfl", 16)
-#nba <- func.sport3("nba", 82)
-#nhl <- func.sport3("nhl", 82)
+nba <- func.sport3("nba", 82)
+nhl <- func.sport3("nhl", 82)
 
 
-#mlb$sport <- "mlb"; nba$sport <- "nba"; nhl$sport <- "nhl"; nfl$sport <- "nfl"
+mlb$sport <- "mlb"
+nba$sport <- "nba"
+nhl$sport <- "nhl"
 nfl$sport <- "nfl"
 
-all.sport.week <- nfl
+all.sport.week <- rbind(nfl, nba, nhl, mlb)
 
-#all.sport.theta.remains <- rbind(mlb, nba, nhl, nfl)
-all.sport.theta.remains <- rbind(nfl)
-all.sport.theta.remains$type <- "est.theta"
+
+
 all.sport.winp.remains$type <- "winp"
 all.sport.pdiff.remains$type <- "pdiff"
 all.sport.week$type <- "week"
@@ -271,13 +323,71 @@ all.sport.week$type <- "week"
 
 all.sport.both <- rbind(all.sport.theta.remains, all.sport.winp.remains, all.sport.pdiff.remains, all.sport.week)
 #pdiff is 1, thetas is 2, winp is 3
-gg.r2 <- ggplot(all.sport.both, aes(day.season, corr.day, lty = type, colour = type)) +
+gg.r2 <- ggplot(all.sport.both, aes(day.season, corr.day, lty = type)) +
   geom_line() + 
-  scale_y_continuous(labels = scales::percent, "", lim = c(0, .8)) + 
+  scale_y_continuous(labels = scales::percent, "", lim = c(0, .85)) + 
   scale_x_continuous("Game of season") +
-  #scale_linetype_manual(labels = c("Our estimates", "Point differential", "Win %", "Weekly"), 
-   #                     values = c(1, 2, 3, 4), "Type") +
+  scale_linetype_manual(labels = c("Simultaneous", "Point differential", "Sequential", "Win %"), 
+                        values = c(1, 2, 3, 4), "Type") +
   facet_wrap(~toupper(sport), scales = "free")  + 
-  labs(title = "Coefficient of determination with future in-season win %") 
+  labs(title = "Coefficient of determination with future in-season win %") + 
+  facet_wrap(~sport, scales = "free_x")
 
 gg.r2
+
+
+
+#### Log loss
+
+load(file.path(root, "data", "tidy_thetas.R1.rda"))
+bigfour.last <- filter(bigfour, (season == 2015 & sport == "nfl") | (season == 2016))
+tidy_thetas <- filter(tidy_thetas, (season == 10 & sport == "nfl") | (season == 11))
+min.day <- bigfour.last %>%
+  group_by(season) %>%
+  summarise(min.day = min(gameDate))
+
+bigfour.last <- bigfour.last %>%
+  left_join(min.day) %>%
+  mutate(day = as.Date(gameDate) - as.Date(min.day), week = as.numeric(floor(day/7) + 1))
+load(file.path("data", "tidy_alphas.R1.rda"))
+tidy_alphas <- select(tidy_alphas, alpha.team.overall, team)
+bigfour.last <- bigfour.last %>% left_join(tidy_alphas, by = c("home_team" = "team"))
+
+
+bigfour.last <- bigfour.last %>% 
+  left_join(select(tidy_thetas.week, theta, week, name), by = (c("visitor_team" = "name", "week" = "week"))) %>% 
+  rename(vis_thetaS = theta) %>%
+  left_join(select(tidy_thetas.week, theta, week, name), by = (c("home_team" = "name", "week" = "week"))) %>% 
+  rename(home_thetaS = theta) %>%
+  mutate(p_homeS = exp(alpha.team.overall + home_thetaS - vis_thetaS)/(1 + exp(alpha.team.overall + home_thetaS - vis_thetaS)))%>%
+  left_join(select(tidy_thetas, theta, week, name), by = (c("visitor_team" = "name", "week" = "week"))) %>% 
+  rename(vis_thetaC = theta) %>%
+  left_join(select(tidy_thetas, theta, week, name), by = (c("home_team" = "name", "week" = "week"))) %>% 
+  rename(home_thetaC = theta) %>%
+  mutate(p_homeC = exp(alpha.team.overall + home_thetaC - vis_thetaC)/(1 + exp(alpha.team.overall + home_thetaC - vis_thetaC)))
+         
+bigfour.last.ll <- bigfour.last %>% 
+  mutate(log.loss.true = home_win*log(p_home) + (1-home_win)*log(1-p_home), 
+         log.loss.Sequential = home_win*log(p_homeS) + (1-home_win)*log(1-p_homeS), 
+         log.loss.Cumulative = home_win*log(p_homeC) + (1-home_win)*log(1-p_homeC)) 
+
+
+
+
+temp <- gather(bigfour.last.ll, "type", "logloss", log.loss.true:log.loss.Cumulative) %>% select(Date: ml_home, home_win, type, sport, logloss, week) %>%
+   filter(week > 1)
+
+meds <- temp %>% group_by(sport, type) %>% summarise(ave.loss = mean(logloss, na.rm = TRUE), med.loss = median(logloss, na.rm = TRUE)) 
+meds
+
+ggplot(temp, aes(x = logloss, colour = type, fill = type)) + geom_density(alpha = 0.2) + 
+   ggtitle("Density curves of game level log loss") + 
+   geom_vline(xintercept = log(0.5), lty = 2) + 
+   annotate("text", x = -1, y = 1.2, label = "Coin flip")  + facet_wrap(~sport)
+## Add medians or means to the plot... add in coin toss line
+
+ggplot(bigfour.last.ll, aes(log.loss.Cumulative - log.loss.Sequential)) + geom_histogram() + geom_vline(xintercept= 0) + 
+  facet_wrap(~sport, scales = "free_y") + ggtitle("Differences in game level log loss, cumulative - sequential")  + 
+  xlab("Difference in log loss (sequential model predictions are better < 0)")
+
+
