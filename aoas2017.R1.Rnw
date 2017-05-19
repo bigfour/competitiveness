@@ -319,7 +319,7 @@ Finally, letting $\tau^{2}_{q,game} = 1 / \sigma^{2}_{q,game}$, $\tau^{2}_{q,sea
 
 Our primary interest lies in three levels of variability with respect to the $\mathbf{\theta}_{(q,s,k)}$'s. First, there is variability at any fixed time $s$ and $k$ across $i$. This reflects the between-team variability in team strength; in other words, how equivalent are the teams to one another at a given snapshot in time? Second, there is variability across $k$, reflected in the week-to-week autoregressive parameter, $\gamma_{q,week}$. This generalizes to how teams can improve or worsen over the course of a season. Third, there is variability across $s$, corresponding to the season-to-season autoregressive parameter, $\gamma_{q,season}$. This accounts for larger changes to team ability that can occur between seasons. 
 
-\hl{Our secondary interest liesin the predictive capability of our team strength estimates with respect to the information sharing of state-space frameworks. Models IHA and CHA each blend outcomes from weeks prior to $k$, during $k$, and after $k$ to estimate team strength. While this is ideal for measuring league parity, it does not work so well with game predictions. As such, in each $q$ for season $S_q$ (the last season of our data), we also fit a series of state-space models using Model IHA, done on a weekly basis (these are termed $sequential$ fits, as opposed to $cumulative$. Formally, for $k = 2, \ldots, K_{q}$ in season $S_q$, we use Model IHA only on games during $k$ or prior.} \hl{Note: see how Glickman worded his prediction section}
+\hl{Our secondary interest lies in using estimated team strengths to better gauge the equivalence of each league's teams; i.e., how likely was it or will it be for each team to beat other teams? In this respect, we are interested in both looking backwards across time (descriptive) as well as looking forwards (predictive). However, Models IHA and CHA each blend outcomes from weeks prior to $k$, during $k$, and after $k$ to estimate team strength. While this is ideal for measuring league parity looking backwards, it is less appropriate to make future game predictions. As such, in each $q$ for season $S_q$ (the last season of our data), we also fit a series of state-space models using Model IHA, done on a weekly basis (these are termed $sequential$ fits, as opposed to $cumulative$). Formally, for $k = 2, \ldots, K_{q}$ in season $S_q$, we also fit Model IHA only on games during $k$ or prior. The comparison of $sequential$ versus $cumulative$ fits of team strength can help us gauge how much state-space model estimates are due to future outcomes, as well as providing a sense of the predictive capability of our estimates.}
 
 %for $s = 1, \ldots , S_{q-1}$ and $k = 1$ in season $S_q$, team strength
 
@@ -330,13 +330,15 @@ While we are unable to share the exact betting market data due to licensing rest
 
 \section{Results}
 
-In this section we present our results. We begin by validating and comparing the fits of Models IHA and CHA. We discuss the implications of our estimates of team strength and home advantage, as well as the interpretation of our variance and autoregressive parameters. We conclude by evaluating our team strength parameters and illustrating how they could be used to build a league parity metric.  
+In this section we present our results. We begin by validating and comparing the fits of Models IHA and CHA. We discuss the implications of our estimates of team strength and home advantage, as well as the interpretation of our variance and autoregressive parameters. We conclude by evaluating our team strength parameters and illustrating how they could be used for predictive purposes and to build a league parity metric.  
 
 \subsection{Model fit}
 
 We identified no concerns with the fit of Models IHA and CHA. Trace plots of $\alpha_{q_0}$, $\gamma_{q, season}$, $\gamma_{q, week}$, $\sigma_{q, game}$, $\sigma_{q, season}$, and $\sigma_{q, week}$ are shown for each $q$ in Figures \ref{fig:MLBtrace}--\ref{fig:NHLtrace} in the Appendix. Visual inspection of these plots does not provide evidence of a lack of convergence or of autocorrelation between draws. These trace plots stem from Model IHA; conclusions are similar when plotting draws from Model CHA. 
 
 Table~\ref{tab:DIC} shows the deviance information criterion (DIC) for each fit in each league, along with the difference in DIC values and the associated standard error (SE). In each of the leagues, fits with a team-specific HA (Model IHA) yielded lower DIC's (lower is better) by a statistically significant margin, with the most noticeable difference in fit improvement in the NBA.
+
+\hl{This needs to be updated with better fits}
 
 \begin{table}[!ht]
 \makebox[\linewidth]{
@@ -579,12 +581,12 @@ params %>%
 
 Posterior draws of $\sigma_{q, game}$ suggest that the highest game-level errors in our log-odds probability estimates occur in the NBA (median posterior draw of $\sigma_{NBA, game}$ = 0.273), followed in order by the NFL, MLB, and the NHL. Interestingly, although Figure \ref{fig:spaghetti} identifies that the talent gap between teams is smallest in MLB, $\sigma_{MLB, game} \approx 2 \times \sigma_{NHL, game}$ in our posterior draws. We posit that this additional game-level error in MLB is a function of the league's pitching match-ups, in which teams rotate through a handful of starting pitchers of varying calibers. 
 
-We also examine the joint distribution of the variability in team strength on a season-to-season ($\sigma_{q,season}$) and week-to-week ($\sigma_{q,week}$) basis via the contour plot in Figure~\ref{fig:contourSigma}, using separate colors for each $q$. Figure~\ref{fig:contourSigma} reveals that the highest uncertainty with respect to team strength occurs in the NBA, followed in order by the NFL, NHL, and MLB. 
+We also examine the joint distribution of the variability in team strength on a season-to-season ($\sigma_{q,season}$) and week-to-week ($\sigma_{q,week}$) basis via the contour plot in Figure~\ref{fig:contourSigma} (Appendix), using separate colors for each $q$. Figure~\ref{fig:contourSigma} reveals that the highest uncertainty with respect to team strength occurs in the NBA, followed in order by the NFL, NHL, and MLB. 
 
 There are a couple of plausible explanations regarding the increased uncertainty in NBA team strength on a weekly basis. Injuries, the resting of starters, and in-season trades would seemingly have a larger impact in a sport like basketball where fewer players are participating at a single point in time. In particular, our model cannot precisely gauge team strength when star players, who could play, are rested in favor of inferior players. Relative to the other professional leagues, star players take on a more important role in the NBA \citep{berri2006road}, an observation undoubtedly known in betting markets. That said, while there is increased variability in our estimate of NBA team strengths, when considering differences in team talent to begin with, these absolute differences are not as extreme (e.g., a difference in team strength of 0.05 means less in the NBA than in the NHL). 
 
 
-<<contourSigma, fig.cap="Contour plot of the estimated season-to-season and week-to-week variability across all four major sports leagues. By both measures, uncertainty is lowest in MLB and highest in the NBA.">>=
+<<>>=
 nfl.sum <- params %>% 
   filter(sport == "nfl") %>% 
   summarise(mean.week = round(mean(gamma_w), 2), 
@@ -592,7 +594,7 @@ nfl.sum <- params %>%
             low.bound = round(quantile(gamma_s, 0.025), 2), 
             upp.bound = round(quantile(gamma_s, 0.975), 2))
 
-ggplot(params, aes(x = sqrt(sigma_w), y = sqrt(sigma_s), 
+p.sigma <- ggplot(params, aes(x = sqrt(sigma_w), y = sqrt(sigma_s), 
                    color = toupper(sport))) + 
   geom_density_2d() + geom_point(alpha = 0.1)  + 
   xlab(expression(sigma[week])) + 
@@ -601,8 +603,8 @@ ggplot(params, aes(x = sqrt(sigma_w), y = sqrt(sigma_s),
   theme_grey(base_size = 16) 
 @
 
-<<contourGamma, fig.cap="Contour plot of the estimated season-to-season and week-to-week autoregressive parameters across all four major sports leagues. ">>=
-ggplot(params, aes(x = gamma_w, y = gamma_s, color = toupper(sport))) + 
+<<>>=
+p.gamma <- ggplot(params, aes(x = gamma_w, y = gamma_s, color = toupper(sport))) + 
   geom_vline(xintercept = 1, color = "darkgray", linetype = 2) + 
   annotate("text", x = 1.001, y = 0.85, 
            label = "Random\nWalk", hjust = "left") + 
@@ -614,7 +616,7 @@ ggplot(params, aes(x = gamma_w, y = gamma_s, color = toupper(sport))) +
 @
 
 
-Similarly, Figure~\ref{fig:contourGamma} displays the joint posterior distribution of $\gamma_{q, season}$ and $\gamma_{q, week}$ via contour plots for each $q$. On a season-to-season basis, team strengths in each of the leagues tend to revert towards the league average of zero as all draws of $\gamma_{q, season} < 1$ for all $q$. Reversion towards the mean is largest in the NHL (estimated $\gamma_{NHL, season}$ = 0.54, implying 46\% reversion), followed by the NBA (38\%), MLB (38\% reversion), and the NFL (31\%). However, the only pair of leagues with non-overlapping credible intervals are the NFL and NHL. 
+Similarly, Figure~\ref{fig:contourGamma} (Appendix) displays the joint posterior distribution of $\gamma_{q, season}$ and $\gamma_{q, week}$ via contour plots for each $q$. On a season-to-season basis, team strengths in each of the leagues tend to revert towards the league average of zero as all draws of $\gamma_{q, season} < 1$ for all $q$. Reversion towards the mean is largest in the NHL (estimated $\gamma_{NHL, season}$ = 0.54, implying 46\% reversion), followed by the NBA (38\%), MLB (38\% reversion), and the NFL (31\%). However, the only pair of leagues with non-overlapping credible intervals are the NFL and NHL. 
 
 For each of the NHL, NBA, and NFL, posterior estimates of $\gamma_{q, week}$ (as well as 95\% credible intervals) imply an autoregressive nature to team strength within each season. Interestingly, the NBA and NFL are the least consistent leagues on a week-to-week basis. In MLB, however, team strength estimates quite possibly follow a random walk (i.e., $\gamma_{MLB, week} = 1$), in which the succession of team strength is unpredictable.
 
@@ -685,14 +687,17 @@ These distinctions have plausible impacts on league standings. An NBA team with 
 
 \subsection{Evaluation of team strength estimates}
 
-Ultimately, estimates from Model IHA are designed to estimate team quality at any given point in a season in the absence of factors such as the home advantage and opponent caliber. If these estimates more properly assess team quality than other metrics of team success (e.g., won-loss percentage or point differential), they should more accurately link to future performance, such as how well teams will perform over the remainder of the season.  
+Ultimately, estimates from Model IHA are designed to estimate team quality at any given point in a season in the absence of factors such as the home advantage and opponent caliber. If these estimates more properly assess team quality than other metrics of team success (e.g., won-loss percentage or point differential), they should more accurately link to future performance, such as how well teams will perform over the remainder of the season. \hl{However, it's admittedly unfair to use $cumulative$ estimates of team strength, as future game outcome information is implicity used to predict those same game outcomes. In this sense, $sequential$ fits may more appropriate for understanding the predictive capability of our state-space models.}
 
-Figure~\ref{fig:R2} shows the coefficient of determination ($R^2$) between each team's future won-loss percentage in a season and each team's (i) average team strength estimate from Model IHA, (ii) season-to-date cumulative point differential, and (iii) season-to-date won-loss percentage. Within each sport, this is computed by game number, which helps to account for league-level differences in season length. For purposes of using our team strength estimates, we took the mean posterior draw for each team in each week a particular contest was played. The lockout-shortened seasons in the NBA (2012) and NHL (2013) were dropped.
+Figure~\ref{fig:R2} shows the coefficient of determination ($R^2$) between each team's future won-loss percentage in a season and each team's (i) average team strength estimate from $cumulative$ Model IHA, (ii) average team strength estimate from $sequential$ Model IHA, (iii) season-to-date cumulative point differential, and (iv) season-to-date won-loss percentage. Within each sport, this is computed by game number, which helps to account for league-level differences in season length. For purposes of using our $cumulative$ team strength estimates, we took the mean posterior draw for each team in each week a particular contest was played; for $sequential$, we used the mean posterior draw for each team in the week prior. 
 
 <<validation>>=
 # necessary to reload bigfour
+sports <- c("nfl", "nba", "nhl", "mlb")
 load(file.path(data_raw, "bigfour.rda"))
 load(file.path(root, "data", "tidy_thetas.R1.rda"))
+load(file.path(root, "data", "tidy_thetas.R1.week.rda"))
+
 bigfour <- bigfour %>% 
   arrange(sport, Date)
 
@@ -736,11 +741,11 @@ stack.game1 <- stack.game %>%
          wins.final = sum(win), win.p.final = wins.final/n(), 
          win.p.left = (wins.final - cum.wins)/(n()-n.game), 
          cum.diff = cumsum(pdiff)) #%>%
-  #filter(!(sport == "nba" & n.game > 20))
+#filter(!(sport == "nba" & n.game > 20))
 
 stack.game1 <- filter(stack.game1, !(season==2012&sport == "nba"),
                       !(season==2013 & sport == "nhl"))
-
+stack.game1 <- filter(stack.game1, (season == 2015 & sport == "nfl") | (season == 2016) )
 
 ####################################################
 ## Next step: consider comparing wins and losses vs. thetas at predicting 
@@ -759,13 +764,17 @@ func.sport2 <- function(sports, days){
   return(corr.grid)
 }
 
-mlb <- func.sport2("mlb", 162)
 nfl <- func.sport2("nfl", 16)
 nba <- func.sport2("nba", 82)
 nhl <- func.sport2("nhl", 82)
+mlb <- func.sport2("mlb", 162)
 
 
-mlb$sport <- "mlb"; nba$sport <- "nba"; nhl$sport <- "nhl"; nfl$sport <- "nfl"
+
+mlb$sport <- "mlb"
+nba$sport <- "nba"
+nhl$sport <- "nhl"
+nfl$sport <- "nfl"
 all.sport.winp.remains <- rbind(mlb, nba, nhl, nfl)
 
 
@@ -788,7 +797,10 @@ nba <- func.sport2("nba", 82)
 nhl <- func.sport2("nhl", 82)
 
 
-mlb$sport <- "mlb"; nba$sport <- "nba"; nhl$sport <- "nhl"; nfl$sport <- "nfl"
+mlb$sport <- "mlb"; 
+nba$sport <- "nba" 
+nhl$sport <- "nhl" 
+nfl$sport <- "nfl"
 all.sport.pdiff.remains <- rbind(mlb, nba, nhl, nfl)
 
 
@@ -831,28 +843,78 @@ nba <- func.sport3("nba", 82)
 nhl <- func.sport3("nhl", 82)
 
 
-mlb$sport <- "mlb"; nba$sport <- "nba"; nhl$sport <- "nhl"; nfl$sport <- "nfl"
-
-
-all.sport.theta.remains <- rbind(mlb, nba, nhl, nfl)
+mlb$sport <- "mlb"
+nba$sport <- "nba"
+nhl$sport <- "nhl"
+nfl$sport <- "nfl"
+all.sport.theta.remains <- rbind(nfl, nba, nhl, mlb)
 all.sport.theta.remains$type <- "est.theta"
+
+
+
+
+### new files
+week.data <- tidy_thetas.week %>% 
+  mutate(week = week) %>%
+  select(sport, season, name, week, theta) %>% 
+  rename(team = name) %>% mutate(season = ifelse(sport == "nfl", 2015, 2016))
+
+
+min.day <- stack.game1 %>%
+  group_by(season, sport) %>%
+  summarise(min.day = min(gameDate))
+
+stack.game2 <- stack.game1 %>%
+  left_join(min.day) %>%
+  mutate(day = as.Date(gameDate) - as.Date(min.day), week = as.numeric(floor(day/7)+1)) %>%
+  left_join(week.data)
+
+
+func.sport3 <- function(sports, week){
+  names.sport <- subset(stack.game2, sport == sports)  
+  corr.grid <- expand.grid(day.season = 1:week, corr.day = NA)
+  for (i in 1:week){
+    day.sport <- subset(stack.game2, n.game == i & sport == sports)
+    corr.grid[i, 2] <- cor(day.sport$theta, day.sport$win.p.left, 
+                           use = "pairwise.complete.obs")^2
+  }
+  return(corr.grid)
+}
+
+mlb <- func.sport3("mlb", 162)
+nfl <- func.sport3("nfl", 16)
+nba <- func.sport3("nba", 82)
+nhl <- func.sport3("nhl", 82)
+
+
+mlb$sport <- "mlb"
+nba$sport <- "nba"
+nhl$sport <- "nhl"
+nfl$sport <- "nfl"
+
+all.sport.week <- rbind(nfl, nba, nhl, mlb)
+
+
+
 all.sport.winp.remains$type <- "winp"
 all.sport.pdiff.remains$type <- "pdiff"
+all.sport.week$type <- "week"
 
-all.sport.both <- rbind(all.sport.theta.remains, all.sport.winp.remains, all.sport.pdiff.remains)
+
+all.sport.both <- rbind(all.sport.theta.remains, all.sport.winp.remains, all.sport.pdiff.remains, all.sport.week)
 #pdiff is 1, thetas is 2, winp is 3
-
 gg.r2 <- ggplot(all.sport.both, aes(day.season, corr.day, lty = type)) +
-  geom_step() + 
-  scale_y_continuous(labels = scales::percent, "", lim = c(0, .8)) + 
+  geom_line() + 
+  scale_y_continuous(labels = scales::percent, "", lim = c(0, .85)) + 
   scale_x_continuous("Game of season") +
-  scale_linetype_manual(labels = c("Our estimates", "Point differential", "Win %"), 
-                        values = c(1, 2, 3), "Type") +
+  scale_linetype_manual(labels = c("Cumulative", "Point differential", "Sequential", "Win %"), 
+                        values = c(1, 2, 3, 4), "Type") +
   facet_wrap(~toupper(sport), scales = "free")  + 
-  labs(title = "Coefficient of determination with future in-season win %") 
+  labs(title = "Coefficient of determination with future in-season win %") + 
+  facet_wrap(~sport, scales = "free_x")
 @
 
-<<R2, fig.height = 3, fig.width = 6, fig.cap="Coefficient of determination with future in-season win percentage. We note the improvement our team strength estimates offer over season-to-date win percentage and season-to-date point differential in all sports, especially early in the season. ">>=
+<<R2, fig.height = 5, fig.width = 6, fig.cap="Coefficient of determination with future in-season win percentage. We note the improvement our team strength estimates offer over season-to-date win percentage and season-to-date point differential in all sports, especially early in the season, and the slight improvement in using $cumulative$ team strength estimates over $sequential$.">>=
 gg.r2
 @
 
@@ -997,6 +1059,16 @@ spag_sport("NFL")
 spag_sport("NHL")
 @
 
+
+<<contourSigma, fig.cap="Contour plot of the estimated season-to-season and week-to-week variability across all four major sports leagues. By both measures, uncertainty is lowest in MLB and highest in the NBA.">>=
+p.sigma
+@
+
+
+
+<<contourGamma, fig.cap="Contour plot of the estimated season-to-season and week-to-week autoregressive parameters across all four major sports leagues. ">>=
+p.gamma
+@
 
 
 \phantom{xxxx}
