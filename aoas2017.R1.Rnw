@@ -687,9 +687,11 @@ These distinctions have plausible impacts on league standings. An NBA team with 
 
 \subsection{Evaluation of team strength estimates}
 
-Ultimately, estimates from Model IHA are designed to estimate team quality at any given point in a season in the absence of factors such as the home advantage and opponent caliber. If these estimates more properly assess team quality than other metrics of team success (e.g., won-loss percentage or point differential), they should more accurately link to future performance, such as how well teams will perform over the remainder of the season. \hl{However, it's admittedly unfair to use $cumulative$ estimates of team strength, as future game outcome information is implicity used to predict those same game outcomes. In this sense, $sequential$ fits may more appropriate for understanding the predictive capability of our state-space models.}
+Ultimately, estimates from Model IHA are designed to estimate team quality at any given point in a season in the absence of factors such as the home advantage and opponent caliber. If these estimates more properly assess team quality than other metrics of team success (e.g., won-loss percentage or point differential), they should more accurately link to future performance, such as how well teams will perform over the remainder of the season. \hl{Additionally, game-level probabilities estimated from IHA coefficients should closely link to observed money lines.}
 
-Figure~\ref{fig:R2} shows the coefficient of determination ($R^2$) between each team's future won-loss percentage in a season and each team's (i) average team strength estimate from $cumulative$ Model IHA, (ii) average team strength estimate from $sequential$ Model IHA, (iii) season-to-date cumulative point differential, and (iv) season-to-date won-loss percentage. Within each sport, this is computed by game number, which helps to account for league-level differences in season length. For purposes of using our $cumulative$ team strength estimates, we took the mean posterior draw for each team in each week a particular contest was played; for $sequential$, we used the mean posterior draw for each team in the week prior. 
+\hl{However, it's admittedly unfair to use $cumulative$ estimates of team strength, as future game outcome information is implicity used to predict those same game outcomes. In this sense, $sequential$ fits may more appropriate for understanding the predictive capability of our state-space models. In this section, we present two ways of comparing the predictive accuracy of both $sequential$ and $cumulative$ state-space fits.}
+
+First, Figure ~\ref{fig:R2} shows the coefficient of determination ($R^2$) between each team's future won-loss percentage in a season and each team's (i) average team strength estimate from $cumulative$ Model IHA, \hl{(ii) average team strength estimate from $sequential$ Model IHA}, (iii) season-to-date cumulative point differential, and (iv) season-to-date won-loss percentage. Within each sport, this is computed by game number, which helps to account for league-level differences in season length. \hl{For purposes of using our $cumulative$ team strength estimates, we took the mean posterior draw for each team in each week a particular contest was played; for $sequential$, we used the mean posterior draw for each team in the week prior.}
 
 <<validation>>=
 # necessary to reload bigfour
@@ -918,10 +920,100 @@ gg.r2 <- ggplot(all.sport.both, aes(day.season, corr.day, lty = type)) +
 gg.r2
 @
 
-Across each sport, our estimates of team strength consistently outperform past team win percentage and point differential in predicting future win percentage. This gap is most pronounced earlier in each season, which is not surprising given the instability of won-loss percentage and point differential in a small number of games. Differences in predictive accuracy remain throughout most of the regular season in MLB, the NHL, and the NFL. However, by the NBA's mid-season, won-loss ratio and point differential are similar to our estimates of team strength in assessing future performance. By and large, this confirms the findings of \cite{wolfson2015s}, who identified that most of the information needed to predict the remainder of the NBA season is contained within the first third of the year.
+Across each sport, our estimates of team strength consistently outperform past team win percentage and point differential in predicting future win percentage. This gap is most pronounced earlier in each season, which is not surprising given the instability of won-loss percentage and point differential in a small number of games. \hl{In general, our $cumulative$ estimates better correlate to future performance than our $sequential ones$. Differences in predictive accuracy remain throughout most of the regular season in MLB, the NHL, and the NFL.} However, by the NBA's mid-season, won-loss ratio and point differential are similar to our estimates of team strength in assessing future performance. By and large, this confirms the findings of \cite{wolfson2015s}, who identified that most of the information needed to predict the remainder of the NBA season is contained within the first third of the year.
 
-Altogether, results suggest that across seasons and sports, team strength estimates from our state-space model more accurately assess team caliber than won-loss percentage and point differential. 
+\hl{As a secondary comparison of $cumulative$ and $sequential$ state-space fits, we use the average posterior draws of team strength and franchise-specific home advantages at each week to extract game-level probabilities. For $sequential$ IHA fits, probabilities are estimated using team strengths from fits ending the week prior, to ensure that no future outcomes are used to inform predictions. Table} \ref{tab:ll} highlights the average and median log-loss in each sport comparing observed probabilities (our $p_{(q,s,k)ij}$'s) versus estimated $p_{(q,s,k)ij}$'s imputed using both $cumulative$ and $sequential$ fits. \hl{Log-loss is a proper scoring rule for probabilistic predictions} \citep{gneiting2007strictly} and is a commonly used approach for assessing model accuracy in sports \citep{lopez2015building, ruiz2015generative, buttrey2016beating}.
 
+<<validation2>>=
+load(file.path(root, "data", "tidy_thetas.R1.rda"))
+load(file.path(data_raw, "bigfour.rda"))
+load(file.path(root, "data", "tidy_thetas.R1.week.rda"))
+bigfour.last <- filter(bigfour, (season == 2015 & sport == "nfl") | (season == 2016))
+tidy_thetas <- filter(tidy_thetas, (season == 10 & sport == "nfl") | (season == 11))
+min.day <- bigfour.last %>%
+  group_by(season, sport) %>%
+  summarise(min.day = min(gameDate))
+
+bigfour.last <- bigfour.last %>%
+  left_join(min.day) %>%
+  mutate(day = as.Date(gameDate) - as.Date(min.day), week = as.numeric(floor(day/7) + 1))
+load(file.path("data", "tidy_alphas.R1.rda"))
+tidy_alphas <- select(tidy_alphas, alpha.team.overall, team)
+bigfour.last <- bigfour.last %>% left_join(tidy_alphas, by = c("home_team" = "team"))
+
+tidy_thetas.week$week <- tidy_thetas.week$week + 1
+
+bigfour.last <- bigfour.last %>% 
+  left_join(select(tidy_thetas.week, theta, week, name), by = (c("visitor_team" = "name", "week" = "week"))) %>% 
+  rename(vis_thetaS = theta) %>%
+  left_join(select(tidy_thetas.week, theta, week, name), by = (c("home_team" = "name", "week" = "week"))) %>% 
+  rename(home_thetaS = theta) %>%
+  mutate(p_homeS = exp(alpha.team.overall + home_thetaS - vis_thetaS)/(1 + exp(alpha.team.overall + home_thetaS - vis_thetaS)))%>%
+  left_join(select(tidy_thetas, theta, week, name), by = (c("visitor_team" = "name", "week" = "week"))) %>% 
+  rename(vis_thetaC = theta) %>%
+  left_join(select(tidy_thetas, theta, week, name), by = (c("home_team" = "name", "week" = "week"))) %>% 
+  rename(home_thetaC = theta) %>%
+  mutate(p_homeC = exp(alpha.team.overall + home_thetaC - vis_thetaC)/(1 + exp(alpha.team.overall + home_thetaC - vis_thetaC)))
+         
+bigfour.last.ll <- bigfour.last %>% 
+  mutate(Observed = home_win*log(p_home) + (1-home_win)*log(1-p_home), 
+         Sequential = home_win*log(p_homeS) + (1-home_win)*log(1-p_homeS), 
+         Cumulative = home_win*log(p_homeC) + (1-home_win)*log(1-p_homeC)) 
+
+
+#ggplot(bigfour.last, aes(p_homeS, p_homeC)) + geom_point() + geom_smooth() + geom_abline(intercept = 0, slope = 1) + facet_wrap(~sport)
+
+@
+
+<<echo=FALSE, results='asis'>>=
+temp <- gather(bigfour.last.ll, "type", "logloss", Observed:Cumulative) %>% 
+  select(Date: ml_home, home_win, type, sport, logloss, week) 
+
+meds <- temp %>% mutate(sport = toupper(sport)) %>% 
+  group_by(sport, type) %>% summarise(ave.loss = round(mean(logloss, na.rm = TRUE), 3), 
+                           med.loss = round(median(logloss, na.rm = TRUE), 3), 
+                            n.games = n()) 
+meds %>% 
+  select(-n.games) %>% 
+  rename(`League ($q$)` = sport, 
+         Fit = type, 
+         `$\\bar{ll}_{S_q}$` = ave.loss, 
+         `Med($ll_{S_q}$)` = med.loss)  %>%
+  xtable(caption = "Average ($\\bar{ll}_{S_q}$) and median (Med($ll_{S_q}$)) log loss by sport and fit", 
+         digits = 3, label = "tab:ll") %>%
+  print(include.rownames = FALSE, sanitize.text.function = identity)
+
+
+p1 <- ggplot(temp, aes(x = logloss, colour = type, fill = type)) + geom_density(alpha = 0.2) + 
+   ggtitle("Density curves of game level log loss") + 
+   geom_vline(xintercept = log(0.5), lty = 2) + xlim(-2.2, 0) + 
+   annotate("text", x = -1, y = 1.2, label = "Coin flip")  + facet_wrap(~sport)
+## Add medians or means to the plot... add in coin toss line
+
+p2 <- ggplot(bigfour.last.ll, aes(Cumulative - Sequential)) + geom_histogram() + geom_vline(xintercept= 0) + 
+  facet_wrap(~sport, scales = "free_y") + ggtitle("Differences in game level log loss, cumulative - sequential")  + 
+  xlab("Difference in log loss (sequential model predictions are better < 0)")
+
+
+p3 <- ggplot(bigfour.last.ll, aes(Cumulative - Sequential)) + geom_histogram() + geom_vline(xintercept= 0) + 
+  facet_wrap(~sport, scales = "free") + ggtitle("Differences in game level log loss, cumulative - sequential")  + 
+  xlab("Difference in log loss (sequential model predictions are better < 0)")
+
+
+y1 <- bigfour.last.ll %>% filter(sport == "nhl") %>% select(Cumulative) %>% unlist()
+y2 <- bigfour.last.ll %>% filter(sport == "nhl") %>% select(Sequential) %>% unlist()
+#t.test(y1,y2,paired=TRUE)
+
+
+@
+
+\hl{Observed $p_{(MLB,s,k)ij}$'s boast lower average and median log-loss, which is likely accounted for the fact that these projections accurately assess which starting pitchers each team is using on that day, an important game-level factor not accounted for by Model IHA. Meanwhile, $cumulative$ and $sequential$ game-level probabilities match or exceed the accuracy shown in observed probabilities for each of the NBA, NFL, and NHL. Although these results do not suggest if an arbitrage opportunity exists (recall that sports books add a vig to each team's price), they do imply that both our team strength and home advantage estimates can be used to extract game-level projections, and that $sequential$ estimates, while slightly less accurate than $observed$ estimates, well approximate the chance of each team winning without using any compromising future information.}
+
+\hl{$Note$: we could used paired tests to identify that LL accuracy is significantly better among cumulative fits. We could also resample games? }
+
+\hl{$Note$: Possible plot: linearity of sequential and cumulative game probabilities. This shows that there is no noticeable difference, but not sure another figure is worth it}
+
+\hl{$Note$: Possible plot: difference in game-level log loss, cumulative - sequential estimates. This shows that, in general, sequential models are slightly worse the cumulative models, and accounts for paired nature of the data}
 \subsection{How often does the best team win?  A new measure of league parity}
 
 We conclude by addressing our initial question about the inherent randomness of game outcomes. 
@@ -932,7 +1024,7 @@ A second option would be to contrast our posterior draws of $\theta_{(q,s,k) i}$
 
 Instead, to assess the equivalence of all teams in each league, we consider the likelihood that---given any pair of teams chosen at random---the better team wins, by simulating estimates of $p_{(q,s,k) ij}$ using posterior draws of team strength, home advantage, and game level error. For our purposes, we define the \emph{better} team to be the one, \emph{a priori}, with a higher probability of winning that game. If a contest has no inherent randomness (consider the Harlem Globetrotters), then the better team \emph{always} wins.\footnote{The Harlem Globetrotters are an exhibition basketball team that plays hundreds of games in a year, rarely losing} Conversely, if game-level variability is large relative to the difference in team strength, then even the inferior team might win nearly half the time.  
 
-Using our posterior draws, we approximate the distribution of game-level probabilities between two randomly chosen teams using the following steps.
+Using our posterior draws, we approximate the distribution of game-level probabilities between two randomly chosen teams using the following steps. \hl{Estimates from $cumulative$ IHA's are chosen given that they appear to more accurately link to game outcomes, and because our interest in assessing team equivalence is more retrospective than prospective.}  
 
 Given sport $q$ with season length $K_{q}$, number of seasons $S_{q}$, and number of teams $t_{q}$, 
 
@@ -997,7 +1089,7 @@ Our second set of findings relates to the autoregressive nature of team strength
 
 Our next finding relates to the relative equivalence of the home advantage in each league, with the NBA well ahead of the pack, with teams averaging a 62.0\% chance of winning versus a like-caliber opponent. We also show that the home advantage varies most significantly between venues within each of the NBA and the NHL. In the NBA, for example, the league's best team home advantage is worth a few wins per year, in expectation, over the league's worst home advantage. Moreover, with the exception of the Colorado Rockies, it is not clear that any MLB or NFL team has a statistically significant home effect. 
 
-Finally, we identify that incorporating information from betting markets can help to more accurately gauge the caliber of each league's teams, as shown by an improved ability to predict future team performance. Unlike wins and losses or point differential, our estimates of team strength account for league characteristics such as unbalanced schedules and season length. We conclude by using these team strength draws to propose a parity metric that can compare team equivalence without being affected by league-level characteristics like unbalanced schedules. 
+Finally, we identify that incorporating information from betting markets can help to more accurately gauge the caliber of each league's teams, as shown by an improved ability to predict future team performance. Unlike wins and losses or point differential, our estimates of team strength account for league characteristics such as unbalanced schedules and season length. \hl{Additionally, we note that, relative to $cumulative$ state space fits that incorporate future information to estimate coefficients, $sequential$ fits are nearly as accurate for predictive purposes, as judged by both links to future team performance and game-level outcomes.} We conclude by using team strength draws to propose a parity metric that can compare team equivalence without being affected by league-level characteristics like unbalanced schedules. 
 
 \subsection{Future work}
 
