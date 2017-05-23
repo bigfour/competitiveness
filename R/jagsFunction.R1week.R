@@ -1,4 +1,4 @@
-source("~/Dropbox/Compete/config.R")
+source("config.R")
 library(rjags)
 load(file.path(data_raw, "bigfour.rda"))
 

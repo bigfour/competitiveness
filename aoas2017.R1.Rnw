@@ -338,17 +338,16 @@ We identified no concerns with the fit of Models IHA and CHA. Trace plots of $\a
 
 Table~\ref{tab:DIC} shows the deviance information criterion (DIC) for each fit in each league, along with the difference in DIC values and the associated standard error (SE). In each of the leagues, fits with a team-specific HA (Model IHA) yielded lower DIC's (lower is better) by a statistically significant margin, with the most noticeable difference in fit improvement in the NBA.
 
-\hl{This needs to be updated with better fits}
-
+\hl{Update this description - two non significant differences}
 \begin{table}[!ht]
 \makebox[\linewidth]{
 \begin{tabular}{l r r r}
 \hline
  & Model IHA & Model CHA & Difference (SE) \\ \hline
-MLB &  -8548 & -8522  & -25.7 (10.8) \\
-NBA & 6886 & 7224 & -337.4 (26.6) \\
-NFL & -1230  & -1216 & -13.6 (3.3) \\
-NHL & -18335  & -18148 & -187.6 (20.7)\\
+MLB &  -8519 & -8481  & -37.7 (38.4) \\
+NBA & 6923 & 7188 & -264.7 (32.9) \\
+NFL & 1245  & 1288 & -42.9 (25.6) \\
+NHL & -18357  & -18128 & -228.6 (37.9)\\
 \hline
 \end{tabular}
 }

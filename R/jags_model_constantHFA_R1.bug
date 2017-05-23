@@ -4,29 +4,29 @@ for (i in 1:n) {
   mu[i] <- alpha + inprod(theta[s[i],w[i],],x[i,])
 }
 
-for (j in 1:nTeams){
+for (j in 1:nTeams) {
   theta_star[1,1,j] ~ dnorm(0, tauSeason)
+  theta[1,1,j] <- theta_star[1,1,j] - mean(theta_star[1,1,])
 }
-  theta[1,1,j] = theta_star[1,1,j] - mean(theta_star[1,1,])
 
 for (www in 2:nWeeks) {  
   for (j in 1:nTeams) {
     theta_star[1,www,j] ~ dnorm(gammaWeek*theta[1,www-1,j], tauWeek)
-  }
     theta[1,www,j] = theta_star[1,www,j] - mean(theta_star[1,www,])
+  }
 }
 
 for (sss in 2:nSeas) {
   for (j in 1:nTeams) {
     theta_star[sss,1,j] ~ dnorm(gammaSeason*theta[sss-1,nWeeks,j], tauSeason)
+    theta[sss,1,j] <- theta_star[sss,1,j] - mean(theta_star[sss,1,])
   }
-    theta[sss,1,j] = theta_star[sss,1,j] - mean(theta_star[sss,1,])
-
-  for (www in 2:nWeeks) {
+    
+  for (www in 2:nWeeks) {  
     for (j in 1:nTeams) {
-      theta_star[sss,www,j] ~ dnorm(gammaWeek*theta[sss,www-1,j], tauWeek)
+    theta_star[sss,www,j] ~ dnorm(gammaWeek*theta[sss,www-1,j], tauWeek)
+    theta[sss,www,j] <- theta_star[sss,www,j] - mean(theta_star[sss,www,])
     }
-      theta[sss,www,j] = theta_star[sss,www,j] - mean(theta_star[sss,www,])
   }
 }
 
