@@ -273,10 +273,7 @@ where $\text{logit}(.)$ is the log-odds transform
 $$
 \sum_{i=1}^{t_{q}} \theta_{(q,s,k)i} = 0
 $$ 
-for all 
-$$
-\{(q,s,k) | q \in \{MLB, NBA, NFL, NHL\}, s \in \{1, \ldots, S_q\}, k  \in \{1, \ldots, K_q\}
-$$.
+for all (q,s,k).
 
 Let ${\bf p}_{(q,s,k)}$ represent the vector of length $g_{(q,s,k)}$ containing all of league $q$'s probabilities in week $k$ of season $s$. Our first model of game outcomes, henceforth referred to as the individual home advantage model (Model IHA), assumes that
 \begin{eqnarray}
