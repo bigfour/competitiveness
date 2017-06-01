@@ -1,0 +1,189 @@
+---
+title: "SevenGameSeries"
+author: "Michael Lopez"
+date: "June 1, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Data wrangling
+
+```{r}
+# tidy the MCMC output
+source("config.R") 
+library(ggbeeswarm)
+library(RColorBrewer)
+
+load(file.path(data_raw, "bigfour.rda"))
+load(file.path(root, "data", "tidy_thetas.R1.rda"))
+load(file.path("data", "params.R1.rda"))
+load(file.path("data", "tidy_alphas.R1.rda"))
+sports <- c("nba", "nhl", "mlb", "nfl")
+max.week <- data.frame(sport = sports, min.week = c(22, 25, 25, 14))
+last.four.weeks <- tidy_thetas %>%
+  mutate(season = season + 2005) %>% 
+  left_join(max.week) %>% 
+  filter(week > min.week) %>% 
+  group_by(name, season, sport) %>% 
+  summarise(theta.max = max(theta)) %>% 
+  rename(theta = theta.max)
+  
+
+teamnames <- bigfour %>% group_by(sport, home_team) %>% summarise(n.games = n())
+hfa <- select(params, sport, alpha)
+
+#Playoff teams
+pteams <- read_csv("Data/playoff_teams.csv")
+
+df.playoffs <- NULL
+for (i in 1:4){
+  for (season in 1:11){
+    df.temp <- subset(pteams, sport == sports[i])
+    pteams.temp <- df.temp$home_team[df.temp[,(season + 3)] == 1]
+    df.playoffs.temp <- data.frame(t(combn(pteams.temp, 2)))
+    df.playoffs.temp$sport <- sports[i]
+    df.playoffs.temp$season <- 2005 + season
+    df.playoffs <- rbind(df.playoffs, df.playoffs.temp)
+  }
+}
+
+#write.csv(df.playoffs, "playoff.matchups.csv", row.names = FALSE)
+library(googlesheets)
+df.playoffs <- read.csv("https://docs.google.com/spreadsheets/d/1Tyhv2RU-p5VpXK_vScPbDzTuzFCAaZKVpbYXmsH22XM/pub?output=csv")
+
+table(df.playoffs$sport, df.playoffs$season)
+tidy_alphas1 <- select(tidy_alphas, team, alpha.team.overall)
+df.playoffs <- df.playoffs %>% filter(! (sport == "nfl" & season == 2016))
+colnames(df.playoffs)[1:2] <- c("Team1", "Team2")
+df.playoffs1 <- df.playoffs %>% 
+  left_join(last.four.weeks, by = c("Team1" = "name", "season" = "season", "sport" = "sport")) %>%
+  rename(theta1 = theta) %>% 
+  left_join(last.four.weeks, by = c("Team2" = "name", "season" = "season", "sport" = "sport")) %>% 
+  rename(theta2 = theta) %>% 
+  left_join(tidy_alphas1, by = c("Team1" = "team")) %>%
+  rename(alpha1 = alpha.team.overall) %>% 
+  left_join(tidy_alphas1, by = c("Team2" = "team")) %>%
+  rename(alpha2 = alpha.team.overall)
+
+df.playoffs2 <- df.playoffs1 %>% 
+  mutate(better.first = theta1 > theta2, 
+         team.b = ifelse(better.first, Team1, Team2), 
+         team.w = ifelse(better.first, Team2, Team1), 
+         theta.b = ifelse(better.first, theta1, theta2), 
+         theta.w = ifelse(better.first, theta2, theta1), 
+         alpha.b = ifelse(better.first, alpha1, alpha2), 
+         alpha.w = ifelse(better.first, alpha2, alpha1)) %>%
+  select(sport, season, team.b:alpha.w) %>%
+  mutate(prob.b.home = exp(alpha.b + theta.b - theta.w)/(1 + exp(alpha.b + theta.b - theta.w)), 
+         prob.b.road = 1 - exp(alpha.w + theta.w - theta.b)/(1 + exp(alpha.w + theta.w - theta.b)), 
+         prob.w.home = 1 - prob.b.home, 
+         prob.w.road = 1 - prob.b.road)
+```
+
+
+## Series level probabilities
+
+Here's a function to define the probability of the better team defeating the worse team in a seven game series
+
+```{r}
+games.out <- function(p1, p2, series.length){
+  games.win <- ceiling(series.length/2)
+  i <- 1
+  win.series <- dbinom(1:games.win, games.win, p1)[games.win]*1
+  for (i in 1:(games.win-1)){
+    prob.temp <- dbinom(1:games.win, games.win, p1)[games.win-i]*(1-pbinom((i-1), (games.win-1), p2)) 
+    win.series <- win.series + prob.temp
+  }
+  return(win.series)
+}
+```
+
+
+Here we use that to define probabilities in our data
+
+```{r}
+df.playoffs2 <- df.playoffs2 %>% 
+  group_by(1:n()) %>% 
+  mutate(better.win.7 = games.out(prob.b.home, prob.b.road, 7), 
+         better.win.all = ifelse(sport == "nfl", prob.b.home, better.win.7))
+```
+
+
+## Graphs
+
+```{r}
+ave.prob <- df.playoffs2 %>% group_by(sport, colour = sport) %>% 
+  summarise(ave.outcome = mean(better.win.all))
+
+ggplot(df.playoffs2, aes(x = sport)) + 
+  geom_beeswarm(alpha = 1, aes(y = better.win.all)) + 
+  geom_point(data = ave.prob, aes(y = ave.outcome, fill = sport), colour = "black") + 
+  guides(fill=FALSE) + xlab("") + ylab("Series win probability") + 
+  scale_colour_brewer(palette="Set2") 
+
+ggplot(df.playoffs2, aes(better.win.7, colour = toupper(sport), group = toupper(sport))) + 
+  geom_dotplot(stackratio = 0.03) + 
+  guides(fill=FALSE) + xlab("") + 
+  theme(axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank()) + 
+  ylab("Percent of series") + 
+  labs(title = "How often does the best team win in the postseason?", subtitle = "7 game series between all playoff teams, 2005-2016") + 
+  scale_colour_brewer(palette="Set2") + 
+  scale_x_continuous(labels=scales::percent) + guides(colour=FALSE)  + 
+  scale_y_continuous(labels=scales::percent) + 
+  facet_wrap(~toupper(sport), ncol = 1)
+
+
+
+ggplot(df.playoffs2, aes(better.win.all, fill = toupper(sport), group = toupper(sport))) + 
+  geom_density() + 
+  geom_vline(data = ave.prob, aes(xintercept = ave.outcome), lty = 2) + 
+  guides(fill=FALSE) + xlab("") + 
+  ylab("Percent of series") + 
+  labs(title = "How often does the best team win in the postseason?", subtitle = "All playoff teams, 2005-2016 in 1 (NFL) or 7 game series") + 
+  scale_colour_brewer(palette="Set2") + 
+  scale_x_continuous(labels=scales::percent) + guides(fill=FALSE)  + 
+  #scale_y_continuous(labels=scales::percent) + 
+  facet_wrap(~toupper(sport), ncol = 1)
+
+ggplot(df.playoffs2, aes(better.win.all, fill = sport)) + 
+  geom_histogram(aes(y=..density..)) + 
+  guides(fill=FALSE) + xlab("") + ylab("Series win probability") + 
+  scale_colour_brewer(palette="Set2") + 
+  facet_wrap(~sport, ncol = 1)
+
+
+```
+
+
+
+## Extend to longer series
+
+```{r}
+df.playoffs3 <- df.playoffs2 %>% group_by(1:n()) %>% mutate(prob.3 = games.out(prob.b.home, prob.b.road, 3), 
+                                            prob.7 = games.out(prob.b.home, prob.b.road, 7), 
+                                            prob.11 = games.out(prob.b.home, prob.b.road, 11),
+                                            prob.21 = games.out(prob.b.home, prob.b.road, 21), 
+                                            prob.31 = games.out(prob.b.home, prob.b.road, 31),
+                                            prob.41 = games.out(prob.b.home, prob.b.road, 41), 
+                                            prob.51 = games.out(prob.b.home, prob.b.road, 51),
+                                            prob.61 = games.out(prob.b.home, prob.b.road, 61), 
+                                            prob.71 = games.out(prob.b.home, prob.b.road, 71),
+                                            prob.81 = games.out(prob.b.home, prob.b.road, 81))
+
+df.playoffs3 %>% 
+  group_by(sport) %>% 
+  summarise(ave.7 = mean(prob.7), 
+            ave.11 = mean(prob.11), 
+            ave.21 = mean(prob.21), 
+            ave.31 = mean(prob.31), 
+            ave.41 = mean(prob.41), 
+            ave.51 = mean(prob.51), 
+            ave.61 = mean(prob.61), 
+            ave.71 = mean(prob.71), 
+            ave.81 = mean(prob.81))
+```
