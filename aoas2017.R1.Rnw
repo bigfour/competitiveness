@@ -269,7 +269,14 @@ $$
 E[\text{logit}(p_{(q,s,k) ij}) | \theta_{(q,s,k) i}, \theta_{(q, s, k) j}, \alpha_{q_{0}}, \alpha_{(q) i^{\star}}] = \theta_{(q,s,k) i} - \theta_{(q, s, k) j} + \alpha_{q_0} + \alpha_{(q) i^{\star}},
 $$
 
-where $\text{logit}(.)$ is the log-odds transform.
+where $\text{logit}(.)$ is the log-odds transform 
+$$
+\sum_{i=1}^{t_{q}} \theta_{(q,s,k)i} = 0
+$$ 
+for all 
+$$
+\{(q,s,k) | q \in \{MLB, NBA, NFL, NHL\}, s \in \{1, \ldots, S_q\}, k  \in \{1, \ldots, K_q\}
+$$.
 
 Let ${\bf p}_{(q,s,k)}$ represent the vector of length $g_{(q,s,k)}$ containing all of league $q$'s probabilities in week $k$ of season $s$. Our first model of game outcomes, henceforth referred to as the individual home advantage model (Model IHA), assumes that
 \begin{eqnarray}
@@ -308,13 +315,13 @@ $$
 
 Finally, letting $\tau^{2}_{q,game} = 1 / \sigma^{2}_{q,game}$, $\tau^{2}_{q,season} = 1/\sigma^{2}_{q,season}$, $\tau^{2}_{q,week} = 1/\sigma^{2}_{q,week}$, and $\tau^{2}_{q,\alpha} = 1/\sigma^{2}_{q,\alpha}$, we assume the following prior distributions: 
 \begin{align*}
-\tau^{2}_{q,game} &\sim \Gamma(0.0001,0.0001) &\qquad
+\tau^{2}_{q,game} &\sim Uniform(0,1000) &\qquad
   \alpha_{q_0} &\sim N(0,10000) \\
-\tau^{2}_{q,season} &\sim \Gamma(0.0001,0.0001) &\qquad
-  \gamma_{q,season} &\sim Uniform(0,2) \\
-\tau^{2}_{q,week} &\sim \Gamma(0.0001,0.0001) &\qquad
-  \gamma_{q,week} &\sim Uniform(0,2) \\
-\tau^{2}_{q,\alpha} &\sim \Gamma(0.0001,0.0001) && \\
+\tau^{2}_{q,season} &\sim Uniform(0,1000) &\qquad
+  \gamma_{q,season} &\sim Uniform(0,1) \\
+\tau^{2}_{q,week} &\sim Uniform(0,1000) &\qquad
+  \gamma_{q,week} &\sim Uniform(0,1.5) \\
+\tau^{2}_{q,\alpha} &\sim Uniform(0,1000) && \\
 \end{align*}
 
 Our primary interest lies in three levels of variability with respect to the $\mathbf{\theta}_{(q,s,k)}$'s. First, there is variability at any fixed time $s$ and $k$ across $i$. This reflects the between-team variability in team strength; in other words, how equivalent are the teams to one another at a given snapshot in time? Second, there is variability across $k$, reflected in the week-to-week autoregressive parameter, $\gamma_{q,week}$. This generalizes to how teams can improve or worsen over the course of a season. Third, there is variability across $s$, corresponding to the season-to-season autoregressive parameter, $\gamma_{q,season}$. This accounts for larger changes to team ability that can occur between seasons. 
