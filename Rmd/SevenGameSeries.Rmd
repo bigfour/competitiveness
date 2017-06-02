@@ -34,13 +34,15 @@ last.four.weeks <- tidy_thetas %>%
 ```
 
 ```{r, echo = TRUE}
-
-teamnames <- bigfour %>% group_by(sport, home_team) %>% summarise(n.games = n())
+teamnames <- bigfour %>% 
+  group_by(sport, home_team) %>% 
+  summarise(n.games = n())
 hfa <- select(params, sport, alpha)
 
 table(df.playoffs$sport, df.playoffs$season)
 tidy_alphas1 <- select(tidy_alphas, team, alpha.team.overall)
-df.playoffs <- df.playoffs %>% filter(! (sport == "nfl" & season == 2016))
+df.playoffs <- df.playoffs %>% 
+  filter(! (sport == "nfl" & season == 2016))
 colnames(df.playoffs)[1:2] <- c("Team1", "Team2")
 df.playoffs1 <- df.playoffs %>% 
   left_join(last.four.weeks, by = c("Team1" = "name", "season" = "season", "sport" = "sport")) %>%
@@ -60,7 +62,7 @@ df.playoffs2 <- df.playoffs1 %>%
          theta.w = ifelse(better.first, theta2, theta1), 
          alpha.b = ifelse(better.first, alpha1, alpha2), 
          alpha.w = ifelse(better.first, alpha2, alpha1)) %>%
-  select(sport, season, team.b:alpha.w) %>%
+  select(sport, season, real, team.b:alpha.w) %>%
   mutate(prob.b.home = exp(alpha.b + theta.b - theta.w)/(1 + exp(alpha.b + theta.b - theta.w)), 
          prob.b.road = 1 - exp(alpha.w + theta.w - theta.b)/(1 + exp(alpha.w + theta.w - theta.b)), 
          prob.w.home = 1 - prob.b.home, 
@@ -99,48 +101,60 @@ df.playoffs2 <- df.playoffs2 %>%
 ## Graphs
 
 ```{r, echo = TRUE}
-ave.prob <- df.playoffs2 %>% group_by(sport, colour = sport) %>% 
+ave.prob <- df.playoffs2 %>% 
+  group_by(sport) %>% 
   summarise(ave.outcome = mean(better.win.all))
 
-ggplot(df.playoffs2, aes(x = sport)) + 
-  geom_beeswarm(alpha = 1, aes(y = better.win.all)) + 
-  geom_point(data = ave.prob, aes(y = ave.outcome, fill = sport), colour = "black") + 
-  guides(fill=FALSE) + xlab("") + ylab("Series win probability") + 
-  scale_colour_brewer(palette="Set2") 
+base_plot <- ggplot(df.playoffs2, aes(fill = toupper(sport), color = toupper(sport))) + 
+  guides(fill = FALSE, color = FALSE, alpha = FALSE) + xlab("") + 
+  scale_colour_brewer(palette = "Set2") +
+  scale_alpha_continuous(range = c(0.25, 1))
+```
 
-ggplot(df.playoffs2, aes(better.win.7, colour = toupper(sport), group = toupper(sport))) + 
+```{r beeswarm}
+gsw_cle <- filter(df.playoffs2, real == 1, team.b == "Golden State Warriors" & team.w == "Cleveland Cavaliers")
+base_plot + aes(x = toupper(sport)) + 
+  geom_hline(data = ave.prob, aes(yintercept = ave.outcome, color = toupper(sport)), 
+             linetype = 2) + 
+  geom_beeswarm(aes(y = better.win.all, alpha = real)) + 
+  ylab("Series win probability") + 
+  # annotation for GSW-CLE
+  annotate("text", x = "MLB", y = 0.9, label = "GSW-CLE") + 
+  geom_text(data = gsw_cle, aes(label = season, y = better.win.all), nudge_y = 0.01) + 
+  geom_curve(data = gsw_cle, aes(y = better.win.all, xend = "MLB", yend = 0.89), 
+             curvature = -0.3, 
+             arrow = arrow(length = unit(0.2, "cm"), ends = "first", type = "closed"))
+```
+
+```{r dots}
+base_plot + aes(better.win.7, group = toupper(sport)) + 
   geom_dotplot(stackratio = 0.03) + 
-  guides(fill=FALSE) + xlab("") + 
   theme(axis.title.y=element_blank(),
         axis.text.y=element_blank(),
         axis.ticks.y=element_blank()) + 
   ylab("Percent of series") + 
-  labs(title = "How often does the best team win in the postseason?", subtitle = "7 game series between all playoff teams, 2005-2016") + 
-  scale_colour_brewer(palette="Set2") + 
-  scale_x_continuous(labels=scales::percent) + guides(colour=FALSE)  + 
-  scale_y_continuous(labels=scales::percent) + 
+  labs(title = "How often does the best team win in the postseason?", subtitle = "7 game series between all playoff teams, 2005-2016") +
+  scale_x_continuous(labels = scales::percent) + 
+  scale_y_continuous(labels = scales::percent) + 
   facet_wrap(~toupper(sport), ncol = 1)
+```
 
-
-
-ggplot(df.playoffs2, aes(better.win.all, fill = toupper(sport), group = toupper(sport))) + 
-  geom_density() + 
+```{r density}
+base_plot + aes(better.win.all, group = toupper(sport)) + 
+  geom_density(color = "black") + 
   geom_vline(data = ave.prob, aes(xintercept = ave.outcome), lty = 2) + 
-  guides(fill=FALSE) + xlab("") + 
   ylab("Percent of series") + 
   labs(title = "How often does the best team win in the postseason?", subtitle = "All playoff teams, 2005-2016 in 1 (NFL) or 7 game series") + 
-  scale_colour_brewer(palette="Set2") + 
-  scale_x_continuous(labels=scales::percent) + guides(fill=FALSE)  + 
+  scale_x_continuous(labels=scales::percent) + 
   #scale_y_continuous(labels=scales::percent) + 
   facet_wrap(~toupper(sport), ncol = 1)
+```
 
-ggplot(df.playoffs2, aes(better.win.all, fill = sport)) + 
-  geom_histogram(aes(y=..density..)) + 
-  guides(fill=FALSE) + xlab("") + ylab("Series win probability") + 
-  scale_colour_brewer(palette="Set2") + 
+```{r histogram}
+base_plot + aes(better.win.all) + 
+  geom_histogram(aes(y = ..density..), color = "black") + 
+  ylab("Series win probability") + 
   facet_wrap(~sport, ncol = 1)
-
-
 ```
 
 
