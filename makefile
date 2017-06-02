@@ -1,11 +1,11 @@
 all: aoas2017.pdf
 
-aoas2017.pdf: aoas2017.tex refs.bib
-	pdflatex aoas2017
-	bibtex aoas2017
-	pdflatex aoas2017
-	bibtex aoas2017
-	pdflatex aoas2017
+aoas2017.pdf: aoas2017.R1.tex refs.bib
+	pdflatex aoas2017.R1
+	bibtex aoas2017.R1
+	pdflatex aoas2017.R1
+	bibtex aoas2017.R1
+	pdflatex aoas2017.R1
 
 jasa2016.pdf: jasa2016.tex refs.bib
 	pdflatex jasa2016
@@ -24,6 +24,10 @@ sloan2016.pdf: sloan2016.tex refs.bib
 clean: 
 	rm *.idx *.ilg *.ind
 	
+
+aoas2017.R1.tex: aoas2017.R1.Rnw
+	Rscript -e "knitr::knit('aoas2017.R1.Rnw')"
+
 aoas2017.tex: aoas2017.Rnw
 	Rscript -e "knitr::knit('aoas2017.Rnw')"
 
