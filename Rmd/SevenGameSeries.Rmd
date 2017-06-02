@@ -7,20 +7,21 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+source("../config.R")
 ```
 
 ## Data wrangling
 
-```{r}
-# tidy the MCMC output
-source("config.R") 
+```{r, echo = TRUE}
 library(ggbeeswarm)
 library(RColorBrewer)
-
 load(file.path(data_raw, "bigfour.rda"))
 load(file.path(root, "data", "tidy_thetas.R1.rda"))
-load(file.path("data", "params.R1.rda"))
-load(file.path("data", "tidy_alphas.R1.rda"))
+load(file.path(root, "data", "params.R1.rda"))
+load(file.path(root, "data", "tidy_alphas.R1.rda"))
+pteams <- read.csv("https://raw.githubusercontent.com/bigfour/competitiveness/master/data/playoff_teams.csv")
+df.playoffs <- read.csv("https://docs.google.com/spreadsheets/d/1Tyhv2RU-p5VpXK_vScPbDzTuzFCAaZKVpbYXmsH22XM/pub?output=csv")
+
 sports <- c("nba", "nhl", "mlb", "nfl")
 max.week <- data.frame(sport = sports, min.week = c(22, 25, 25, 14))
 last.four.weeks <- tidy_thetas %>%
@@ -30,29 +31,12 @@ last.four.weeks <- tidy_thetas %>%
   group_by(name, season, sport) %>% 
   summarise(theta.max = max(theta)) %>% 
   rename(theta = theta.max)
-  
+```
+
+```{r, echo = TRUE}
 
 teamnames <- bigfour %>% group_by(sport, home_team) %>% summarise(n.games = n())
 hfa <- select(params, sport, alpha)
-
-#Playoff teams
-pteams <- read_csv("Data/playoff_teams.csv")
-
-df.playoffs <- NULL
-for (i in 1:4){
-  for (season in 1:11){
-    df.temp <- subset(pteams, sport == sports[i])
-    pteams.temp <- df.temp$home_team[df.temp[,(season + 3)] == 1]
-    df.playoffs.temp <- data.frame(t(combn(pteams.temp, 2)))
-    df.playoffs.temp$sport <- sports[i]
-    df.playoffs.temp$season <- 2005 + season
-    df.playoffs <- rbind(df.playoffs, df.playoffs.temp)
-  }
-}
-
-#write.csv(df.playoffs, "playoff.matchups.csv", row.names = FALSE)
-library(googlesheets)
-df.playoffs <- read.csv("https://docs.google.com/spreadsheets/d/1Tyhv2RU-p5VpXK_vScPbDzTuzFCAaZKVpbYXmsH22XM/pub?output=csv")
 
 table(df.playoffs$sport, df.playoffs$season)
 tidy_alphas1 <- select(tidy_alphas, team, alpha.team.overall)
@@ -88,7 +72,7 @@ df.playoffs2 <- df.playoffs1 %>%
 
 Here's a function to define the probability of the better team defeating the worse team in a seven game series
 
-```{r}
+```{r, echo = TRUE}
 games.out <- function(p1, p2, series.length){
   games.win <- ceiling(series.length/2)
   i <- 1
@@ -104,7 +88,7 @@ games.out <- function(p1, p2, series.length){
 
 Here we use that to define probabilities in our data
 
-```{r}
+```{r, echo = TRUE}
 df.playoffs2 <- df.playoffs2 %>% 
   group_by(1:n()) %>% 
   mutate(better.win.7 = games.out(prob.b.home, prob.b.road, 7), 
@@ -114,7 +98,7 @@ df.playoffs2 <- df.playoffs2 %>%
 
 ## Graphs
 
-```{r}
+```{r, echo = TRUE}
 ave.prob <- df.playoffs2 %>% group_by(sport, colour = sport) %>% 
   summarise(ave.outcome = mean(better.win.all))
 
@@ -163,8 +147,8 @@ ggplot(df.playoffs2, aes(better.win.all, fill = sport)) +
 
 ## Extend to longer series
 
-```{r}
-df.playoffs3 <- df.playoffs2 %>% group_by(1:n()) %>% mutate(prob.3 = games.out(prob.b.home, prob.b.road, 3), 
+```{r, echo = TRUE}
+df.playoffs3 <- df.playoffs2 %>% ungroup %>% group_by(1:n()) %>% mutate(prob.3 = games.out(prob.b.home, prob.b.road, 3), 
                                             prob.7 = games.out(prob.b.home, prob.b.road, 7), 
                                             prob.11 = games.out(prob.b.home, prob.b.road, 11),
                                             prob.21 = games.out(prob.b.home, prob.b.road, 21), 
@@ -176,6 +160,7 @@ df.playoffs3 <- df.playoffs2 %>% group_by(1:n()) %>% mutate(prob.3 = games.out(p
                                             prob.81 = games.out(prob.b.home, prob.b.road, 81))
 
 df.playoffs3 %>% 
+  ungroup() %>% 
   group_by(sport) %>% 
   summarise(ave.7 = mean(prob.7), 
             ave.11 = mean(prob.11), 
