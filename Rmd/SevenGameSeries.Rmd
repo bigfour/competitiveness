@@ -21,7 +21,7 @@ load(file.path(root, "data", "params.R1.rda"))
 load(file.path(root, "data", "tidy_alphas.R1.rda"))
 
 df.playoffs <- read.csv(file.path(root, "data", "playoff_rounds.csv"))
-df.playoffs <- df.playoffs %>% mutate(season = ifelse(sport == "nfl", season - 1, season))
+df.playoffs <- df.playoffs %>% mutate(season =  ifelse(sport == "nfl", season - 1, season))
 
 sports <- c("nba", "nhl", "mlb", "nfl")
 max.week <- data.frame(sport = sports, min.week = c(22, 25, 25, 14))
@@ -129,7 +129,7 @@ base_plot <- ggplot(df.playoffs2, aes(fill = toupper(sport), color = toupper(spo
 ```{r beeswarm}
 gsw <- filter(df.playoffs2, team.b == "Golden State Warriors" & season == 2017)
 wsh <- filter(df.playoffs2, team.b == "Washington Capitals" & season == 2017)
-base_plot + aes(x = toupper(sport)) + 
+p<- base_plot + aes(x = toupper(sport)) + 
   geom_hline(data = ave.prob, aes(yintercept = ave.outcome, color = toupper(sport)), 
              linetype = 2) + 
   geom_beeswarm(aes(y = better.win.all)) + 
@@ -144,6 +144,7 @@ base_plot + aes(x = toupper(sport)) +
   geom_curve(data = wsh, aes(y = better.win.all, xend = 5, yend = 0.89), 
              curvature = -0.3, 
              arrow = arrow(length = unit(0.2, "cm"), ends = "first", type = "closed"))
+p
 ```
 
 
