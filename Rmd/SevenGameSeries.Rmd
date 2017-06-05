@@ -19,8 +19,9 @@ load(file.path(data_raw, "bigfour.rda"))
 load(file.path(root, "data", "tidy_thetas.R1.rda"))
 load(file.path(root, "data", "params.R1.rda"))
 load(file.path(root, "data", "tidy_alphas.R1.rda"))
-pteams <- read.csv("https://raw.githubusercontent.com/bigfour/competitiveness/master/data/playoff_teams.csv")
-df.playoffs <- read.csv("https://docs.google.com/spreadsheets/d/1Tyhv2RU-p5VpXK_vScPbDzTuzFCAaZKVpbYXmsH22XM/pub?output=csv")
+
+df.playoffs <- read.csv(file.path(root, "data", "playoff_rounds.csv"))
+df.playoffs <- df.playoffs %>% mutate(season =  ifelse(sport == "nfl", season - 1, season))
 
 sports <- c("nba", "nhl", "mlb", "nfl")
 max.week <- data.frame(sport = sports, min.week = c(22, 25, 25, 14))
@@ -31,9 +32,7 @@ last.four.weeks <- tidy_thetas %>%
   group_by(name, season, sport) %>% 
   summarise(theta.max = max(theta)) %>% 
   rename(theta = theta.max)
-```
 
-```{r, echo = TRUE}
 teamnames <- bigfour %>% 
   group_by(sport, home_team) %>% 
   summarise(n.games = n())
@@ -42,8 +41,8 @@ hfa <- select(params, sport, alpha)
 table(df.playoffs$sport, df.playoffs$season)
 tidy_alphas1 <- select(tidy_alphas, team, alpha.team.overall)
 df.playoffs <- df.playoffs %>% 
-  filter(! (sport == "nfl" & season == 2016))
-colnames(df.playoffs)[1:2] <- c("Team1", "Team2")
+  filter(! (sport == "nfl" & season == 2005))
+
 df.playoffs1 <- df.playoffs %>% 
   left_join(last.four.weeks, by = c("Team1" = "name", "season" = "season", "sport" = "sport")) %>%
   rename(theta1 = theta) %>% 
@@ -55,6 +54,7 @@ df.playoffs1 <- df.playoffs %>%
   rename(alpha2 = alpha.team.overall)
 
 df.playoffs2 <- df.playoffs1 %>% 
+  filter(is.na(SeriesPrice)) %>% 
   mutate(better.first = theta1 > theta2, 
          team.b = ifelse(better.first, Team1, Team2), 
          team.w = ifelse(better.first, Team2, Team1), 
@@ -62,12 +62,15 @@ df.playoffs2 <- df.playoffs1 %>%
          theta.w = ifelse(better.first, theta2, theta1), 
          alpha.b = ifelse(better.first, alpha1, alpha2), 
          alpha.w = ifelse(better.first, alpha2, alpha1)) %>%
-  select(sport, season, real, team.b:alpha.w) %>%
+  select(sport, season, team.b:alpha.w, Real, SeriesPrice) %>%
   mutate(prob.b.home = exp(alpha.b + theta.b - theta.w)/(1 + exp(alpha.b + theta.b - theta.w)), 
          prob.b.road = 1 - exp(alpha.w + theta.w - theta.b)/(1 + exp(alpha.w + theta.w - theta.b)), 
          prob.w.home = 1 - prob.b.home, 
          prob.w.road = 1 - prob.b.road)
+df.playoffs.save <- df.playoffs2
 ```
+
+
 
 
 ## Series level probabilities
@@ -93,8 +96,15 @@ Here we use that to define probabilities in our data
 ```{r, echo = TRUE}
 df.playoffs2 <- df.playoffs2 %>% 
   group_by(1:n()) %>% 
-  mutate(better.win.7 = games.out(prob.b.home, prob.b.road, 7), 
-         better.win.all = ifelse(sport == "nfl", prob.b.home, better.win.7))
+  mutate(better.win.all = ifelse(sport == "nfl", prob.b.home, games.out(prob.b.home, prob.b.road, 7))) %>% 
+  ungroup() %>% select(sport:team.w, better.win.all)
+
+## Grab recent games
+df.missing <- df.playoffs1 %>% filter(!is.na(SeriesPrice)) %>% select(sport, season, Team1, Team2, SeriesPrice) %>% 
+  rename(team.b = Team1, team.w = Team2, better.win.all = SeriesPrice)
+
+df.playoffs2 <- bind_rows(df.playoffs2, df.missing) %>% arrange(sport, -season)
+
 ```
 
 
@@ -103,32 +113,47 @@ df.playoffs2 <- df.playoffs2 %>%
 ```{r, echo = TRUE}
 ave.prob <- df.playoffs2 %>% 
   group_by(sport) %>% 
-  summarise(ave.outcome = mean(better.win.all))
+  summarise(ave.outcome = mean(better.win.all), med.outcome = median(better.win.all))
+
+filter(df.playoffs2, season == 2016, sport == "mlb") %>% 
+  select(sport, season, team.b, team.w, better.win.all) %>% 
+  arrange(-better.win.all) %>% print.data.frame()
 
 base_plot <- ggplot(df.playoffs2, aes(fill = toupper(sport), color = toupper(sport))) + 
   guides(fill = FALSE, color = FALSE, alpha = FALSE) + xlab("") + 
   scale_colour_brewer(palette = "Set2") +
   scale_alpha_continuous(range = c(0.25, 1))
+
 ```
 
 ```{r beeswarm}
-gsw_cle <- filter(df.playoffs2, real == 1, team.b == "Golden State Warriors" & team.w == "Cleveland Cavaliers")
-base_plot + aes(x = toupper(sport)) + 
+gsw <- filter(df.playoffs2, team.b == "Golden State Warriors" & season == 2017)
+wsh <- filter(df.playoffs2, team.b == "Washington Capitals" & season == 2017)
+p<- base_plot + aes(x = toupper(sport)) + 
   geom_hline(data = ave.prob, aes(yintercept = ave.outcome, color = toupper(sport)), 
              linetype = 2) + 
-  geom_beeswarm(aes(y = better.win.all, alpha = real)) + 
+  geom_beeswarm(aes(y = better.win.all)) + 
   ylab("Series win probability") + 
-  # annotation for GSW-CLE
-  annotate("text", x = "MLB", y = 0.9, label = "GSW-CLE") + 
-  geom_text(data = gsw_cle, aes(label = season, y = better.win.all), nudge_y = 0.01) + 
-  geom_curve(data = gsw_cle, aes(y = better.win.all, xend = "MLB", yend = 0.89), 
+  annotate("text", x = "MLB", y = 0.9, label = "GSW-2017") + 
+  geom_text(data = gsw, aes(label = team.w, y = better.win.all), nudge_y = 0.01) + 
+  geom_curve(data = gsw, aes(y = better.win.all, xend = "MLB", yend = 0.89), 
+             curvature = -0.3, 
+             arrow = arrow(length = unit(0.2, "cm"), ends = "first", type = "closed"))+ 
+  annotate("text", x = 5, y = 0.9, label = "WSH-2017") + 
+  geom_text(data = wsh, aes(label = team.w, y = better.win.all), nudge_y = 0.01) + 
+  geom_curve(data = wsh, aes(y = better.win.all, xend = 5, yend = 0.89), 
              curvature = -0.3, 
              arrow = arrow(length = unit(0.2, "cm"), ends = "first", type = "closed"))
+p
 ```
 
+
+
+
+
 ```{r dots}
-base_plot + aes(better.win.7, group = toupper(sport)) + 
-  geom_dotplot(stackratio = 0.03) + 
+base_plot + aes(better.win.all, group = toupper(sport)) + 
+  geom_dotplot(stackratio = .5) + 
   theme(axis.title.y=element_blank(),
         axis.text.y=element_blank(),
         axis.ticks.y=element_blank()) + 
@@ -162,27 +187,25 @@ base_plot + aes(better.win.all) +
 ## Extend to longer series
 
 ```{r, echo = TRUE}
-df.playoffs3 <- df.playoffs2 %>% ungroup %>% group_by(1:n()) %>% mutate(prob.3 = games.out(prob.b.home, prob.b.road, 3), 
+df.playoffs3 <- df.playoffs.save %>% ungroup %>% group_by(1:n()) %>% mutate(prob.3 = games.out(prob.b.home, prob.b.road, 3), 
                                             prob.7 = games.out(prob.b.home, prob.b.road, 7), 
                                             prob.11 = games.out(prob.b.home, prob.b.road, 11),
                                             prob.21 = games.out(prob.b.home, prob.b.road, 21), 
-                                            prob.31 = games.out(prob.b.home, prob.b.road, 31),
-                                            prob.41 = games.out(prob.b.home, prob.b.road, 41), 
-                                            prob.51 = games.out(prob.b.home, prob.b.road, 51),
+                                            prob.41 = games.out(prob.b.home, prob.b.road, 41),
+                                            prob.51 = games.out(prob.b.home, prob.b.road, 51), 
                                             prob.61 = games.out(prob.b.home, prob.b.road, 61), 
                                             prob.71 = games.out(prob.b.home, prob.b.road, 71),
-                                            prob.81 = games.out(prob.b.home, prob.b.road, 81))
+                                            prob.81 = games.out(prob.b.home, prob.b.road, 81), 
+                                            prob.91 = games.out(prob.b.home, prob.b.road, 91),
+                                            prob.101 = games.out(prob.b.home, prob.b.road, 101))
 
 df.playoffs3 %>% 
   ungroup() %>% 
   group_by(sport) %>% 
-  summarise(ave.7 = mean(prob.7), 
-            ave.11 = mean(prob.11), 
-            ave.21 = mean(prob.21), 
-            ave.31 = mean(prob.31), 
-            ave.41 = mean(prob.41), 
-            ave.51 = mean(prob.51), 
-            ave.61 = mean(prob.61), 
-            ave.71 = mean(prob.71), 
-            ave.81 = mean(prob.81))
+  summarise(prob.7 = mean(prob.7), 
+            prob.41 = mean(prob.41),
+            prob.51 = mean(prob.51), 
+            prob.61 = mean(prob.61), 
+            prob.91 = mean(prob.91), 
+            prob.101 = mean(prob.101))
 ```
