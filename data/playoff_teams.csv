@@ -1,0 +1,123 @@
+home_team,sport,p.2005,p.2006,p.2007,p.2008,p.2009,p.2010,p.2011,p.2012,p.2013,p.2014,p.2015,p.2016
+Arizona Diamondbacks,mlb,0,0,1,0,0,0,1,0,0,0,0,0
+Atlanta Braves,mlb,1,0,0,0,0,1,0,1,1,0,0,0
+Baltimore Orioles,mlb,0,0,0,0,0,0,0,1,0,1,0,1
+Boston Red Sox,mlb,1,0,1,1,1,0,0,0,1,0,0,1
+Chicago Cubs,mlb,0,0,1,1,0,0,0,0,0,0,1,1
+Chicago White Sox,mlb,1,0,0,1,0,0,0,0,0,0,0,0
+Cincinnati Reds,mlb,0,0,0,0,0,1,0,1,1,0,0,0
+Cleveland Indians,mlb,0,0,1,0,0,0,0,0,1,0,0,1
+Colorado Rockies,mlb,0,0,1,0,1,0,0,0,0,0,0,0
+Detroit Tigers,mlb,0,1,0,0,0,0,1,1,1,1,0,0
+Houston Astros,mlb,1,0,0,0,0,0,0,0,0,0,1,0
+Kansas City Royals,mlb,0,0,0,0,0,0,0,0,0,1,1,0
+Los Angeles Angels,mlb,1,0,1,1,1,0,0,0,0,1,0,0
+Los Angeles Dodgers,mlb,0,1,0,1,1,0,0,0,1,1,1,1
+Miami Marlins,mlb,0,0,0,0,0,0,0,0,0,0,0,0
+Milwaukee Brewers,mlb,0,0,0,1,0,0,1,0,0,0,0,0
+Minnesota Twins,mlb,0,1,0,0,1,1,0,0,0,0,0,0
+New York Mets,mlb,0,1,0,0,0,0,0,0,0,0,1,1
+New York Yankees,mlb,1,1,1,0,1,1,1,1,0,0,1,0
+Oakland Athletics,mlb,0,1,0,0,0,0,0,1,1,1,0,0
+Philadelphia Phillies,mlb,0,0,1,1,1,1,1,0,0,0,0,0
+Pittsburgh Pirates,mlb,0,0,0,0,0,0,0,0,1,1,1,0
+San Diego Padres,mlb,1,1,0,0,0,0,0,0,0,0,0,0
+San Francisco Giants,mlb,0,0,0,0,0,1,0,1,0,1,0,1
+Seattle Mariners,mlb,0,0,0,0,0,0,0,0,0,0,0,0
+St Louis Cardinals,mlb,1,1,0,0,1,0,1,1,1,1,1,0
+Tampa Bay Rays,mlb,0,0,0,1,0,1,1,0,1,0,0,0
+Texas Rangers,mlb,0,0,0,0,0,1,1,1,0,0,1,1
+Toronto Blue Jays,mlb,0,0,0,0,0,0,0,0,0,0,1,1
+Washington Nationals,mlb,0,0,0,0,0,0,0,1,0,1,0,1
+Atlanta Hawks,nba,0,0,0,1,1,1,1,1,1,1,1,1
+Boston Celtics,nba,1,0,0,1,1,1,1,1,1,0,1,1
+Brooklyn Nets,nba,1,1,1,0,0,0,0,0,1,1,1,0
+Charlotte Hornets,nba,0,0,0,0,0,1,0,0,0,1,0,1
+Chicago Bulls,nba,1,1,1,0,1,1,1,1,1,1,1,0
+Cleveland Cavaliers,nba,0,1,1,1,1,1,0,0,0,0,1,1
+Dallas Mavericks,nba,1,1,1,1,1,1,1,1,0,1,1,1
+Denver Nuggets,nba,1,1,1,1,1,1,1,1,1,0,0,0
+Detroit Pistons,nba,1,1,1,1,1,0,0,0,0,0,0,1
+Golden State Warriors,nba,0,0,1,0,0,0,0,0,1,1,1,1
+Houston Rockets,nba,1,0,1,1,1,0,0,0,1,1,1,1
+Indiana Pacers,nba,1,1,0,0,0,0,1,1,1,1,0,1
+Los Angeles Clippers,nba,0,1,0,0,0,0,0,1,1,1,1,1
+Los Angeles Lakers,nba,0,1,1,1,1,1,1,1,1,0,0,0
+Memphis Grizzlies,nba,1,1,0,0,0,0,1,1,1,1,1,1
+Miami Heat,nba,1,1,1,0,1,1,1,1,1,1,0,1
+Milwaukee Bucks,nba,0,1,0,0,0,1,0,0,1,0,1,0
+Minnesota Timberwolves,nba,0,0,0,0,0,0,0,0,0,0,0,0
+New Orleans Pelicans,nba,0,0,0,1,1,0,1,0,0,0,1,0
+New York Knicks,nba,0,0,0,0,0,0,1,1,1,0,0,0
+Oklahoma City Thunder,nba,1,0,0,0,0,1,1,1,1,1,0,1
+Orlando Magic,nba,0,0,1,1,1,1,1,1,0,0,0,0
+Philadelphia 76ers,nba,1,0,0,1,1,0,1,1,0,0,0,0
+Phoenix Suns,nba,1,1,1,1,0,1,0,0,0,0,0,0
+Portland Trail Blazers,nba,0,0,0,0,1,1,1,0,0,1,1,1
+Sacramento Kings,nba,1,1,0,0,0,0,0,0,0,0,0,0
+San Antonio Spurs,nba,1,1,1,1,1,1,1,1,1,1,1,1
+Toronto Raptors,nba,0,0,1,1,0,0,0,0,0,1,1,1
+Utah Jazz,nba,0,0,1,1,1,1,0,1,0,0,0,0
+Washington Wizards,nba,1,1,1,1,0,0,0,0,0,1,1,0
+Arizona Cardinals,nfl,0,0,0,1,1,0,0,0,0,1,1,0
+Atlanta Falcons,nfl,0,0,0,1,0,1,1,1,0,0,0,1
+Baltimore Ravens,nfl,0,1,0,1,1,1,1,1,0,1,0,0
+Buffalo Bills,nfl,0,0,0,0,0,0,0,0,0,0,0,0
+Carolina Panthers,nfl,1,0,0,1,0,0,0,0,1,1,1,0
+Chicago Bears,nfl,1,1,0,0,0,1,0,0,0,0,0,0
+Cincinnati Bengals,nfl,1,0,0,0,1,0,1,1,1,1,1,0
+Cleveland Browns,nfl,0,0,0,0,0,0,0,0,0,0,0,0
+Dallas Cowboys,nfl,0,1,1,0,1,0,0,0,0,1,0,1
+Denver Broncos,nfl,1,0,0,0,0,0,1,1,1,1,1,0
+Detroit Lions,nfl,0,0,0,0,0,0,1,0,0,1,0,1
+Green Bay Packers,nfl,0,0,1,0,1,1,1,1,1,1,1,1
+Houston Texans,nfl,0,0,0,0,0,0,1,1,0,0,1,1
+Indianapolis Colts,nfl,1,1,1,1,1,1,0,1,1,1,0,0
+Jacksonville Jaguars,nfl,1,0,1,0,0,0,0,0,0,0,0,0
+Kansas City Chiefs,nfl,0,1,0,0,0,1,0,0,1,0,1,1
+Los Angeles Rams,nfl,0,0,0,0,0,0,0,0,0,0,0,0
+Miami Dolphins,nfl,0,0,0,1,0,0,0,0,0,0,0,1
+Minnesota Vikings,nfl,0,0,0,1,1,0,0,1,0,0,1,0
+New England Patriots,nfl,1,1,1,0,1,1,1,1,1,1,1,1
+New Orleans Saints,nfl,0,1,0,0,1,1,1,0,1,0,0,0
+New York Giants,nfl,1,1,1,1,0,0,1,0,0,0,0,1
+New York Jets,nfl,0,1,0,0,1,1,0,0,0,0,0,0
+Oakland Raiders,nfl,0,0,0,0,0,0,0,0,0,0,0,1
+Philadelphia Eagles,nfl,0,1,0,1,1,1,0,0,1,0,0,0
+Pittsburgh Steelers,nfl,1,0,1,1,0,1,1,0,0,1,1,1
+San Diego Chargers,nfl,0,1,1,1,1,0,0,0,1,0,0,0
+San Francisco 49ers,nfl,0,0,0,0,0,0,1,1,1,0,0,0
+Seattle Seahawks,nfl,1,1,1,0,0,1,0,1,1,1,1,1
+Tampa Bay Buccaneers,nfl,1,0,1,0,0,0,0,0,0,0,0,0
+Tennessee Titans,nfl,0,0,1,1,0,0,0,0,0,0,0,0
+Washington Redskins,nfl,1,0,1,0,0,0,0,1,0,0,1,0
+Anaheim Ducks,nhl,0,1,1,1,1,0,1,0,1,1,1,1
+Arizona Coyotes,nhl,0,0,0,0,0,1,1,1,0,0,0,0
+Boston Bruins,nhl,0,0,0,1,1,1,1,1,1,1,0,0
+Buffalo Sabres,nhl,0,1,1,0,0,1,1,0,0,0,0,0
+Calgary Flames,nhl,0,1,1,1,1,0,0,0,0,0,1,0
+Carolina Hurricanes,nhl,0,1,0,0,1,0,0,0,0,0,0,0
+Chicago Blackhawks,nhl,0,0,0,0,1,1,1,1,1,1,1,1
+Colorado Avalanche,nhl,0,1,0,1,0,1,0,0,0,1,0,0
+Columbus Blue Jackets,nhl,0,0,0,0,1,0,0,0,0,1,0,0
+Dallas Stars,nhl,0,1,1,1,0,0,0,0,0,1,0,1
+Detroit Red Wings,nhl,0,1,1,1,1,1,1,1,1,1,1,1
+Edmonton Oilers,nhl,0,1,0,0,0,0,0,0,0,0,0,0
+Florida Panthers,nhl,0,0,0,0,0,0,0,1,0,0,0,1
+Los Angeles Kings,nhl,0,0,0,0,0,1,1,1,1,1,0,1
+Minnesota Wild,nhl,0,0,1,1,0,0,0,0,1,1,1,1
+Montreal Canadiens,nhl,0,1,0,1,1,1,1,0,1,1,1,0
+Nashville Predators,nhl,0,1,1,1,0,1,1,1,0,0,1,1
+New Jersey Devils,nhl,0,1,1,1,1,1,0,1,0,0,0,0
+New York Islanders,nhl,0,0,1,0,0,0,0,0,1,0,1,1
+New York Rangers,nhl,0,1,1,1,1,0,1,1,1,1,1,1
+Ottawa Senators,nhl,0,1,1,1,0,1,0,1,1,0,1,0
+Philadelphia Flyers,nhl,0,1,0,1,1,1,1,1,0,1,0,1
+Pittsburgh Penguins,nhl,0,0,1,1,1,1,1,1,1,1,1,1
+San Jose Sharks,nhl,0,1,1,1,1,1,1,1,1,1,0,1
+St. Louis Blues,nhl,0,0,0,0,1,0,0,1,1,1,1,1
+Tampa Bay Lightning,nhl,0,1,1,0,0,0,1,0,0,1,1,1
+Toronto Maple Leafs,nhl,0,0,0,0,0,0,0,0,1,0,0,0
+Vancouver Canucks,nhl,0,0,1,0,1,1,1,1,1,0,1,0
+Washington Capitals,nhl,0,0,0,1,1,1,1,1,1,0,1,1
+Winnipeg Jets,nhl,0,0,1,0,0,0,0,0,0,0,1,0
