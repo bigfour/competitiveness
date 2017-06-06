@@ -155,7 +155,7 @@ p<- base_plot + aes(x = factor(toupper(sport))) +
   geom_beeswarm(data = gsw , aes(y = better.win.all) , colour = "black" , cex = 2) +
   geom_beeswarm(data = wsh , aes(y = better.win.all) , colour = "black" , cex = 2) + 
   xlab("League")
-p + theme_gray(15) + scale_x_discrete(expand = c(.2, .5)) + scale_y_continuous(labels = scales::percent)
+p + theme_gray(15) + scale_x_discrete(expand = c(.2, .5), labels = c("MLB", "NHL", "NFL", "NBA")) + scale_y_continuous(labels = scales::percent)
 
 ```
 
@@ -222,25 +222,29 @@ base_plot + aes(better.win.all) +
 ## Extend to longer series
 
 ```{r, echo = TRUE}
-df.playoffs3 <- df.playoffs.save %>% ungroup %>% group_by(1:n()) %>% mutate(prob.3 = games.out(prob.b.home, prob.b.road, 3), 
-                                            prob.7 = games.out(prob.b.home, prob.b.road, 7), 
-                                            prob.11 = games.out(prob.b.home, prob.b.road, 11),
-                                            prob.21 = games.out(prob.b.home, prob.b.road, 21), 
-                                            prob.41 = games.out(prob.b.home, prob.b.road, 41),
-                                            prob.51 = games.out(prob.b.home, prob.b.road, 51), 
-                                            prob.61 = games.out(prob.b.home, prob.b.road, 61), 
-                                            prob.71 = games.out(prob.b.home, prob.b.road, 71),
-                                            prob.81 = games.out(prob.b.home, prob.b.road, 81), 
-                                            prob.91 = games.out(prob.b.home, prob.b.road, 91),
-                                            prob.101 = games.out(prob.b.home, prob.b.road, 101))
+df.playoffs3 <- df.playoffs.save %>% ungroup %>% group_by(1:n()) %>% 
+  mutate(prob.3 = games.out(prob.b.home, prob.b.road, 3), 
+          prob.7 = games.out(prob.b.home, prob.b.road, 7), 
+          prob.11 = games.out(prob.b.home, prob.b.road, 11),
+          prob.21 = games.out(prob.b.home, prob.b.road, 21), 
+          prob.41 = games.out(prob.b.home, prob.b.road, 41),
+          prob.81 = games.out(prob.b.home, prob.b.road, 81),
+          prob.83 = games.out(prob.b.home, prob.b.road, 83), 
+          prob.85 = games.out(prob.b.home, prob.b.road, 85),
+          prob.87 = games.out(prob.b.home, prob.b.road, 87),
+          prob.89 = games.out(prob.b.home, prob.b.road, 89),
+          prob.91 = games.out(prob.b.home, prob.b.road, 91),
+          prob.93 = games.out(prob.b.home, prob.b.road, 93))
 
 df.playoffs3 %>% 
   ungroup() %>% 
   group_by(sport) %>% 
   summarise(prob.7 = mean(prob.7), 
-            prob.41 = mean(prob.41),
-            prob.51 = mean(prob.51), 
-            prob.61 = mean(prob.61), 
+            prob.81 = mean(prob.81), 
+            prob.83 = mean(prob.83), 
+            prob.85 = mean(prob.85), 
+            prob.87 = mean(prob.87), 
+            prob.89 = mean(prob.89), 
             prob.91 = mean(prob.91), 
-            prob.101 = mean(prob.101))
+            prob.93 = mean(prob.93))
 ```
