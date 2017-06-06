@@ -7,7 +7,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-source("../config.R")
+source("config.R")
 ```
 
 ## Data wrangling
@@ -96,7 +96,8 @@ Here we use that to define probabilities in our data
 ```{r, echo = TRUE}
 df.playoffs2 <- df.playoffs2 %>% 
   group_by(1:n()) %>% 
-  mutate(better.win.all = ifelse(sport == "nfl", prob.b.home, games.out(prob.b.home, prob.b.road, 7))) %>% 
+  mutate(better.win.all = ifelse(sport == "nfl", prob.b.home, games.out(prob.b.home, prob.b.road, 7)), 
+         better.win.all = ifelse(sport == "mlb" & Real == 2, games.out(prob.b.home, prob.b.road, 5), better.win.all)) %>% 
   ungroup() %>% select(sport:team.w, better.win.all)
 
 ## Grab recent games
@@ -154,7 +155,7 @@ p<- base_plot + aes(x = factor(toupper(sport))) +
   geom_beeswarm(data = gsw , aes(y = better.win.all) , colour = "black" , cex = 2) +
   geom_beeswarm(data = wsh , aes(y = better.win.all) , colour = "black" , cex = 2) + 
   xlab("League")
-p
+p + theme_gray(15) + scale_x_discrete(expand = c(.2, .5)) + scale_y_continuous(labels = scales::percent)
 
 ```
 
