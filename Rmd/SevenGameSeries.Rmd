@@ -111,6 +111,10 @@ df.playoffs2 <- bind_rows(df.playoffs2, df.missing) %>% arrange(sport, -season)
 ## Graphs
 
 ```{r, echo = TRUE}
+
+df.playoffs2$sport <- factor(df.playoffs2$sport)
+levels(df.playoffs2$sport)<-c("mlb","nhl","nfl","nba")
+
 ave.prob <- df.playoffs2 %>% 
   group_by(sport) %>% 
   summarise(ave.outcome = mean(better.win.all), med.outcome = median(better.win.all))
@@ -118,6 +122,9 @@ ave.prob <- df.playoffs2 %>%
 filter(df.playoffs2, season == 2016, sport == "mlb") %>% 
   select(sport, season, team.b, team.w, better.win.all) %>% 
   arrange(-better.win.all) %>% print.data.frame()
+
+
+ 
 
 base_plot <- ggplot(df.playoffs2, aes(fill = toupper(sport), color = toupper(sport))) + 
   guides(fill = FALSE, color = FALSE, alpha = FALSE) + xlab("") + 
@@ -129,25 +136,52 @@ base_plot <- ggplot(df.playoffs2, aes(fill = toupper(sport), color = toupper(spo
 ```{r beeswarm}
 gsw <- filter(df.playoffs2, team.b == "Golden State Warriors" & season == 2017)
 wsh <- filter(df.playoffs2, team.b == "Washington Capitals" & season == 2017)
-p<- base_plot + aes(x = toupper(sport)) + 
+p<- base_plot + aes(x = factor(toupper(sport))) + 
   geom_hline(data = ave.prob, aes(yintercept = ave.outcome, color = toupper(sport)), 
              linetype = 2) + 
-  geom_beeswarm(aes(y = better.win.all)) + 
+  geom_beeswarm(aes(y = better.win.all)) +
   ylab("Series win probability") + 
-  annotate("text", x = "MLB", y = 0.9, label = "GSW-2017") + 
-  geom_text(data = gsw, aes(label = team.w, y = better.win.all), nudge_y = 0.01) + 
-  geom_curve(data = gsw, aes(y = better.win.all, xend = "MLB", yend = 0.89), 
+  geom_text(data = gsw, aes(label = team.w, y = better.win.all), nudge_x = -0.2, colour = "black") + 
+  geom_curve(data = gsw, aes(y = better.win.all, xend = 4.5, yend = 0.9), 
              curvature = -0.3, 
-             arrow = arrow(length = unit(0.2, "cm"), ends = "first", type = "closed"))+ 
-  annotate("text", x = 5, y = 0.9, label = "WSH-2017") + 
-  geom_text(data = wsh, aes(label = team.w, y = better.win.all), nudge_y = 0.01) + 
-  geom_curve(data = wsh, aes(y = better.win.all, xend = 5, yend = 0.89), 
+             arrow = arrow(length = unit(0.2, "cm"), ends = "first", type = "closed")) + 
+  annotate("text", x = 4.5, y = 0.9, label = "Golden State \n Warriors \n 2017") + 
+  geom_text(data = wsh, aes(label = team.w, y = better.win.all), nudge_x = -0.2 , colour = "black") + 
+  geom_curve(data = wsh, aes(y = better.win.all, xend = 2.5, yend = 0.7), 
              curvature = -0.3, 
-             arrow = arrow(length = unit(0.2, "cm"), ends = "first", type = "closed"))
+             arrow = arrow(length = unit(0.2, "cm"), ends = "first", type = "closed")) +
+  annotate("text", x = 2.5, y = 0.7, label = "Washington \n Capitals \n 2017") + 
+  geom_beeswarm(data = gsw , aes(y = better.win.all) , colour = "black" , cex = 2) +
+  geom_beeswarm(data = wsh , aes(y = better.win.all) , colour = "black" , cex = 2) + 
+  xlab("League")
 p
+
 ```
 
-
+```{r plotly}
+library(plotly)
+gsw <- filter(df.playoffs2, team.b == "Golden State Warriors" & season == 2017)
+wsh <- filter(df.playoffs2, team.b == "Washington Capitals" & season == 2017)
+q<- base_plot + aes(x = factor(toupper(sport))) + 
+  geom_hline(data = ave.prob, aes(yintercept = ave.outcome, color = toupper(sport)), 
+             linetype = 2) + 
+  geom_beeswarm(aes(y = better.win.all)) +
+  ylab("Series win probability") + 
+  # geom_text(data = gsw, aes(label = team.w, y = better.win.all), nudge_x = -0.2, colour = "black") + 
+  # geom_curve(data = gsw, aes(y = better.win.all, xend = 4.5, yend = 0.9), 
+  #            curvature = -0.3, 
+  #            arrow = arrow(length = unit(0.2, "cm"), ends = "first", type = "closed")) + 
+  # annotate("text", x = 4.5, y = 0.9, label = "Golden State \n Warriors \n 2017") + 
+  # geom_text(data = wsh, aes(label = team.w, y = better.win.all), nudge_x = -0.2 , colour = "black") + 
+  # geom_curve(data = wsh, aes(y = better.win.all, xend = 2.5, yend = 0.7), 
+  #            curvature = -0.3, 
+  #            arrow = arrow(length = unit(0.2, "cm"), ends = "first", type = "closed")) +
+  # annotate("text", x = 2.5, y = 0.7, label = "Washington \n Capitals \n 2017") + 
+  # geom_beeswarm(data = gsw , aes(y = better.win.all) , colour = "black" , cex = 2) +
+  # geom_beeswarm(data = wsh , aes(y = better.win.all) , colour = "black" , cex = 2) + 
+  xlab("League")
+ggplotly(q,text=team.b)
+```
 
 
 
