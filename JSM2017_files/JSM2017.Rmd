@@ -1,5 +1,5 @@
 ---
-title: "The NFL's paradox"
+title: "The NFL's parity paradox"
 author: "Michael Lopez (with Gregory Matthews, Benjamin Baumer"
 output:
   rmdshower::shower_presentation:
