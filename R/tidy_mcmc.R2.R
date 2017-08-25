@@ -111,10 +111,6 @@ save(tidy_thetas, file = file.path(root, "data", "tidy_thetas.R2.rda"), compress
 
 
 ### Alphas
-## Overall sport estimate
-sport.est <- params %>% 
-  group_by(sport) %>% 
-  summarise(alpha.sport = mean(alpha))
 
 makeAlphas <- function(sport){
   teamnames <- sort(t(unique(bigfour_public[bigfour_public$sport==sport,"home_team"])))
