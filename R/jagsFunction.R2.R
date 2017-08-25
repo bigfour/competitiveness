@@ -104,10 +104,10 @@ library(foreach)
 
 ### Function inputs
 num_adapt <- 100
-num_update <- 1000
+num_update <- 500
 num_draws <- 2000
 
-posteriorDraws = c('alpha','theta','tauGame','tauWeek',
+posteriorDraws = c('theta','tauGame','tauWeek',
                    'tauSeason','gammaWeek','gammaSeason', 'alphaInd', 'tauAlpha')
 leaguestodo <- c("nhl", "nba", "nfl", "mlb")
 
@@ -115,7 +115,7 @@ leaguestodo <- c("nhl", "nba", "nfl", "mlb")
 ### Run the models across leagues using parallel computing
 
 ## Home advantage specific model 
-bugFile <- file.path("R", "jags_model_TeamHFA_R1.bug")
+bugFile <- file.path("R", "jags_model_TeamHFA_R2.bug")
 fit.type <- "team"
 
 cl <- makeCluster(4)
