@@ -389,7 +389,6 @@ tidy_thetas %>%
             min = min(theta),
             CIL = quantile(theta, probs = 0.025),
             Q1 = quantile(theta, probs = 0.25),
-            mean = mean(theta), 
             Q3 = quantile(theta, probs = 0.75),
             CIR = quantile(theta, probs = 0.975),
             max = max(theta),
@@ -554,7 +553,7 @@ spag_sport <- function(sport_name) {
 }
 @
 
-As in Table \ref{tab:thetas}, these figures suggest that the NBA and NFL boast larger between-team gaps in quality than the NHL and MLB, implying more competitive balance in the latter pair of leagues. On one level, this stands somewhat in contrast to competitive balance as measured using Noll-Scully, which alternatively argues that the NFL is more competitively balanced than MLB \citep{WagesWins}. One likely explanation for this difference is Null-Scully's link to number of games played, which artificially makes MLB (162 games) appear less balanced than it actually is and the NFL (16) appear more balanced. Like Noll-Scully, we conclude that the NBA does not show competitive balance relative to other leagues.
+As in Table \ref{tab:thetas}, these figures suggest that the NBA and NFL boast larger between-team gaps in quality than the NHL and MLB, implying more competitive balance in the latter pair of leagues. On one level, this stands somewhat in contrast to competitive balance as measured using Noll-Scully, which alternatively argues that the NFL is more competitively balanced than MLB \citep{WagesWins}. One likely explanation for this difference is Null-Scully's link to number of games played, which artificially makes MLB (162 games) appear less balanced than it actually is and the NFL (16) appear more balanced. Like Noll-Scully, we conclude that the NBA \hl{shows less} competitive balance relative to other leagues.
 
 Our figures also illustrate several other observations. For example, the New England Patriots of the NFL stand out as having the top single week performance in the last decade, with an average team strength of \Sexpr{max.theta} on the log-odds scale, observed during Week 11 of 2007.  In that season, New England finished the regular season 16-0 before eventually losing in the Super Bowl. The worst performance belongs to the NBA's Miami Heat, who during week 23 of the 2007--08 season had a posterior mean team strength of \Sexpr{min.theta}.  That Heat team finished with an overall record of 15-67, at one point losing 15 consecutive games. Related, it is interesting that the team strength estimates of bad teams in the NBA (e.g. the Heat in 2007--08) lie further from 0 than the estimates for good teams. This possibly reveals the tendency for teams in this league to ``tank"---a strategy of fielding a weak team intentionally to improve the chances of having better selection preference in the upcoming player draft \citep{soebbing2013gamblers}.
 
@@ -636,7 +635,7 @@ p.gamma <- ggplot(params, aes(x = gamma_w, y = gamma_s, color = toupper(sport)))
 @
 
 
-Similarly, Figure~\ref{fig:contourGamma} (Appendix) displays the joint posterior distribution of $\gamma_{q, \text{season}}$ and $\gamma_{q, \text{week}}$ via contour plots for each $q$. On a season-to-season basis, team strengths in each of the leagues tend to revert towards the league average of zero as all draws of $\gamma_{q, \text{season}} < 1$ for all $q$. Reversion towards the mean is largest in the NHL (estimated $\gamma_{NHL, \text{season}}$ = 0.54, implying 46\% reversion), followed by the NBA (38\%), MLB (38\% reversion), and the NFL (31\%). However, the only pair of leagues with non-overlapping credible intervals are the NFL and NHL. 
+Similarly, Figure~\ref{fig:contourGamma} (Appendix) displays the joint posterior distribution of $\gamma_{q, \text{season}}$ and $\gamma_{q, \text{week}}$ via contour plots for each $q$. On a season-to-season basis, team strengths in each of the leagues tend to revert towards the league average of zero as all draws of $\gamma_{q, \text{season}} < 1$ for all $q$. Reversion towards the mean is largest in the NHL (estimated $\gamma_{NHL, \text{season}}$ = 0.54, implying 46\% reversion), followed by the NBA (38\%), MLB (38\% reversion), and the NFL (31\%). However, the only pair of leagues with non-overlapping credible intervals are the NFL and NHL. \hl{Note that one reason that team strengths tend to revert towards zero each year is the structure of each league's draft, in which newly eligble players are chosen. In expectation, the worst team in each league is likely to get the top selection in the following year's draft, and so by aquiring the best perceived talent, those worst teams are more likely to improve. Perhaps one reason that the NFL shows the most consistency over time is that, in general, it is the worst at drafting newly eligible players (see \url{https://statsbylopez.com/2016/06/22/the-making-and-comparison-of-draft-curves/} for comparisons in the drafting ability of each league).}
 
 For each of the NHL, NBA, and NFL, posterior estimates of $\gamma_{q, \text{week}}$ (as well as 95\% credible intervals) imply an autoregressive nature to team strength within each season. Interestingly, the NBA and NFL are the least consistent leagues on a week-to-week basis. In MLB, however, team strength estimates quite possibly follow a random walk (i.e., $\gamma_{\text{MLB}, \text{week}} = 1$), in which the succession of team strength is unpredictable. Alternatively, it is also feasible that MLB team strengths could explode over time ($\gamma_{\text{MLB}, \text{week}} > 1$), in which case these estimates would be pulled towards 0 in the long run (across seasons, via $\gamma_{\text{MLB}, \text{season}})$.
 
@@ -931,15 +930,14 @@ all.sport.both <- filter(all.sport.both, type != "est.theta")
 #pdiff is 1, thetas is 2, winp is 3
 @
 
-<<R2, fig.height=5, fig.width=8, fig.cap="Coefficient of determination with future in-season win percentage. We note the improvement our team strength estimates offer over season-to-date win percentage and season-to-date point differential in all sports, especially early in the season. $R^2$ values tend to 0 as the number of future games goes to 0. \\ ">>=
-ggplot(all.sport.both, aes(x = day.season, y = corr.day, lty = type, color = toupper(sport))) +
+<<R2, fig.height=5, fig.width=8, fig.cap="Coefficient of determination with future in-season win percentage. We note the improvement our team strength estimates offer over season-to-date win percentage and season-to-date point differential in most sports, especially early in the season. $R^2$ values tend to 0 as the number of future games goes to 0. \\ ">>=
+ggplot(all.sport.both, aes(x = day.season, y = corr.day, color = type)) +
   geom_line() + 
   scale_y_continuous(labels = scales::percent, "", lim = c(0, .85)) + 
   scale_x_continuous("Game of season") +
-  scale_linetype_manual(labels = c("Point differential", "Sequential", "Win %"), 
+  scale_colour_manual(labels = c("Point differential", "Sequential", "Win %"), 
                         values = c(2, 1, 3), "Type") +
   facet_wrap(~toupper(sport), scales = "free")  + 
-  scale_colour_brewer(palette = "Spectral", "League") +
   labs(title = "Coefficient of determination with future in-season win %") + 
   facet_wrap(~toupper(sport), scales = "free_x")
 @
@@ -1117,7 +1115,7 @@ Finally, we identify that incorporating information from betting markets can hel
 
 \subsection{Discussion}
 
-There are several options for applying or extending our model. Generally, the conditions needed to apply our framework are minimal; only paired events, outcome probabilities, and some unit of time are needed. As in our example, actual event outcomes need not be observed.
+There are several options for applying or extending our model. Generally, the conditions needed to apply our framework are minimal; only paired events, outcome probabilities, and some unit of time are needed.
 
 As alternative examples in sports, comparisons between divisions of teams in the same organization (as in English soccer) or between the top leagues of the same sport (as in European soccer) would follow a similar structure to the one provided. Alternatively, in any sporting league, modeling the impact of structural changes (such as free agency, expansion or scoring system updates) would be straightforward to test by adding covariates to our models. Note that team sports are not required for our model to apply: a similar framework could assess the caliber of tennis players, whose relative strengths fluctuate over time both within and across seasons. Competitive balance questions within amateur sport (for example, conferences in NCAA football, or even across all intercollegiate sports) would follow a similar design. 
 
