@@ -1018,14 +1018,25 @@ aucs <- bigfour.last.ll %>%
   ungroup()
 
 
+briers <- bigfour.last.ll %>%
+  ungroup() %>%
+  mutate(squared.score = (p_home - home_win)^2, squared.scoreS = (p_homeS - home_win)^2) %>% 
+  group_by(sport) %>%
+  summarise(brier = mean(squared.score, na.rm = TRUE), brierS = mean(squared.scoreS, na.rm = TRUE))
+  
 
 aucs %>% 
+  left_join(briers) %>% 
   rename(`League ($q$)` = sport, 
          `AUC (observed)` = auc.observed, 
-         `AUC (sequential fits)` = auc.sequential)  %>%
+         `AUC (sequential fits)` = auc.sequential,
+         `Brier score (observed)` = brier, 
+         `Brier score  (sequential fits)` = brierS)  %>%
   xtable(caption = "AUC values by sport", 
          digits = 3, label = "tab:ll") %>%
   print(include.rownames = FALSE, sanitize.text.function = identity)
+
+
 
 #bigfour.last.ll %>% group_by(sport) %>% 
 #  summarise(cor.sport = cor(p_homeC, p_homeS, use = "pairwise.complete.obs"))
