@@ -1006,7 +1006,8 @@ bigfour %>% left_join(select(tidy_thetas, theta, week, season, name), by = (c("h
 
 <<echo=FALSE, results='asis'>>=
 library(ROCR)
-aucs <- bigfour.last.ll %>%
+aucs <- bigfour.last.ll %>% 
+  filter(!is.na(p_homeS))  %>%
   ungroup() %>%
   group_by(sport) %>%
   do({
@@ -1018,21 +1019,42 @@ aucs <- bigfour.last.ll %>%
   ungroup()
 
 
-briers <- bigfour.last.ll %>%
+briers <- bigfour.last.ll %>% 
+  filter(!is.na(p_homeS)) %>%
   ungroup() %>%
   mutate(squared.score = (p_home - home_win)^2, squared.scoreS = (p_homeS - home_win)^2) %>% 
   group_by(sport) %>%
-  summarise(brier = mean(squared.score, na.rm = TRUE), brierS = mean(squared.scoreS, na.rm = TRUE))
+  summarise(brier = mean(squared.score), brierS = mean(squared.scoreS))
   
+## Greater |z| values are less calibrated -- upper tail probabilities 
+spiegel <- bigfour.last.ll %>% 
+  filter(!is.na(p_homeS)) %>% 
+  ungroup() %>% 
+  mutate(numerator = (home_win - p_home)*(1-2*p_home), denominator = (1-2*p_home)^2*p_home*(1-p_home), 
+         numeratorS = (home_win - p_homeS)*(1-2*p_homeS), denominatorS = (1-2*p_homeS)^2*p_homeS*(1-p_homeS)) %>% 
+  group_by(sport) %>% 
+  summarise(spiegel.z = sum(numerator)/sqrt(sum(denominator)), 
+            spiegel.zS = sum(numeratorS)/sqrt(sum(denominatorS)), 
+            pval.z = pchisq(spiegel.z^2, 1, lower.tail = FALSE), 
+            pval.zS = pchisq(spiegel.zS^2, 1, lower.tail = FALSE))
+
+
+aucs <- aucs %>% 
+  left_join(briers) %>% 
+  left_join(spiegel) %>% 
+  mutate(brier.observed.sum = paste0(round(brier, 3), " (", round(pval.z, 3), ")"), 
+                        brier.sequential.sum = paste0(round(brierS, 3), " (", round(pval.zS, 3), ")")) %>% 
+  select(sport, auc.observed, auc.sequential, brier.observed.sum, brier.sequential.sum)
+
+
 
 aucs %>% 
-  left_join(briers) %>% 
   rename(`League ($q$)` = sport, 
-         `AUC (observed)` = auc.observed, 
-         `AUC (sequential fits)` = auc.sequential,
-         `Brier score (observed)` = brier, 
-         `Brier score  (sequential fits)` = brierS)  %>%
-  xtable(caption = "AUC values by sport", 
+         `AUC observed` = auc.observed, 
+         `AUC sequential)` = auc.sequential,
+         `Brier observed (p-value)` = brier.observed.sum, 
+         `Brier sequential (p-value)` = brier.sequential.sum)  %>%
+  xtable(caption = "AUC values and Brier scores (p-values) by sport", 
          digits = 3, label = "tab:ll") %>%
   print(include.rownames = FALSE, sanitize.text.function = identity)
 
