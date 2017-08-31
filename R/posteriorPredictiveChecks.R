@@ -98,10 +98,38 @@ for (league in c("nfl","mlb","nhl","nba")){print(league)
 }
   
 save(postPred,file="/Users/gregorymatthews/Dropbox/competitivenessGit/postPred.RData")
+save(yList,file="/Users/gregorymatthews/Dropbox/competitivenessGit/yList.RData")
+
+  
 
 
-  par(mar=c(0,0,0,0))
-  par(mfrow=c(5,5))
-  for (i in 1:25){
-  plot(postPred[["mlb"]][[i]],y,xlim=c(-4,4))
+
+
+par(mar=c(0,0,0,0))
+  par(mfrow=c(2,2))
+  for (i in 1:4){
+    qqnorm(postPred[["mlb"]][[i]]-yList[["mlb"]],col="red")
   } 
+  
+  par(mar=c(0,0,0,0))
+  par(mfrow=c(2,2))
+  for (i in 1:4){
+    qqnorm(postPred[["nfl"]][[i]]-yList[["nfl"]],col="green")
+  } 
+  
+  par(mar=c(0,0,0,0))
+  par(mfrow=c(2,2))
+  for (i in 1:4){
+    qqnorm(postPred[["nhl"]][[i]]-yList[["nhl"]],col="blue")
+  } 
+  
+  par(mar=c(0,0,0,0))
+  par(mfrow=c(2,2))
+  for (i in 1:4){
+    qqnorm(postPred[["nba"]][[i]]-yList[["nba"]],col="black")
+  } 
+  
+  
+  
+  
+  
