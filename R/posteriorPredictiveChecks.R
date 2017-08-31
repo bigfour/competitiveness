@@ -12,7 +12,7 @@ logit <- function(p) {
 asinTransform <- function(p) { asin(sqrt(p)) }
 
 set.seed(1234)
-postPred<-list()
+yList<-postPred<-list()
 nsim<-100
 for (league in c("nfl","mlb","nhl","nba")){print(league)
   postPred[[league]]<-list()
@@ -30,7 +30,7 @@ for (league in c("nfl","mlb","nhl","nba")){print(league)
   head(test)
   
   
-  y <- logit(test$p_home)
+  yList[[league]] <- y <- logit(test$p_home)
   w <- test$week
   s <- test$season - min(test$season) + 1
   table(s, w)
@@ -97,15 +97,11 @@ for (league in c("nfl","mlb","nhl","nba")){print(league)
   
 }
   
-
+save(postPred,file="/Users/gregorymatthews/Dropbox/competitivenessGit/postPred.RData")
 
 
   par(mar=c(0,0,0,0))
   par(mfrow=c(5,5))
-  for (i in 1:15){
-  hist(postPred[[i]],xlim=c(-4,4))
-  }
-  hist(y,xlim=c(-4,4))
-  for (i in 16:24){
-    hist(postPred[[i]],xlim=c(-4,4))
+  for (i in 1:25){
+  plot(postPred[["mlb"]][[i]],y,xlim=c(-4,4))
   } 
