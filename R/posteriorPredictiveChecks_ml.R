@@ -146,13 +146,18 @@ ggplot(filter(df.all, sim.number > 10), aes(x = y.tilde, y = factor(sim.number),
   ylab("simulation")
 
 
+df.all %>% ggplot(aes(y.tilde, group = sim.number)) + 
+  geom_density(colour = "grey") + 
+  geom_density(data = filter(df.all, sim.number == 11), aes(y.tilde), colour = "red") + 
+  facet_wrap(~sport, scales = "free")
+
+
+
+
 ### compare predicted residuals
 
 df.all %>% filter(sim.number == 2) %>% mutate(resid = y.obs - y.tilde) %>% 
   ggplot(aes(y.obs, resid)) + geom_point() + geom_smooth() + facet_wrap(~sport)
-
-
-
 
 
 
