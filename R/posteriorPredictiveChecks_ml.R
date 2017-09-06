@@ -14,6 +14,7 @@ asinTransform <- function(p) { asin(sqrt(p)) }
 set.seed(1234)
 yList <- postPred <- list()
 nsim <- 20
+
 for (league in c("nfl","mlb","nhl","nba")){print(league)
   postPred[[league]]<-list()
   load(paste0(mcmc_dir,"/", league,"_paper_teamHFA.R1.RData"))
@@ -117,25 +118,37 @@ save(yList, file = paste0(data_raw, "yList.v2.RData"))
 ######################################################################
 source("config.R")
 library(rjags)
+library(ggjoy)
 load(file.path(data_raw, "bigfour.rda"))
 load(file.path(data_raw, "postPred.v2.RData"))
 load(file.path(data_raw, "yList.v2.RData"))
 nsim <- 20        #define given above inputs
 n.draws <- 2000   #define  given above inputs
 n.chains <- 3     #define given above inputs
+seasonList <- list()
+hteamList <- list()
 
-df.all <- NULL
 
 for (leagues in c("nfl","mlb","nhl","nba")){
+  test <- subset(bigfour, sport == leagues)
+  seasonList[[leagues]] <- test$season
+  hteamList[[leagues]] <- test$home_team
+}
+
+
+df.all <- NULL
+for (leagues in c("nfl","mlb","nhl","nba")){
   y.obs <- yList[[leagues]]
+  season.obs <- seasonList[[leagues]]
+  hteam.obs <- hteamList[[leagues]]
   for (sim in 1:nsim){
     y.tilde <- postPred[[leagues]][[sim]]
     sim.number <- sim
     sport <- leagues
-    df.current <- data.frame(sport, sim.number, y.obs, y.tilde, real = FALSE)
+    df.current <- data.frame(sport, sim.number, y.obs, y.tilde, season.obs, hteam.obs, real = FALSE)
     df.all <- rbind(df.all, df.current)
   }
-  df.real <- data.frame(sport, sim.number = sim.number + 1, y.obs, y.tilde = y.obs, real = TRUE)
+  df.real <- data.frame(sport, sim.number = sim.number + 1, y.obs, y.tilde = y.obs, season.obs, hteam.obs, real = TRUE)
   df.all <- rbind(df.all, df.real)
 }
 
@@ -145,14 +158,31 @@ ggplot(filter(df.all, sim.number > 10), aes(x = y.tilde, y = factor(sim.number),
   geom_joy() + facet_wrap(~sport, scales = "free") + 
   ylab("simulation")
 
-
 df.all %>% ggplot(aes(y.tilde, group = sim.number)) + 
   geom_density(colour = "grey") + 
-  geom_density(data = filter(df.all, sim.number == 11), aes(y.tilde), colour = "red") + 
+  geom_density(data = filter(df.all, real), aes(y.tilde), colour = "red") + 
   facet_wrap(~sport, scales = "free")
 
 
+df.all %>% ggplot(aes(y.tilde, group = sim.number)) + 
+  geom_density(colour = "grey") + 
+  geom_density(data = filter(df.all, real), aes(y.tilde), colour = "red") + 
+  facet_wrap(~sport + season.obs, scales = "free", nrow = 4)
 
+filter(df.all, sport == "mlb") %>% ggplot(aes(y.tilde, group = sim.number)) + 
+  geom_density(colour = "grey") + 
+  geom_density(data = filter(df.all, sport == "mlb", real) , aes(y.tilde), colour = "red") + 
+  facet_wrap(~hteam.obs, scales = "free", nrow = 4)
+
+
+filter(df.all, sport == "nhl") %>% ggplot(aes(y.tilde, group = sim.number)) + 
+  geom_density(colour = "grey") + 
+  geom_density(data = filter(df.all, sport == "nhl", real) , aes(y.tilde), colour = "red") + 
+  facet_wrap(~hteam.obs, scales = "free", nrow = 4)
+
+
+
+## Possible idea: compare to constant home advantage
 
 ### compare predicted residuals
 
