@@ -4,10 +4,14 @@ load(file.path(data_raw, "bigfour.rda"))
 
 ### Here's the logit function
 logit <- function(p) { 
-  out <- log(p/(1 - p))
+  out <- log(p/(1 - p)) 
   return(out)
 }
 
+
+####################################################################################
+##### Team-level home advantage
+####################################################################################
 
 asinTransform <- function(p) { asin(sqrt(p)) }
 
@@ -15,12 +19,12 @@ set.seed(1234)
 yList <- postPred <- list()
 nsim <- 20
 
+
 for (league in c("nfl","mlb","nhl","nba")){print(league)
   postPred[[league]]<-list()
   load(paste0(mcmc_dir,"/", league,"_paper_teamHFA.R1.RData"))
   
   test <- subset(bigfour, sport == league)
-  greg <- as.Date(gsub(" 0:00","",test$event_date),"%m/%d/%Y")
   min.day <- test %>%
     group_by(season) %>%
     summarise(min.day = min(gameDate))
@@ -81,58 +85,149 @@ n.chains <- dim(z$theta)[5]
 
 #Create a vector of thetas for a season a and week
   for (sim in 1:nsim){print(sim)
-  draw<-sample(1:n.draws,1)
-  chain<-sample(1:n.chains,1)
+  draw<-sample(1:n.draws, 1)
+  chain<-sample(1:n.chains, 1)
 
     thetaMat<-z$theta[,,,draw,chain]
     alpha<-z$alpha[1,draw,chain]
-      alphaInd<-z$alphaInd[,draw,chain]
+    alphaInd<-z$alphaInd[,draw,chain]
     tauGame<-z$tauGame[1,draw,chain]
   
     
     mu<-rep(NA,nrow(x))
     
     for (i in 1:nrow(x)){
-    mu[i]<-alpha + alphaInd[zzz[i]] + c(thetaMat[s[i],w[i],]%*%x[i,])
+    mu[i] <- alpha + alphaInd[zzz[i]] + c(thetaMat[s[i],w[i],]%*%x[i,])
     }
     
     ## Note the code specification for rnorm()
     postPred[[league]][[sim]] <- rnorm(length(mu), mean = mu, sd = sqrt(1/tauGame))
-    
-  # df <- data.frame(mu = mu, pred = postPred[[league]][[sim]], y = y)
-  # ggplot(df, aes(y, mu)) + geom_smooth() + geom_point()  + geom_abline(aes(intercept = 0, slope = 1), colour = "red") + 
-  #   scale_y_continuous(lim = c(-3.5, 3.5)) + scale_x_continuous(lim = c(-3.5, 3.5))
-  # ggplot(df, aes(y, pred)) + geom_smooth() + geom_point()  + geom_abline(aes(intercept = 0, slope = 1), colour = "red")+ 
-  #   scale_y_continuous(lim = c(-3.5, 3.5)) + scale_x_continuous(lim = c(-3.5, 3.5))
-  
   }
   
 }
   
-save(postPred, file = paste0(data_raw, "postPred.v2.RData"))
-save(yList, file = paste0(data_raw, "yList.v2.RData"))
+save(postPred, file = paste0(root, "/data/postPred.team.v2.RData"))
+save(yList, file = paste0(root, "/data/yList.team.v2.RData"))
 
 
+####################################################################################
+##### Constant home advantage
+####################################################################################
 
+
+source("config.R")
+library(rjags)
+load(file.path(data_raw, "bigfour.rda"))
+
+### Here's the logit function
+logit <- function(p) { 
+  out <- log(p/(1 - p))
+  return(out)
+}
+
+
+asinTransform <- function(p) { asin(sqrt(p)) }
+
+set.seed(1234)
+yList <- postPred.constant <- list()
+nsim <- 20
+
+for (league in c("nfl","mlb","nhl","nba")){print(league)
+  postPred.constant[[league]]<-list()
+  load(paste0(mcmc_dir,"/", league,"_paper_constantHFA.R1.RData"))
+  
+  test <- subset(bigfour, sport == league)
+  min.day <- test %>%
+    group_by(season) %>%
+    summarise(min.day = min(gameDate))
+  
+  test <- test %>%
+    left_join(min.day) %>%
+    mutate(day = as.Date(gameDate) - as.Date(min.day), week = as.numeric(floor(day/7) + 1))
+  head(test)
+  
+  
+  w <- test$week
+  s <- test$season - min(test$season) + 1
+  table(s, w)
+  
+  
+  #create a design matrix 
+  Teams <- sort(as.character(unique(c(as.character(test$home_team),
+                                      as.character(test$visitor_team)))))
+  
+  #Defining the number of things
+  nTeams <- length(Teams)
+  nWeeks <- max(test$week)
+  nSeas <- max(s)
+  n <- nrow(test)
+  
+  #Defining the design matrix
+  x <- matrix(0, nrow = dim(test)[1], ncol = length(Teams))
+  for (i in 1:dim(test)[1]) {
+    x[i, which(as.character(test[i,"home_team"]) == Teams)] <- (1)
+    x[i, which(as.character(test[i,"visitor_team"]) == Teams)] <- (-1)
+  } 
+  
+  
+  ######################################################################
+  #####    Sample From posterior distribution
+  ######################################################################
+  
+  # Properties of chains  
+  n.draws <- dim(z$theta)[4]
+  n.chains <- dim(z$theta)[5]  
+  
+  #Create a vector of thetas for a season a and week
+  for (sim in 1:nsim){print(sim)
+    draw<-sample(1:n.draws, 1)
+    chain<-sample(1:n.chains, 1)
+    
+    thetaMat<-z$theta[,,,draw,chain]
+    alpha<-z$alpha[1,draw,chain]
+    tauGame<-z$tauGame[1,draw,chain]
+    
+    
+    mu<-rep(NA,nrow(x))
+    
+    for (i in 1:nrow(x)){
+      mu[i]<-alpha + c(thetaMat[s[i],w[i],]%*%x[i,])
+    }
+    
+    ## Note the code specification for rnorm()
+    postPred.constant[[league]][[sim]] <- rnorm(length(mu), mean = mu, sd = sqrt(1/tauGame))
+    
+  }
+  
+}
+
+save(postPred.constant, file = paste0(root, "/data/postPred.constant.v2.RData"))
 
 ######################################################################
 source("config.R")
 library(rjags)
 library(ggjoy)
 load(file.path(data_raw, "bigfour.rda"))
-load(file.path(data_raw, "postPred.v2.RData"))
-load(file.path(data_raw, "yList.v2.RData"))
+load(file.path(root, "data/postPred.constant.v2.RData"))
+load(file.path(root, "data/postPred.team.v2.RData"))
+postPred.team <- postPred
+load(file.path(root, "data/yList.team.v2.RData"))
+
+
 nsim <- 20        #define given above inputs
 n.draws <- 2000   #define  given above inputs
 n.chains <- 3     #define given above inputs
 seasonList <- list()
 hteamList <- list()
+vteamList <- list()
+
 
 
 for (leagues in c("nfl","mlb","nhl","nba")){
   test <- subset(bigfour, sport == leagues)
   seasonList[[leagues]] <- test$season
   hteamList[[leagues]] <- test$home_team
+  vteamList[[leagues]] <- test$visitor_team
 }
 
 
@@ -141,48 +236,90 @@ for (leagues in c("nfl","mlb","nhl","nba")){
   y.obs <- yList[[leagues]]
   season.obs <- seasonList[[leagues]]
   hteam.obs <- hteamList[[leagues]]
+  vteam.obs <- vteamList[[leagues]]
   for (sim in 1:nsim){
-    y.tilde <- postPred[[leagues]][[sim]]
+    y.tilde.team <- postPred.team[[leagues]][[sim]]
+    y.tilde.constant <- postPred.constant[[leagues]][[sim]]
     sim.number <- sim
     sport <- leagues
-    df.current <- data.frame(sport, sim.number, y.obs, y.tilde, season.obs, hteam.obs, real = FALSE)
+    df.current <- data.frame(sport, sim.number, y.obs, y.tilde.team, y.tilde.constant, season.obs, hteam.obs, vteam.obs, real = FALSE)
     df.all <- rbind(df.all, df.current)
   }
-  df.real <- data.frame(sport, sim.number = sim.number + 1, y.obs, y.tilde = y.obs, season.obs, hteam.obs, real = TRUE)
+  df.real <- data.frame(sport, sim.number = sim.number + 1, y.obs, y.tilde.team = y.obs, y.tilde.constant = y.obs, season.obs, hteam.obs, vteam.obs, real = TRUE)
   df.all <- rbind(df.all, df.real)
 }
 
 library(ggjoy)
 
-ggplot(filter(df.all, sim.number > 10), aes(x = y.tilde, y = factor(sim.number), fill = real)) + 
+ggplot(filter(df.all, sim.number > 10), aes(x = y.tilde.team, y = factor(sim.number), fill = real)) + 
   geom_joy() + facet_wrap(~sport, scales = "free") + 
   ylab("simulation")
 
-df.all %>% ggplot(aes(y.tilde, group = sim.number)) + 
+
+df.all %>% filter(!real) %>% ggplot(aes(y.tilde.team, group = sim.number)) + 
   geom_density(colour = "grey") + 
-  geom_density(data = filter(df.all, real), aes(y.tilde), colour = "red") + 
+  geom_density(data = filter(df.all, real), aes(y.tilde.team), colour = "red") + 
   facet_wrap(~sport, scales = "free")
 
+adjust <- 1/4
+df.all %>% filter(!real) %>% ggplot(aes(y.tilde.team, group = sim.number)) + 
+  geom_density(colour = "grey", adjust = adjust) + 
+  geom_density(data = filter(df.all, real), aes(y.tilde.team), colour = "red", adjust = adjust) + 
+  facet_wrap(~sport, scales = "free")
 
-df.all %>% ggplot(aes(y.tilde, group = sim.number)) + 
+df.all %>% group_by(sport, y.obs) %>% count() %>% ungroup() %>% mutate(n = n/21) %>% group_by(sport) %>% arrange(-n) %>% slice(1:5)
+bigfour %>% group_by(sport, p_home) %>% count() %>% ungroup() %>% group_by(sport) %>% arrange(-n) %>% slice(1:5)
+
+
+df.all %>% filter(!real)  %>% ggplot(aes(y.tilde.team, group = sim.number)) + 
   geom_density(colour = "grey") + 
-  geom_density(data = filter(df.all, real), aes(y.tilde), colour = "red") + 
+  geom_density(data = filter(df.all, real), aes(y.tilde.team), colour = "red") + 
   facet_wrap(~sport + season.obs, scales = "free", nrow = 4)
 
-filter(df.all, sport == "mlb") %>% ggplot(aes(y.tilde, group = sim.number)) + 
+##### team HFA model
+filter(df.all, sport == "mlb", !real) %>% ggplot(aes(y.tilde.team, group = sim.number)) + 
   geom_density(colour = "grey") + 
-  geom_density(data = filter(df.all, sport == "mlb", real) , aes(y.tilde), colour = "red") + 
+  geom_density(data = filter(df.all, sport == "mlb", real) , aes(y.tilde.team), colour = "red") + 
   facet_wrap(~hteam.obs, scales = "free", nrow = 4)
 
+##### team comparison
+team.analyze <- "Denver Nuggets"
+data.analyze <- df.all %>% filter(hteam.obs == team.analyze)
 
-filter(df.all, sport == "nhl") %>% ggplot(aes(y.tilde, group = sim.number)) + 
+filter(data.analyze, !real) %>% ggplot(aes(y.tilde.constant, group = sim.number)) + 
   geom_density(colour = "grey") + 
-  geom_density(data = filter(df.all, sport == "nhl", real) , aes(y.tilde), colour = "red") + 
-  facet_wrap(~hteam.obs, scales = "free", nrow = 4)
+  geom_density(data = filter(data.analyze, real) , aes(y.tilde.constant), colour = "red")
+
+
+filter(data.analyze, !real) %>% ggplot(aes(y.tilde.team, group = sim.number)) + 
+  geom_density(colour = "grey") + 
+  geom_density(data = filter(data.analyze, real) , aes(y.tilde.team), colour = "red")
+
+ggplot(data.analyze, aes(y.tilde.team, y.tilde.constant)) + geom_point() + geom_smooth() +  geom_abline(aes(intercept = 0, slope = 1), col = "red")
+
+
+df.all %>% mutate(diff.constant = y.tilde.constant - y.obs, 
+                  diff.team = y.tilde.team - y.obs) %>% 
+                  group_by(hteam.obs, sport) %>% 
+                  summarise(ave.diff.constant = mean(diff.constant),  ave.diff.team = mean(diff.team)) %>% 
+          gather("type", "Average_difference", ave.diff.constant:ave.diff.team) %>% 
+          ggplot(aes(x = hteam.obs, y = Average_difference, colour = type)) + geom_point() + xlab("Team") + geom_hline(aes(yintercept = 0)) +  coord_flip() + 
+         facet_wrap(~sport, scales = "free_y") + theme_gray(16) + ggtitle("Average difference between PPV of logit(p) versus observed logit(p), by home team")
 
 
 
-## Possible idea: compare to constant home advantage
+df.all %>% mutate(diff.constant = y.tilde.constant - y.obs, 
+                  diff.team = y.tilde.team - y.obs) %>% 
+  group_by(vteam.obs, sport) %>% 
+  summarise(ave.diff.constant = mean(-diff.constant),  ave.diff.team = mean(-diff.team)) %>% ### take the negative to get in terms of away team
+  gather("type", "Average_difference", ave.diff.constant:ave.diff.team) %>% 
+  ggplot(aes(x = vteam.obs, y = Average_difference, colour = type)) + geom_point() + xlab("Team") + geom_hline(aes(yintercept = 0)) +  coord_flip() + 
+  facet_wrap(~sport, scales = "free_y") + theme_gray(16) + ggtitle("Average difference between PPV of logit(p) versus observed logit(p), by road team")
+
+
+
+
+### Compare night football games
 
 ### compare predicted residuals
 
