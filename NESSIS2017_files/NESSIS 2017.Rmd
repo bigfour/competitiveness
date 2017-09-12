@@ -85,8 +85,20 @@ p  + geom_point(data = xander, colour = "black", size = 3) +
 
 Two huge swings in win probability that were outside the Red Sox control
 
+* Red Sox were lucky!
+
+
 <img src="max.gif" style="width:400px; height=200px">
 
+## Using statistics to assess luck in sports
+
+> * The best team does not always win. Sorry, Detroit
+
+> * How to untangle luck from skill? 
+
+> * Game outcomes (won or loss) as realizations of random variables 
+
+> * Nice feature: sports have repeatable trials, out of sample games to use for predictions
 
 ## 1. Assess parity in professional sports
 
@@ -102,7 +114,6 @@ How to define parity
 What parity looks like:
 
 <img src="Joe.gif" style="width:400px; height=200px">
-
 
 
 ## 1. Assess parity in professional sports
@@ -127,6 +138,80 @@ Motivation: Extend [Glickman and Stern, 1998](http://www.tandfonline.com/doi/abs
 
 
 <img src="Glickman.png" style="width:800px; height=670px">
+
+
+## Building a cross-sport model 
+
+
+*Problem:* wins and losses alone insufficient, point differential non-generalizable
+
+*Solution*: if you can't beat em, use their probabilities in a statistical model
+
+<img src="sportsbook.png" style="width:300px; height=200px">
+
+
+
+## Building a cross-sport model 
+
+
+Betting markets: Cubs ($\ell_i = -127$) vs Diamondbacks ($\ell_j = 117$) 
+
+$$
+  p_i(\ell_i) = \begin{cases}
+        \frac{100}{100 + \ell_i} & \text{ if } \ell_i \geq 100 \\
+        \frac{|\ell_i|}{100 + |\ell_i|} & \text{ if } \ell_i \leq -100
+      \end{cases} \,.
+$$
+
+- Cubs: $p_i(-127) = 0.559$, Diamondbacks: $p_j(117) = 0.461$
+- Normalize to sum to unity
+    - Cubs: .548
+    - Diamondbacks 0.452
+
+
+## Building a cross-sport model 
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE, fig.width= 8, fig.height = 4.5}
+source("https://raw.githubusercontent.com/bigfour/competitiveness/master/config.R")
+load(file.path(data_raw, "bigfour.rda"))
+bigfour <- bigfour %>%
+  mutate(sport = toupper(sport))
+bigfour_summary <- bigfour %>%
+  group_by(sport) %>%
+  summarize(N = n(), num_seasons = n_distinct(season), 
+            earliest = min(gameDate), latest = max(gameDate),
+            home_win_pct = sum(home_win, na.rm = TRUE) / n(), 
+            prob_missing = sum(is.na(p_home)), 
+            prob_pct = sum(!is.na(p_home)) / n(), 
+            home_win_prob = mean(p_home, na.rm = TRUE))
+bigfour_binned <- bigfour %>%
+  mutate(p_home_bin = round(p_home, 2)) %>%
+  group_by(sport, p_home_bin) %>%
+  summarize(N = n(), home_win_bin_pct = mean(home_win))
+
+markets_plot <- ggplot(data = bigfour, 
+                       aes(x = p_home, y = as.numeric(home_win), 
+                           color = sport)) + 
+  #geom_point(alpha = 0.1) + 
+  geom_point(data = bigfour_binned, 
+             aes(x = p_home_bin, y = home_win_bin_pct, size = N), alpha = 0.5) + 
+  geom_smooth() +
+  geom_abline(slope = 1, intercept = 0, color = "black", lty = 2) + 
+  geom_hline(data = bigfour_summary, 
+             aes(yintercept = home_win_pct, color = sport), lty = 3) + 
+  geom_vline(data = bigfour_summary, 
+             aes(xintercept = home_win_prob, color = sport), lty = 3) + 
+  coord_equal() + 
+  scale_x_continuous("Betting Market Estimated Probability of Home Win", 
+                     labels = scales::percent, limits = c(0,1)) + 
+  scale_y_continuous("Observed Probability of Home Win", 
+                     labels = scales::percent, limits = c(0,1)) + 
+  scale_color_brewer(palette = "Spectral", name = NULL, guide = FALSE) +
+  facet_wrap(~sport)
+#  facet_grid(sport ~ season)
+markets_plot + theme_grey(base_size = 16) 
+```
+
 
 
 ## Building a cross-sport model
