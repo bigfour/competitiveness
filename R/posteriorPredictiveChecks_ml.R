@@ -220,7 +220,7 @@ n.chains <- 3     #define given above inputs
 seasonList <- list()
 hteamList <- list()
 vteamList <- list()
-
+dayList <- list()
 
 
 for (leagues in c("nfl","mlb","nhl","nba")){
@@ -228,6 +228,7 @@ for (leagues in c("nfl","mlb","nhl","nba")){
   seasonList[[leagues]] <- test$season
   hteamList[[leagues]] <- test$home_team
   vteamList[[leagues]] <- test$visitor_team
+  dayList[[leagues]] <- weekdays(test$gameDate)
 }
 
 
@@ -237,15 +238,16 @@ for (leagues in c("nfl","mlb","nhl","nba")){
   season.obs <- seasonList[[leagues]]
   hteam.obs <- hteamList[[leagues]]
   vteam.obs <- vteamList[[leagues]]
+  day <- dayList[[leagues]]
   for (sim in 1:nsim){
     y.tilde.team <- postPred.team[[leagues]][[sim]]
     y.tilde.constant <- postPred.constant[[leagues]][[sim]]
     sim.number <- sim
     sport <- leagues
-    df.current <- data.frame(sport, sim.number, y.obs, y.tilde.team, y.tilde.constant, season.obs, hteam.obs, vteam.obs, real = FALSE)
+    df.current <- data.frame(sport, day, sim.number, y.obs, y.tilde.team, y.tilde.constant, season.obs, hteam.obs, vteam.obs, real = FALSE)
     df.all <- rbind(df.all, df.current)
   }
-  df.real <- data.frame(sport, sim.number = sim.number + 1, y.obs, y.tilde.team = y.obs, y.tilde.constant = y.obs, season.obs, hteam.obs, vteam.obs, real = TRUE)
+  df.real <- data.frame(sport, day, sim.number = sim.number + 1, y.obs, y.tilde.team = y.obs, y.tilde.constant = y.obs, season.obs, hteam.obs, vteam.obs, real = TRUE)
   df.all <- rbind(df.all, df.real)
 }
 
@@ -316,10 +318,14 @@ df.all %>% mutate(diff.constant = y.tilde.constant - y.obs,
   ggplot(aes(x = vteam.obs, y = Average_difference, colour = type)) + geom_point() + xlab("Team") + geom_hline(aes(yintercept = 0)) +  coord_flip() + 
   facet_wrap(~sport, scales = "free_y") + theme_gray(16) + ggtitle("Average difference between PPV of logit(p) versus observed logit(p), by road team")
 
-
-
-
 ### Compare night football games
+
+nfl.wday <- df.all %>% filter(sport == "nfl")  %>% mutate(night.game = (day == "Monday")|(day == "Thursday")) 
+filter(nfl.wday, !real) %>% ggplot(aes(y.tilde.team, group = sim.number)) + 
+  geom_density(colour = "grey")  + 
+  geom_density(data = filter(nfl.wday, real) , aes(y.tilde.team), colour = "red")
+  
+
 
 ### compare predicted residuals
 
