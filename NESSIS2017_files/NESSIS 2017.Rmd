@@ -85,10 +85,10 @@ p  + geom_point(data = xander, colour = "black", size = 3) +
 
 Two huge swings in win probability that were outside the Red Sox control
 
-* Red Sox were lucky!
+> * Red Sox were lucky!
 
 
-<img src="max.gif" style="width:400px; height=200px">
+> * <img src="max.gif" style="width:400px; height=200px">
 
 ## Using statistics to assess luck in sports
 
@@ -96,9 +96,9 @@ Two huge swings in win probability that were outside the Red Sox control
 
 > * How to untangle luck from skill? 
 
-> * Game outcomes (won or loss) as realizations of random variables 
+> * How often does the best team win in each sport?  Luck ---> parity
 
-> * Nice feature: sports have repeatable trials, out of sample games to use for predictions
+
 
 ## 1. Assess parity in professional sports
 
@@ -143,9 +143,11 @@ Motivation: Extend [Glickman and Stern, 1998](http://www.tandfonline.com/doi/abs
 ## Building a cross-sport model 
 
 
-*Problem:* wins and losses alone insufficient, point differential non-generalizable
+*Problem:* wins and losses alone insufficient 
 
-*Solution*: if you can't beat em, use their probabilities in a statistical model
+*Problem:* point differential non-generalizable
+
+*Solution*: if you can't beat em, use their numbers in a statistical model
 
 <img src="sportsbook.png" style="width:300px; height=200px">
 
@@ -168,10 +170,10 @@ $$
     - Cubs: .548
     - Diamondbacks 0.452
 
+## { .fullpage }
 
-## Building a cross-sport model 
-
-```{r, echo = FALSE, message = FALSE, warning = FALSE, fig.width= 8, fig.height = 4.5}
+<div class="fullpage width">
+```{r, echo = FALSE}
 source("https://raw.githubusercontent.com/bigfour/competitiveness/master/config.R")
 load(file.path(data_raw, "bigfour.rda"))
 bigfour <- bigfour %>%
@@ -208,9 +210,10 @@ markets_plot <- ggplot(data = bigfour,
                      labels = scales::percent, limits = c(0,1)) + 
   scale_color_brewer(palette = "Spectral", name = NULL, guide = FALSE) +
   facet_wrap(~sport)
-#  facet_grid(sport ~ season)
-markets_plot + theme_grey(base_size = 16) 
+markets_plot + theme_grey(base_size = 13) 
 ```
+</div>
+
 
 
 
@@ -243,6 +246,19 @@ Assumptions:
 *Software*: `rjags` package in **R** statistical software 
 
 *Draws*: 20k iterations, 2k burn in, thin of 5
+
+## Team strength results
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE, fig.width=7, fig.height=3.8}
+load(file.path(root, "data", "sox.tigers.rda"))
+sox.tigers %>% ggplot(aes(x = theta, fill = team)) + 
+  geom_density(alpha = 0.5) + ylab("") + xlab("Team Strength (log odds scale)") + 
+  scale_fill_manual("", values = c("#BD3039", "#FF6600"), labels = c("Tigers", "Red Sox"), breaks = c("Tigers", "Red Sox")) + 
+  labs(title = "Posterior distribution of team strengths", 
+       subtitle = "End of 2013 regular season")+  
+  theme_grey(base_size = 15)
+```
+
 
 ## Team strength results
 
@@ -306,16 +322,19 @@ ggplot(data = df.2013,
   geom_text(aes(label = annotation), color = "black", hjust = "left", nudge_x = 0.25) + 
   scale_color_manual(name = NULL, values = primary) + 
   scale_fill_manual(name = NULL, values = secondary) + 
-  scale_x_continuous(name = "Week of season") +
-  scale_y_continuous(name = "Team Strength (log-odds scale)") + 
+  scale_x_continuous(name = "Week of season", lim = c(0, 32)) +
+  scale_y_continuous(name = "Team strength (log odds)") + 
+  ggtitle("Team Strengths, 2013 MLB ") + 
   guides(color = FALSE, fill = FALSE) +
   geom_line(data = tigers, aes(x = cumweek - 196, y = theta), colour = "#FF6600") + 
   geom_point(data = tigers, aes(x = cumweek - 196, y = theta), colour = "#FF6600") + 
   geom_line(data = sox, aes(x = cumweek - 196, y = theta), colour = "#BD3039") + 
   geom_point(data = sox, aes(x = cumweek - 196, y = theta),  colour = "#BD3039") + 
-  #  guides(color = guide_legend(ncol = 2)) 
-  theme_grey(base_size = 18)
+  annotate("text", x = 28.5, y = .24, colour = "#BD3039", label = "Red Sox", hjust = 0) +  
+  annotate("text", x = 28.5, y = .35, colour = "#FF6600", label = "Tigers", hjust = 0) +  
+  theme_grey(base_size = 15)
 ```
+
 
 
 ## { .fullpage }
@@ -339,14 +358,7 @@ spag + facet_wrap(~sport, ncol = 1)
 ```
 </div>
 
-## NFL's parity: unpredictability at a fixed point in time
-
-
-How often does the best team win?
- 
-<img src="parity.png" style="width:800px; height=300px">
-
-## NFL's parity: unpredictability by season
+## Unpredictability, season-to-season
 
 ```{r, echo = FALSE, fig.width = 5.8, fig.height = 4.4}
 load(file.path(root, "data", "params.R1.rda"))
@@ -366,15 +378,15 @@ params1 <- filter(params1, type == "gamma_s" | gamma > 0.9)
 library(ggjoy)
 
 
-p1 <- ggplot(filter(params1, type == "gamma_s"), aes(x = gamma, y = toupper(sport), fill = sport == "nfl")) + 
-  geom_joy() +xlim(c(0.4, 0.8)) + xlab("Less predictable                       More predictable") + ylab("") + 
+p1 <- ggplot(filter(params1, type == "gamma_s"), aes(x = gamma, y = toupper(sport), fill = sport)) + 
+  geom_joy() +xlim(c(0.4, 0.8)) + xlab("Less consistent                       More consistent") + ylab("") + 
   ggtitle(expression(paste("Season-to-season evolution of team strength (", gamma[season],")"))) + theme(plot.title = element_text(hjust = 0.5))+ 
-  theme_grey(base_size = 12) + scale_fill_manual(values = c("grey", "red"))  + theme(legend.position="none") 
+  theme_grey(base_size = 12)  + theme(legend.position="none") 
 
-p2 <- ggplot(filter(params1, type == "gamma_w"), aes(x = gamma, y = toupper(sport), fill = sport == "nfl")) + 
-  geom_joy() +xlim(c(0.96, 1.01)) + xlab("Less predictable                       More predictable") + ylab("") + 
+p2 <- ggplot(filter(params1, type == "gamma_w"), aes(x = gamma, y = toupper(sport), fill = sport)) + 
+  geom_joy() +xlim(c(0.96, 1.01)) + xlab("Less consistent                       More consistent") + ylab("") + 
   ggtitle(expression(paste("Week-to-week evolution of team strength (", gamma[week],")"))) + theme(plot.title = element_text(hjust = 0.5))+ 
-  theme_grey(base_size = 12) + scale_fill_manual(values = c("grey", "red"))  + theme(legend.position="none") 
+  theme_grey(base_size = 12)  + theme(legend.position="none") 
 #library(gridExtra)
 #grid.arrange(p1, p2, nrow = 1)
 
@@ -384,8 +396,7 @@ p1
 ```
 
 
-
-## NFL's parity: unpredictability by week
+## Unpredictability, season-to-season
 
 
 ```{r, echo = FALSE, fig.width = 5.8, fig.height = 4.4}
@@ -393,108 +404,90 @@ p2
 ```
 
 
+## Unpredictability at a fixed point in time
+
+Steps about process???
 
 
-
-## NFL systems that impact perceived parity
-
-
-> * Small number of games 
-> * Single elimination tournament 
-> * Unbalanced schedule (focus of today)
-
-## Effect of NFLs unbalanced schedule
-
-2 games per year against like-placed teams from prior year (I'll call them "crossover" games).
-
-$Hypothetical$: What if league-average teams were played instead?
-
-$Approach$: Use team strength estimates to approximate change in expected wins
-
-## Effect of NFLs unbalanced schedule
-
-```{r, echo = FALSE, fig.width = 6.7, fig.height = 4.4}
-load(file.path(root, "data", "nflparity.rda"))
-
-### Crossover games
-nfl.crossovers <- nfl.all %>% 
-  filter(type == "crossover") %>% 
-  group_by(team, season, type, lag.place.div) %>% 
-  summarise(exp.wins = mean(exp.win.diff)*2) 
-
-nfl.crossovers.sum <- nfl.crossovers %>% 
-  ungroup() %>% 
-  group_by(team) %>% 
-  summarise(total.cost = round(sum(exp.wins), 2)) 
-
-nfl.crossovers <- nfl.crossovers %>% left_join(nfl.crossovers.sum) %>% 
-  mutate(nickname = stri_extract_last_words(team), 
-         team.paste = paste0(nickname, " (", round(total.cost, 2), ")"))
-# It's recommended to use a named vector
-cols <- c("4" = "royalblue4", "3" = "skyblue1", "2" = "pink", "1" = "red")
-
-#nfl.crossovers %>% group_by(lag.place.div) %>% summarise(delta = mean(exp.wins))
+## Unpredictability at a fixed point in time
 
 
-ggplot(filter(nfl.crossovers, team == "Indianapolis Colts"), aes(season, exp.wins)) + 
-  geom_bar(stat = "identity") + 
-  #geom_text(data = nfl.crossovers.sum, aes(2010, -0.4, label = total.cost)) + 
-  #facet_wrap(~reorder(team.paste, total.cost), nrow = 4) +
-  theme_tufte(14) +
-  #scale_fill_manual(values = cols, "Prior division finish", labels = c("1st", "2nd", "3rd", "4th")) +   
-  ggtitle("Change in expected wins by season, Colts crossover games") + 
-  xlab("") + ylab("")
+How often does the best team win?
+ 
+<img src="parity.png" style="width:800px; height=300px">
 
+
+## Home advantage
+
+```{r, echo = FALSE, fig.width = 5.8, fig.height = 4.4}
+ggplot(params, aes(x = alpha, y = toupper(sport), fill = sport)) + 
+  geom_joy() + xlab("Home advantage (log odds scale)") + ylab("") + 
+  ggtitle(expression(paste("Home advantage (", alpha[q],")"))) + theme(plot.title = element_text(hjust = 0.5))+ 
+  theme_grey(base_size = 12)  + theme(legend.position="none") 
+```
+
+## Home advantage
+
+```{r, echo = FALSE, fig.width = 6, fig.height = 4.5}
+load(file.path(root, "data", "tidy_alphas.R1.rda"))
+tidy_alpha_prob <- tidy_alphas %>%
+  mutate(alpha_prob = mosaic::ilogit(alpha.team.overall), 
+         top_half = alpha_prob < 0.58)
+tidy_alpha_summary <- tidy_alpha_prob %>%
+  group_by(sport) %>%
+  summarize(N = n(), median_ha = median(alpha_prob), max_ha = max(alpha_prob), 
+            min_ha = min(alpha_prob)) %>% ungroup() %>% 
+  filter(sport == "nba")
+
+gg4 <- ggplot(data = filter(tidy_alpha_prob, sport == "nba"), 
+              aes(y = alpha_prob, 
+                  x = reorder(team, alpha_prob))) + 
+  geom_hline(data = filter(tidy_alpha_summary, sport == "nba"), alpha = 0.5,
+             aes(yintercept = median_ha)) + 
+  geom_hline(data = filter(tidy_alpha_summary, sport == "nba"), alpha = 0.5,
+             aes(yintercept = max_ha)) + 
+  geom_hline(data = filter(tidy_alpha_summary, sport == "nba"), alpha = 0.5,
+             aes(yintercept = min_ha)) + 
+  geom_errorbar(aes(ymin = mosaic::ilogit(alpha.team.lower), 
+                    ymax = mosaic::ilogit(alpha.team.upper))) +
+  geom_point() + 
+  coord_flip() + 
+  scale_x_discrete(NULL) + 
+  scale_y_continuous("Probability of beating an equal caliber opponent at home", 
+                     breaks = c(tidy_alpha_summary$min_ha, tidy_alpha_summary$median_ha, tidy_alpha_summary$max_ha),
+                     labels = c(round(tidy_alpha_summary$min_ha, 3),
+                                round(tidy_alpha_summary$median_ha, 3),
+                                round(tidy_alpha_summary$max_ha, 3)),
+                     minor_breaks = NULL) +  
+  scale_colour_brewer(palette = "Spectral", "League") +
+  ggtitle("Estimated Home Advantage in NBA") +
+  theme_gray(12)
+gg4
 ```
 
 
+## Systems that impact perceived parity
 
+Future work:
 
+> * How often does best team win postseason?
+> * Number of games impact 
+> * Tournament structures
+> * Unbalanced schedules
 
-
-## { .fullpage }
-
-<div class="fullpage width">
-```{r, echo = FALSE}
-
-ggplot(nfl.crossovers, aes(season, exp.wins, fill = factor(lag.place.div))) + geom_bar(stat = "identity") + 
-  #geom_text(data = nfl.crossovers.sum, aes(2010, -0.4, label = total.cost)) + 
-  facet_wrap(~reorder(team.paste, total.cost), nrow = 4) + theme_tufte() +
-  scale_fill_manual(values = cols, "Prior division finish", labels = c("1st", "2nd", "3rd", "4th")) +   
-  ggtitle("Change in expected wins, cross-over games (total wins cost or gained)") + 
-  ylab("") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + xlab("")
-```
-</div>
-
-
-## Conclusion
-
-Does NFL have parity? Not particularly
-
-> * <img src="bee.gif" style="width:400px; height=200px">
-
-
-## Conclusion
-
-Do NFL systems push records to 0.500? Sort of
-
-> * <img src="jim.gif" style="width:300px; height=200px">
-
-
-## Acknowledgements: Greg and Ben
+## Acknowledgements: Greg
 
 <p class="double">
 <img src="greg.png" class="one-col-image" style="width:150px; height=150px">
-<img src="ben.jpg" class="one-col-image" style="width:150px; height=150px">
 </p>
 
 
-## Summary: parity in the NFL
+## Summary: parity in sports
 
-> 1. Unpredictability at a fixed time `r emo::ji("x")`
-> 2. Within season unpredictability `r emo::ji("heavy_check_mark")`
-> 3. Between season unpredictability `r emo::ji("x")`
-> 4. Crossover games drive records to 0.500 `r emo::ji("heavy_check_mark")`
+> * Unpredictability at a fixed time: `r emo::ji("trophy")` (NHL), `r emo::ji("baseball")`
+> * Within season unpredictability `r emo::ji("football")`
+> * Between season unpredictability `r emo::ji("trophy")` (NHL)
+
 
 More info: Paper ([https://arxiv.org/abs/1701.05976](https://arxiv.org/abs/1701.05976)) & Github ([https://github.com/bigfour/competitiveness](https://github.com/bigfour/competitiveness))
 
