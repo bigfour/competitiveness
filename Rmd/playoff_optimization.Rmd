@@ -34,9 +34,9 @@ best_teams <- function(data, k = 8) {
 library(tourneyr)
 sim_data <- end_thetas %>%
 #  filter(season == 10) %>%
-#  filter(sport == "nba", season == 11) %>%
+#  filter(sport == "nba", season == 10) %>%
   group_by(sport, season) %>%
-  do(best_teams(., k = 8))
+  do(best_teams(., k = 16))
 
 # Test Spurs-Bulls
 spurs_bulls <- sim_data %>%
@@ -45,14 +45,20 @@ spurs_bulls <- sim_data %>%
 
 # should be around 54%
 long_run_prob(spurs_bulls, n = 1000)
+long_run_prob(spurs_bulls, n = 1000, series_length = 7)
 # should be nearly certain
 long_run_prob(spurs_bulls, n = 1000, series_length = 99)
 
-sim_data %>% 
-  do(one_simulation(., series_length = 99))
+one_simulation(spurs_bulls)
 
+sim_data %>% 
+  do(one_simulation(., series_length = 7))
+```
+
+```{r}
 res <- sim_data %>%
-  do(many_simulations(., n = 100, series_length = 999))
+  group_by(sport, season) %>%
+  do(many_simulations(., n = 100, series_length = 7))
 ``` 
   
 ```{r}
@@ -60,13 +66,19 @@ res %>%
   group_by(sport, seed) %>%
   summarize(N = n(), mean_finish = mean(finish), wins = sum(finish == 1))
 
+res %>% 
+  filter(sport == "nba", season == 10, seed == 1) %>% 
+  group_by(finish) %>% 
+  summarize(N = n())
+
 res %>%
   group_by(sport) %>%
   summarize(cor(seed, finish))
 
 ggplot(res, aes(x = seed, y = finish, color = sport)) + 
-  geom_jitter(alpha = 0.5) + 
+  geom_jitter(alpha = 0.1) + 
   geom_smooth() + 
   facet_wrap(~sport)
+ggsave(filename = "gfx/playoff_sims.pdf", width = 10, height = 8)
 ```
 
