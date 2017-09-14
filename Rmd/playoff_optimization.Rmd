@@ -1,0 +1,72 @@
+---
+title: "Playoff optimization"
+author: "Ben Baumer"
+date: "August 31, 2017"
+output: html_document
+---
+
+## Load Data
+
+```{r}
+library(tidyverse)
+load("data/tidy_thetas.R2.rda")
+ggplot(filter(tidy_thetas, name == "Boston Celtics"), aes(x = time_val, y = theta)) + 
+  geom_line()
+end_thetas <- tidy_thetas %>%
+  mutate(end_season = max.week - week <= 4) %>%
+  filter(end_season) %>%
+  group_by(sport, season, team_id, name) %>%
+  summarize(N = n(), mean_theta = mean(theta))
+```
+
+
+```{r}
+best_teams <- function(data, k = 8) {
+  data %>%
+    arrange(desc(mean_theta)) %>%
+    head(k)
+}
+```
+
+## Simulations
+
+```{r}
+library(tourneyr)
+sim_data <- end_thetas %>%
+#  filter(season == 10) %>%
+#  filter(sport == "nba", season == 11) %>%
+  group_by(sport, season) %>%
+  do(best_teams(., k = 8))
+
+# Test Spurs-Bulls
+spurs_bulls <- sim_data %>%
+  filter(sport == "nba", season == 10, 
+         team_id %in% c(27, 5)) 
+
+# should be around 54%
+long_run_prob(spurs_bulls, n = 1000)
+# should be nearly certain
+long_run_prob(spurs_bulls, n = 1000, series_length = 99)
+
+sim_data %>% 
+  do(one_simulation(., series_length = 99))
+
+res <- sim_data %>%
+  do(many_simulations(., n = 100, series_length = 999))
+``` 
+  
+```{r}
+res %>%
+  group_by(sport, seed) %>%
+  summarize(N = n(), mean_finish = mean(finish), wins = sum(finish == 1))
+
+res %>%
+  group_by(sport) %>%
+  summarize(cor(seed, finish))
+
+ggplot(res, aes(x = seed, y = finish, color = sport)) + 
+  geom_jitter(alpha = 0.5) + 
+  geom_smooth() + 
+  facet_wrap(~sport)
+```
+
