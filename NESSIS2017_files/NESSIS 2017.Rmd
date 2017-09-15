@@ -483,7 +483,7 @@ gg4
 <img src="greg.png" class="one-col-image" style="width:150px; height=150px">
 </p>
 
-
+ 
 ## Summary: parity in sports
 
 > * Unpredictability at a fixed time: `r emo::ji("trophy")` (NHL), `r emo::ji("baseball")`
