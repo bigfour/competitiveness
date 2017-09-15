@@ -466,14 +466,16 @@ gg4
 ```
 
 
-## Systems that impact perceived parity
+## Practical implications for decision-makers
 
-Future work:
 
-> * How often does best team win postseason?
-> * Number of games impact 
-> * Tournament structures
-> * Unbalanced schedules
+> * Better metrics of team strength than W-L
+> * Trade deadline 
+> * Postseason understanding
+> * Talent evaluation in off-season
+> * Home advantage
+> * Inequalities between leagues 
+
 
 ## Acknowledgements: Greg
 
@@ -487,6 +489,7 @@ Future work:
 > * Unpredictability at a fixed time: `r emo::ji("trophy")` (NHL), `r emo::ji("baseball")`
 > * Within season unpredictability `r emo::ji("football")`
 > * Between season unpredictability `r emo::ji("trophy")` (NHL)
+> * Largest home advantage `r emo::ji("basketball")`
 
 
 More info: Paper ([https://arxiv.org/abs/1701.05976](https://arxiv.org/abs/1701.05976)) & Github ([https://github.com/bigfour/competitiveness](https://github.com/bigfour/competitiveness))
