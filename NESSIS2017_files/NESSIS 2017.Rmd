@@ -404,9 +404,6 @@ p2
 ```
 
 
-## Unpredictability at a fixed point in time
-
-Steps about process???
 
 
 ## Unpredictability at a fixed point in time
@@ -469,12 +466,38 @@ gg4
 ## Practical implications for decision-makers
 
 
-> * Better metrics of team strength than W-L
-> * Trade deadline 
-> * Postseason understanding
-> * Talent evaluation in off-season
-> * Home advantage
-> * Inequalities between leagues 
+<p class="double">
+<img src="herm.png" style="width:250px; height=250px">
+</p>
+ 
+
+> * Our team strengths are better at predicting future W-L 
+
+
+## Practical implications for decision-makers
+
+Patriots rest starters in 2015 against Dolphins
+
+<p class="double">
+<img src="pats_dolphins.jpg" style="width:250px; height=150px">
+</p>
+
+
+> * Home advantage matters in `r emo::ji("football")` and `r emo::ji("basketball")`
+
+
+
+## Practical implications for decision-makers
+
+
+> "They have to rethink their whole philosophy"
+
+**Mike Milbury on the 2016 Washinton Capitals losing to Pittsburgh**
+ 
+
+> * There's an immense amount of luck involved in hockey. Rethinking your philosophy on a postseason series is ludicrous
+
+
 
 
 ## Acknowledgements: Greg
