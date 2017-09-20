@@ -9,7 +9,7 @@ output: html_document
 
 ```{r}
 library(tidyverse)
-load("data/tidy_thetas.R2.rda")
+load("data/tidy_thetas.R1.rda")
 ggplot(filter(tidy_thetas, name == "Boston Celtics"), aes(x = time_val, y = theta)) + 
   geom_line()
 end_thetas <- tidy_thetas %>%
@@ -76,7 +76,7 @@ res %>%
   summarize(cor(seed, finish))
 
 ggplot(res, aes(x = seed, y = finish, color = sport)) + 
-  geom_jitter(alpha = 0.1) + 
+  geom_jitter(alpha = 0.01) + 
   geom_smooth() + 
   facet_wrap(~sport)
 ggsave(filename = "gfx/playoff_sims.pdf", width = 10, height = 8)

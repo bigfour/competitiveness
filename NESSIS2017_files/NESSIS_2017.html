@@ -6,10 +6,8 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="NESSIS_2017_files/rmdshower/node_modules/shower-ribbon/styles/screen-16x10.css">
-  <link rel="stylesheet" href="NESSIS_2017_files/rmdshower/package/styles/screen-16x10.css">
   <link rel="stylesheet" href="NESSIS_2017_files/rmdshower/style-common.css">
   <link rel="stylesheet" href="NESSIS_2017_files/rmdshower/style-ribbon.css">
-  <link rel="stylesheet" href="NESSIS_2017_files/rmdshower/style-override.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.js"></script>
   <script src="NESSIS_2017_files/rmdshower/auto-render.min.js" type="text/javascript"></script>
@@ -46,11 +44,11 @@ Michael Lopez, Gregory Matthews, Benjamin Baumer <a href="https://github.com/big
 </section>
 <section id="a-closer-look" class="slide level2">
 <h2>A closer look</h2>
-<p><img src="NESSIS_2017_files/figure-revealjs/unnamed-chunk-1-1.png" width="576" /></p>
+<p><img src="NESSIS_2017_files/figure-revealjs/strike-zone-1.png" width="576" /></p>
 </section>
 <section id="a-closer-look-1" class="slide level2">
 <h2>A closer look</h2>
-<p><img src="NESSIS_2017_files/figure-revealjs/unnamed-chunk-2-1.png" width="576" /></p>
+<p><img src="NESSIS_2017_files/figure-revealjs/strike-zone-plus-1.png" width="576" /></p>
 </section>
 <section id="a-closer-look-2" class="slide level2">
 <h2>A closer look</h2>
@@ -75,10 +73,27 @@ Michael Lopez, Gregory Matthews, Benjamin Baumer <a href="https://github.com/big
 <section id="a-closer-look-4" class="slide level2">
 <h2>A closer look</h2>
 <p>Two huge swings in win probability that were outside the Red Sox control</p>
-<p><img src="max.gif" style="width:400px; height=200px"></p>
+<ul>
+<li class="fragment next">Red Sox were lucky!</li>
+</ul>
+<ul>
+<li class="fragment next"><img src="max.gif" style="width:400px; height=200px"></li>
+</ul>
+</section>
+<section id="using-statistics-to-assess-luck-in-sports" class="slide level2">
+<h2>Using statistics to assess luck in sports</h2>
+<ul>
+<li class="fragment next">The best team does not always win. Sorry, Detroit</li>
+</ul>
+<ul>
+<li class="fragment next">How to untangle luck from skill?</li>
+</ul>
+<ul>
+<li class="fragment next">How often does the best team win in each sport? Luck —&gt; parity</li>
+</ul>
 </section>
 <section id="assess-parity-in-professional-sports" class="slide level2">
-<h2>1. Assess parity in professional sports</h2>
+<h2>Assess parity in professional sports</h2>
 <p>How to define parity</p>
 <blockquote>
 <p>the state or condition of being equal</p>
@@ -86,17 +101,17 @@ Michael Lopez, Gregory Matthews, Benjamin Baumer <a href="https://github.com/big
 <p><strong>Google</strong></p>
 </section>
 <section id="assess-parity-in-professional-sports-1" class="slide level2">
-<h2>1. Assess parity in professional sports</h2>
+<h2>Assess parity in professional sports</h2>
 <p>What parity looks like:</p>
 <p><img src="Joe.gif" style="width:400px; height=200px"></p>
 </section>
 <section id="assess-parity-in-professional-sports-2" class="slide level2">
-<h2>1. Assess parity in professional sports</h2>
+<h2>Assess parity in professional sports</h2>
 <p>What parity does not look like:</p>
 <p><img src="kp.gif" style="width:400px; height=200px"></p>
 </section>
 <section id="assess-parity-in-professional-sports-3" class="slide level2">
-<h2>1. Assess parity in professional sports</h2>
+<h2>Assess parity in professional sports</h2>
 <p>Parity checklist</p>
 <ol type="1">
 <li>Equality at a fixed time</li>
@@ -111,6 +126,37 @@ Michael Lopez, Gregory Matthews, Benjamin Baumer <a href="https://github.com/big
 </section>
 <section id="building-a-cross-sport-model-1" class="slide level2">
 <h2>Building a cross-sport model</h2>
+<p><em>Problem:</em> wins and losses alone insufficient</p>
+<p><em>Problem:</em> point differential non-generalizable</p>
+<p><em>Solution</em>: if you can’t beat em, use their numbers in a statistical model</p>
+<p><img src="sportsbook.png" style="width:300px; height=200px"></p>
+</section>
+<section id="building-a-cross-sport-model-2" class="slide level2">
+<h2>Building a cross-sport model</h2>
+<p>Betting markets: Cubs (<span class="math inline">\(\ell_i = -127\)</span>) vs Diamondbacks (<span class="math inline">\(\ell_j = 117\)</span>)</p>
+<p><span class="math display">\[
+  p_i(\ell_i) = \begin{cases}
+        \frac{100}{100 + \ell_i} &amp; \text{ if } \ell_i \geq 100 \\
+        \frac{|\ell_i|}{100 + |\ell_i|} &amp; \text{ if } \ell_i \leq -100
+      \end{cases} \,.
+\]</span></p>
+<ul>
+<li>Cubs: <span class="math inline">\(p_i(-127) = 0.559\)</span>, Diamondbacks: <span class="math inline">\(p_j(117) = 0.461\)</span></li>
+<li>Normalize to sum to unity
+<ul>
+<li>Cubs: .548</li>
+<li>Diamondbacks 0.452</li>
+</ul></li>
+</ul>
+</section>
+<section id="section" class="slide level2 fullpage">
+<h2></h2>
+<div class="fullpage width">
+<p><img src="NESSIS_2017_files/figure-revealjs/markets-plot-1.png" width="960" /></p>
+</div>
+</section>
+<section id="building-a-cross-sport-model-3" class="slide level2">
+<h2>Building a cross-sport model</h2>
 <ul>
 <li><span class="math inline">\(p_{(q,s,k)ij}\)</span> is probability that team <span class="math inline">\(i\)</span> will beat team <span class="math inline">\(j\)</span> in season <span class="math inline">\(s\)</span> during week <span class="math inline">\(k\)</span> of sports league <span class="math inline">\(q\)</span>, for <span class="math inline">\(q \in \{MLB, NBA, NFL, NHL\}\)</span>.</li>
 <li><span class="math inline">\(\alpha_{q_{0}}\)</span> be the league-wide home advantage (HA) in <span class="math inline">\(q\)</span></li>
@@ -118,7 +164,7 @@ Michael Lopez, Gregory Matthews, Benjamin Baumer <a href="https://github.com/big
 <li><span class="math inline">\(\theta_{(q,s,k) i}\)</span> and <span class="math inline">\(\theta_{(q, s, k) j}\)</span> be season-week team strength parameters</li>
 </ul>
 </section>
-<section id="building-a-cross-sport-model-2" class="slide level2">
+<section id="building-a-cross-sport-model-4" class="slide level2">
 <h2>Building a cross-sport model</h2>
 <p><span class="math display">\[ E[\text{logit}(p_{(q,s,k) ij})] = \theta_{(q,s,k) i} - \theta_{(q, s, k) j} + \alpha_{q_0} + \alpha_{(q) i^{\star}} \]</span></p>
 <p>Assumptions:</p>
@@ -138,79 +184,82 @@ Michael Lopez, Gregory Matthews, Benjamin Baumer <a href="https://github.com/big
 </section>
 <section id="team-strength-results" class="slide level2">
 <h2>Team strength results</h2>
-<p><img src="NESSIS_2017_files/figure-revealjs/unnamed-chunk-3-1.png" width="576" /></p>
+<p><img src="NESSIS_2017_files/figure-revealjs/sox-tigers-1.png" width="672" /></p>
 </section>
-<section id="section" class="slide level2 fullpage">
-<h2></h2>
-<div class="fullpage width">
-<p><img src="NESSIS_2017_files/figure-revealjs/unnamed-chunk-4-1.png" width="960" /></p>
-</div>
-</section>
-<section id="nfls-parity-unpredictability-at-a-fixed-point-in-time" class="slide level2">
-<h2>NFL’s parity: unpredictability at a fixed point in time</h2>
-<p>How often does the best team win?</p>
-<p><img src="parity.png" style="width:800px; height=300px"></p>
-</section>
-<section id="nfls-parity-unpredictability-by-season" class="slide level2">
-<h2>NFL’s parity: unpredictability by season</h2>
-<p><img src="NESSIS_2017_files/figure-revealjs/unnamed-chunk-5-1.png" width="556.8" /></p>
-</section>
-<section id="nfls-parity-unpredictability-by-week" class="slide level2">
-<h2>NFL’s parity: unpredictability by week</h2>
-<p><img src="NESSIS_2017_files/figure-revealjs/unnamed-chunk-6-1.png" width="556.8" /></p>
-</section>
-<section id="nfl-systems-that-impact-perceived-parity" class="slide level2">
-<h2>NFL systems that impact perceived parity</h2>
-<ul>
-<li class="fragment next">Small number of games</li>
-<li class="fragment next">Single elimination tournament</li>
-<li class="fragment next">Unbalanced schedule (focus of today)</li>
-</ul>
-</section>
-<section id="effect-of-nfls-unbalanced-schedule" class="slide level2">
-<h2>Effect of NFLs unbalanced schedule</h2>
-<p>2 games per year against like-placed teams from prior year (I’ll call them “crossover” games).</p>
-<p><span class="math inline">\(Hypothetical\)</span>: What if league-average teams were played instead?</p>
-<p><span class="math inline">\(Approach\)</span>: Use team strength estimates to approximate change in expected wins</p>
-</section>
-<section id="effect-of-nfls-unbalanced-schedule-1" class="slide level2">
-<h2>Effect of NFLs unbalanced schedule</h2>
-<p><img src="NESSIS_2017_files/figure-revealjs/unnamed-chunk-7-1.png" width="643.2" /></p>
+<section id="team-strength-results-1" class="slide level2">
+<h2>Team strength results</h2>
+<p><img src="NESSIS_2017_files/figure-revealjs/sox-tigers-spaghetti-1.png" width="576" /></p>
 </section>
 <section id="section-1" class="slide level2 fullpage">
 <h2></h2>
 <div class="fullpage width">
-<p><img src="NESSIS_2017_files/figure-revealjs/unnamed-chunk-8-1.png" width="960" /></p>
+<p><img src="NESSIS_2017_files/figure-revealjs/full-spaghetti-1.png" width="960" /></p>
 </div>
 </section>
-<section id="conclusion" class="slide level2">
-<h2>Conclusion</h2>
-<p>Does NFL have parity? Not particularly</p>
-<ul>
-<li class="fragment next"><img src="bee.gif" style="width:400px; height=200px"></li>
-</ul>
+<section id="unpredictability-season-to-season" class="slide level2">
+<h2>Unpredictability, season-to-season</h2>
+<p><img src="NESSIS_2017_files/figure-revealjs/season-sigma-1.png" width="556.8" /></p>
 </section>
-<section id="conclusion-1" class="slide level2">
-<h2>Conclusion</h2>
-<p>Do NFL systems push records to 0.500? Sort of</p>
-<ul>
-<li class="fragment next"><img src="jim.gif" style="width:300px; height=200px"></li>
-</ul>
+<section id="unpredictability-week-to-week" class="slide level2">
+<h2>Unpredictability, week-to-week</h2>
+<p><img src="NESSIS_2017_files/figure-revealjs/week-sigma-1.png" width="556.8" /></p>
 </section>
-<section id="acknowledgements-greg-and-ben" class="slide level2">
-<h2>Acknowledgements: Greg and Ben</h2>
+<section id="unpredictability-at-a-fixed-point-in-time" class="slide level2">
+<h2>Unpredictability at a fixed point in time</h2>
+<p>How often does the best team win?</p>
+<p><img src="parity.png" style="width:800px; height=300px"></p>
+</section>
+<section id="home-advantage" class="slide level2">
+<h2>Home advantage</h2>
+<p><img src="NESSIS_2017_files/figure-revealjs/home-advantage-1.png" width="556.8" /></p>
+</section>
+<section id="home-advantage-1" class="slide level2">
+<h2>Home advantage</h2>
+<p><img src="NESSIS_2017_files/figure-revealjs/home-advantage-nba-1.png" width="576" /></p>
+</section>
+<section id="practical-implications-for-decision-makers" class="slide level2">
+<h2>Practical implications for decision-makers</h2>
 <p class="double">
-<img src="greg.png" class="one-col-image" style="width:150px; height=150px"> <img src="ben.jpg" class="one-col-image" style="width:150px; height=150px">
+<img src="herm.png" style="width:250px; height=250px">
+</p>
+<ul>
+<li class="fragment next">Our team strengths are better at predicting future W-L</li>
+</ul>
+</section>
+<section id="practical-implications-for-decision-makers-1" class="slide level2">
+<h2>Practical implications for decision-makers</h2>
+<p>Patriots rest starters in 2015 against Dolphins</p>
+<p class="double">
+<img src="pats_dolphins.jpg" style="width:250px; height=150px">
+</p>
+<ul>
+<li class="fragment next">Home advantage matters in 🏈 and 🏀</li>
+</ul>
+</section>
+<section id="practical-implications-for-decision-makers-2" class="slide level2">
+<h2>Practical implications for decision-makers</h2>
+<blockquote>
+<p>“They have to rethink their whole philosophy”</p>
+</blockquote>
+<p><strong>Mike Milbury on the 2016 Washington Capitals losing to Pittsburgh</strong></p>
+<ul>
+<li class="fragment next">There’s an immense amount of luck involved in hockey. Rethinking your philosophy on a postseason series is ludicrous</li>
+</ul>
+</section>
+<section id="acknowledgements-greg" class="slide level2">
+<h2>Acknowledgements: Greg</h2>
+<p class="double">
+<img src="greg.png" class="one-col-image" style="width:150px; height=150px">
 </p>
 </section>
-<section id="summary-parity-in-the-nfl" class="slide level2">
-<h2>Summary: parity in the NFL</h2>
-<ol type="1">
-<li class="fragment next">Unpredictability at a fixed time ❌</li>
-<li class="fragment next">Within season unpredictability ✔️</li>
-<li class="fragment next">Between season unpredictability ❌</li>
-<li class="fragment next">Crossover games drive records to 0.500 ✔️</li>
-</ol>
+<section id="summary-parity-in-sports" class="slide level2">
+<h2>Summary: parity in sports</h2>
+<ul>
+<li class="fragment next">Unpredictability at a fixed time: 🏆 (NHL), ⚾️</li>
+<li class="fragment next">Within season unpredictability 🏈</li>
+<li class="fragment next">Between season unpredictability 🏆 (NHL)</li>
+<li class="fragment next">Largest home advantage 🏀</li>
+</ul>
 <p>More info: Paper (<a href="https://arxiv.org/abs/1701.05976" class="uri">https://arxiv.org/abs/1701.05976</a>) &amp; Github (<a href="https://github.com/bigfour/competitiveness" class="uri">https://github.com/bigfour/competitiveness</a>)</p>
 </section>
 

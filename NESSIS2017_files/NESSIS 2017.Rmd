@@ -29,7 +29,7 @@ https://github.com/bigfour/competitiveness.
 ## A closer look 
 
 
-```{r, echo = FALSE, message = FALSE, warning = FALSE, fig.width= 6, fig.height = 4.5}
+```{r strike-zone, echo = FALSE, message = FALSE, warning = FALSE, fig.width= 6, fig.height = 4.5}
 source("https://raw.githubusercontent.com/bigfour/competitiveness/master/config.R")
 temp.df1 <- read.csv(file.path(root, "data", "alcs2013.csv"), stringsAsFactors = FALSE)
 
@@ -48,7 +48,7 @@ p
 
 ## A closer look
 
-```{r, echo = FALSE, message = FALSE, warning = FALSE, fig.width= 6, fig.height = 4.5}
+```{r strike-zone-plus, echo = FALSE, message = FALSE, warning = FALSE, fig.width= 6, fig.height = 4.5}
 ### Note: Using GAMs, 81% chance that Boegarts pitch is called a strike (not accounting for superstar/rookie/home team effects)
 
 library(jpeg); library(grid)
@@ -137,7 +137,7 @@ Parity checklist
 Motivation: Extend [Glickman and Stern, 1998](http://www.tandfonline.com/doi/abs/10.1080/01621459.1998.10474084)
 
 
-<img src="Glickman.png" style="width:800px; height=670px">
+<img src="glickman.png" style="width:800px; height=670px">
 
 
 ## Building a cross-sport model 
@@ -173,7 +173,7 @@ $$
 ## { .fullpage }
 
 <div class="fullpage width">
-```{r, echo = FALSE}
+```{r markets-plot, echo = FALSE}
 source("https://raw.githubusercontent.com/bigfour/competitiveness/master/config.R")
 load(file.path(data_raw, "bigfour.rda"))
 bigfour <- bigfour %>%
@@ -249,7 +249,7 @@ Assumptions:
 
 ## Team strength results
 
-```{r, echo = FALSE, message = FALSE, warning = FALSE, fig.width=7, fig.height=3.8}
+```{r sox-tigers, echo = FALSE, message = FALSE, warning = FALSE, fig.width=7, fig.height=3.8}
 load(file.path(root, "data", "sox.tigers.rda"))
 sox.tigers %>% ggplot(aes(x = theta, fill = team)) + 
   geom_density(alpha = 0.5) + ylab("") + xlab("Team Strength (log odds scale)") + 
@@ -262,7 +262,7 @@ sox.tigers %>% ggplot(aes(x = theta, fill = team)) +
 
 ## Team strength results
 
-```{r, echo = FALSE, message = FALSE, warning = FALSE, fig.width= 6, fig.height = 3.5}
+```{r sox-tigers-spaghetti, echo = FALSE, message = FALSE, warning = FALSE, fig.width= 6, fig.height = 3.5}
 load(file.path(root, "data", "tidy_thetas.rda"))
 tidy_thetas <- tidy_thetas %>%
   mutate(sport = toupper(sport),
@@ -340,7 +340,7 @@ ggplot(data = df.2013,
 ## { .fullpage }
 
 <div class="fullpage width">
-```{r, echo = FALSE}
+```{r full-spaghetti, echo = FALSE}
 spag <- ggplot(data = tidy_thetas_division, 
        aes(x = time_val, y = theta,  group = name)) +
   geom_line(alpha = 0.5) + 
@@ -360,7 +360,7 @@ spag + facet_wrap(~sport, ncol = 1)
 
 ## Unpredictability, season-to-season
 
-```{r, echo = FALSE, fig.width = 5.8, fig.height = 4.4}
+```{r season-sigma, echo = FALSE, fig.width = 5.8, fig.height = 4.4}
 load(file.path(root, "data", "params.R1.rda"))
 #p.gamma <- ggplot(params, aes(x = gamma_w, y = gamma_s, color = toupper(sport))) + 
 #  geom_vline(xintercept = 1, color = "darkgray", linetype = 2) + 
@@ -396,10 +396,10 @@ p1
 ```
 
 
-## Unpredictability, season-to-season
+## Unpredictability, week-to-week
 
 
-```{r, echo = FALSE, fig.width = 5.8, fig.height = 4.4}
+```{r week-sigma, echo = FALSE, fig.width = 5.8, fig.height = 4.4}
 p2
 ```
 
@@ -416,7 +416,7 @@ How often does the best team win?
 
 ## Home advantage
 
-```{r, echo = FALSE, fig.width = 5.8, fig.height = 4.4}
+```{r home-advantage, echo = FALSE, fig.width = 5.8, fig.height = 4.4}
 ggplot(params, aes(x = alpha, y = toupper(sport), fill = sport)) + 
   geom_joy() + xlab("Home advantage (log odds scale)") + ylab("") + 
   ggtitle(expression(paste("Home advantage (", alpha[q],")"))) + theme(plot.title = element_text(hjust = 0.5))+ 
@@ -425,7 +425,7 @@ ggplot(params, aes(x = alpha, y = toupper(sport), fill = sport)) +
 
 ## Home advantage
 
-```{r, echo = FALSE, fig.width = 6, fig.height = 4.5}
+```{r home-advantage-nba, echo = FALSE, fig.width = 6, fig.height = 4.5}
 load(file.path(root, "data", "tidy_alphas.R1.rda"))
 tidy_alpha_prob <- tidy_alphas %>%
   mutate(alpha_prob = mosaic::ilogit(alpha.team.overall), 
@@ -492,7 +492,7 @@ Patriots rest starters in 2015 against Dolphins
 
 > "They have to rethink their whole philosophy"
 
-**Mike Milbury on the 2016 Washinton Capitals losing to Pittsburgh**
+**Mike Milbury on the 2016 Washington Capitals losing to Pittsburgh**
  
 
 > * There's an immense amount of luck involved in hockey. Rethinking your philosophy on a postseason series is ludicrous
