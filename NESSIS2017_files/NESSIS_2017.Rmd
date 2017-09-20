@@ -8,28 +8,36 @@ output:
     ratio: 16x10
 ---
 
-## How often does the best team win? { .black }
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, 
+                      fig.width = 8, fig.height = 4.5)
+```
 
-<img src="http://www.zontikgames.com/media/catalog/product/cache/1/image/9df78eab33525d08d6e5fb8d27136e95/p/r/primary_4.jpg" class="cover">
+## How often does the best team win? 
+
+<img src="http://www.zontikgames.com/media/catalog/product/cache/1/image/9df78eab33525d08d6e5fb8d27136e95/p/r/primary_4.jpg" width="500px" class="cover">
+
+</br></br></br></br></br>
 
 <p class="black">
-Michael Lopez, Gregory Matthews, Benjamin Baumer
-https://github.com/bigfour/competitiveness.
+Michael Lopez, Gregory Matthews, Benjamin Baumer</br>
+https://github.com/bigfour/competitiveness
 </p>
 
+# An anecdote
 
 ## What we remember 
-<img src="shane.gif" style="width:500px; height=400px">
+<img src="shane.gif" width="700px">
 
 ## What we forget
 
-<img src="xander.gif" style="width:500px; height=400px">
+<img src="xander.gif" width="700px">
 
 
-## A closer look 
+## Pitches in the series
 
 
-```{r strike-zone, echo = FALSE, message = FALSE, warning = FALSE, fig.width= 6, fig.height = 4.5}
+```{r strike-zone, fig.width = 6, fig.height = 4.5}
 source("https://raw.githubusercontent.com/bigfour/competitiveness/master/config.R")
 temp.df1 <- read.csv(file.path(root, "data", "alcs2013.csv"), stringsAsFactors = FALSE)
 
@@ -46,23 +54,23 @@ p <- ggplot(filter(temp.df1, stand == "R"), aes(plate_x, plate_z, colour = strik
 p
 ```
 
-## A closer look
+## That pitch
 
-```{r strike-zone-plus, echo = FALSE, message = FALSE, warning = FALSE, fig.width= 6, fig.height = 4.5}
+```{r strike-zone-plus, fig.width = 6, fig.height = 4.5}
 ### Note: Using GAMs, 81% chance that Boegarts pitch is called a strike (not accounting for superstar/rookie/home team effects)
 
 library(jpeg); library(grid)
 image <- jpeg::readJPEG(file.path(root, "NESSIS2017_files", "xander.jpg"))
 
 p  + geom_point(data = xander, colour = "black", size = 3) + 
-  geom_segment(aes(x=1, xend=xander$plate_x+.05, y=0.3, yend=xander$plate_z - 0.15), 
+  geom_segment(aes(x = 1, xend=xander$plate_x+.05, y=0.3, yend=xander$plate_z - 0.15), 
                arrow = arrow(length = unit(0.2, "cm")), colour = "black") + 
   annotation_custom(rasterGrob(image,  width = unit(1,"npc"), 
                                height = unit(1,"npc")), 
                     xmin = 0.2, xmax = 1.8, ymin = -1, ymax = 0.35)
 ```
 
-## A closer look 
+## The truth is...
 
 * About 80% of pitches taken at this location called a strike (using advanced modeling)
 * Walk worth about 12% in win expectency ([32% to 44%](http://www.tangotiger.net/welist.html))
@@ -70,25 +78,27 @@ p  + geom_point(data = xander, colour = "black", size = 3) +
 
 
 
-## What we forget
+## What we also forget
 
-<img src="jose.gif" style="width:500px; height=400px">
+<img src="jose.gif" width="700px">
 
 
-## A closer look 
+## About that error...
 
 * Jose Iglesias: 98.5% fielding percentage (*Note*: Statcast data unavailable)
 * Error worth about 20% in win expectency over out at second ([36% to 56%](http://www.tangotiger.net/welist.html))
 * Red Sox were lucky!
 
-## A closer look
+## Summary
 
-Two huge swings in win probability that were outside the Red Sox control
+<div class="double">
+> - Two huge swings in win probability that were outside the Red Sox control
+> - Red Sox were lucky!
 
-> * Red Sox were lucky!
+> - <img src="max.gif" class="one-col-image">
+</div>
 
-
-> * <img src="max.gif" style="width:400px; height=200px">
+# Luck and parity</br>in sports
 
 ## Using statistics to assess luck in sports
 
@@ -100,63 +110,58 @@ Two huge swings in win probability that were outside the Red Sox control
 
 
 
-## Assess parity in professional sports
-
-How to define parity
+## How to define parity
 
 > the state or condition of being equal
 
 **Google**
 
 
-## Assess parity in professional sports
+## What parity looks like
 
-What parity looks like:
-
-<img src="Joe.gif" style="width:400px; height=200px">
+<img src="Joe.gif" width="400px">
 
 
-## Assess parity in professional sports
+## What parity does not look like
 
-What parity does not look like: 
-
-<img src="kp.gif" style="width:400px; height=200px">
+<img src="kp.gif">
 
 
-## Assess parity in professional sports
-
-Parity checklist
+## Parity checklist
 
 1. Equality at a fixed time 
 2. Within season equality 
 3. Between season equality
 
-## Building a cross-sport model 
+# A cross-sport model 
+
+## Prior work
+
+- Extend [Glickman and Stern, 1998](http://www.tandfonline.com/doi/abs/10.1080/01621459.1998.10474084)
+
+<img src="glickman.png" width="800px">
 
 
-Motivation: Extend [Glickman and Stern, 1998](http://www.tandfonline.com/doi/abs/10.1080/01621459.1998.10474084)
+## Challenges 
+
+<div class="double">
+> - Problem 1: wins and losses alone insufficient (noisy)
+> - Problem 2: point differential non-generalizable
+> - Solution: if you can't beat em, use their numbers in a statistical model
+
+<img src="sportsbook.png" class="one-col-image">
+</div>
 
 
-<img src="glickman.png" style="width:800px; height=670px">
+## Moneylines
 
+Team                                  Line ($\ell$)    Probability ($p$)    Normalized
+------------------------------------ ---------------  -------------------  ------------
+<img src="tigers.jpg" width="125px">      -127            0.559               0.548
+<img src="redsox.jpg" width="125px">      +117            0.461               0.452
+------------------------------------ ---------------  -------------------  ------------
 
-## Building a cross-sport model 
-
-
-*Problem:* wins and losses alone insufficient 
-
-*Problem:* point differential non-generalizable
-
-*Solution*: if you can't beat em, use their numbers in a statistical model
-
-<img src="sportsbook.png" style="width:300px; height=200px">
-
-
-
-## Building a cross-sport model 
-
-
-Betting markets: Cubs ($\ell_i = -127$) vs Diamondbacks ($\ell_j = 117$) 
+</hr>
 
 $$
   p_i(\ell_i) = \begin{cases}
@@ -165,15 +170,9 @@ $$
       \end{cases} \,.
 $$
 
-- Cubs: $p_i(-127) = 0.559$, Diamondbacks: $p_j(117) = 0.461$
-- Normalize to sum to unity
-    - Cubs: .548
-    - Diamondbacks 0.452
+## &nbsp; { .fullpage }
 
-## { .fullpage }
-
-<div class="fullpage width">
-```{r markets-plot, echo = FALSE}
+```{r markets-plot}
 source("https://raw.githubusercontent.com/bigfour/competitiveness/master/config.R")
 load(file.path(data_raw, "bigfour.rda"))
 bigfour <- bigfour %>%
@@ -212,20 +211,16 @@ markets_plot <- ggplot(data = bigfour,
   facet_wrap(~sport)
 markets_plot + theme_grey(base_size = 13) 
 ```
-</div>
 
+## The model: definitions
 
-
-
-## Building a cross-sport model
-
-* $p_{(q,s,k)ij}$ is probability that team $i$ will beat team $j$ in season $s$ during week $k$ of sports league $q$, for $q \in \{MLB, NBA, NFL, NHL\}$.
+* $p_{(q,s,k)ij} =$  probability that team $i$ will beat team $j$ in season $s$ during week $k$ of sports league $q$, for $q \in \{MLB, NBA, NFL, NHL\}$.
 * $\alpha_{q_{0}}$ be the league-wide home advantage (HA) in $q$
 * $\alpha_{(q) i^{\star}}$ be the extra effect (+ or -) for team $i$ when playing at home
 * $\theta_{(q,s,k) i}$ and $\theta_{(q, s, k) j}$ be season-week team strength parameters 
 
 
-## Building a cross-sport model
+## The model & assumptions
 
 \[ E[\text{logit}(p_{(q,s,k) ij})] = \theta_{(q,s,k) i} - \theta_{(q, s, k) j} + \alpha_{q_0} + \alpha_{(q) i^{\star}} \] 
 
@@ -239,17 +234,20 @@ Assumptions:
 
 ## Fitting a cross-sport model
 
-*Data*:  2006-2016 regular season games in MLB, NBA, NFL, NHL via Sports Insights
+- Data  
+    - 2006--2016 reg. season in MLB, NBA, NFL, NHL (Sports Insights)
+- Priors
+    - Uniform (variance parameters) and Normal (team strength parameters)
+- Software
+    - `rjags` package in **R** statistical software 
+- Draws
+    - 20k iterations, 2k burn in, thin of 5
 
-*Priors*: Uniform (variance parameters) and Normal (team strength parameters)
+# Results
 
-*Software*: `rjags` package in **R** statistical software 
+## &nbsp; {.fullpage}
 
-*Draws*: 20k iterations, 2k burn in, thin of 5
-
-## Team strength results
-
-```{r sox-tigers, echo = FALSE, message = FALSE, warning = FALSE, fig.width=7, fig.height=3.8}
+```{r sox-tigers}
 load(file.path(root, "data", "sox.tigers.rda"))
 sox.tigers %>% ggplot(aes(x = theta, fill = team)) + 
   geom_density(alpha = 0.5) + ylab("") + xlab("Team Strength (log odds scale)") + 
@@ -260,9 +258,9 @@ sox.tigers %>% ggplot(aes(x = theta, fill = team)) +
 ```
 
 
-## Team strength results
+## &nbsp; {.fullpage}
 
-```{r sox-tigers-spaghetti, echo = FALSE, message = FALSE, warning = FALSE, fig.width= 6, fig.height = 3.5}
+```{r sox-tigers-spaghetti}
 load(file.path(root, "data", "tidy_thetas.rda"))
 tidy_thetas <- tidy_thetas %>%
   mutate(sport = toupper(sport),
@@ -337,10 +335,9 @@ ggplot(data = df.2013,
 
 
 
-## { .fullpage }
+## &nbsp; { .fullpage }
 
-<div class="fullpage width">
-```{r full-spaghetti, echo = FALSE}
+```{r full-spaghetti}
 spag <- ggplot(data = tidy_thetas_division, 
        aes(x = time_val, y = theta,  group = name)) +
   geom_line(alpha = 0.5) + 
@@ -356,11 +353,10 @@ spag <- ggplot(data = tidy_thetas_division,
   ggtitle("Team strengths across 4 sports leagues")
 spag + facet_wrap(~sport, ncol = 1)
 ```
-</div>
 
-## Unpredictability, season-to-season
+## &nbsp; { .fullpage }
 
-```{r season-sigma, echo = FALSE, fig.width = 5.8, fig.height = 4.4}
+```{r season-sigma}
 load(file.path(root, "data", "params.R1.rda"))
 #p.gamma <- ggplot(params, aes(x = gamma_w, y = gamma_s, color = toupper(sport))) + 
 #  geom_vline(xintercept = 1, color = "darkgray", linetype = 2) + 
@@ -379,27 +375,24 @@ library(ggjoy)
 
 
 p1 <- ggplot(filter(params1, type == "gamma_s"), aes(x = gamma, y = toupper(sport), fill = sport)) + 
-  geom_joy() +xlim(c(0.4, 0.8)) + xlab("Less consistent                       More consistent") + ylab("") + 
-  ggtitle(expression(paste("Season-to-season evolution of team strength (", gamma[season],")"))) + theme(plot.title = element_text(hjust = 0.5))+ 
-  theme_grey(base_size = 12)  + theme(legend.position="none") 
-
-p2 <- ggplot(filter(params1, type == "gamma_w"), aes(x = gamma, y = toupper(sport), fill = sport)) + 
-  geom_joy() +xlim(c(0.96, 1.01)) + xlab("Less consistent                       More consistent") + ylab("") + 
-  ggtitle(expression(paste("Week-to-week evolution of team strength (", gamma[week],")"))) + theme(plot.title = element_text(hjust = 0.5))+ 
-  theme_grey(base_size = 12)  + theme(legend.position="none") 
-#library(gridExtra)
-#grid.arrange(p1, p2, nrow = 1)
-
+  geom_joy() + xlim(c(0.4, 0.8)) + xlab("Less consistent                       More consistent") + ylab("") + 
+  ggtitle(expression(paste("Season-to-season evolution of team strength (", gamma[season],")"))) + theme(plot.title = element_text(hjust = 0.5)) + 
+  theme_grey(base_size = 12)  + theme(legend.position ="none") 
 
 p1
 
 ```
 
 
-## Unpredictability, week-to-week
+## &nbsp; { .fullpage }
 
 
-```{r week-sigma, echo = FALSE, fig.width = 5.8, fig.height = 4.4}
+```{r week-sigma}
+p2 <- ggplot(filter(params1, type == "gamma_w"), aes(x = gamma, y = toupper(sport), fill = sport)) + 
+  geom_joy() + xlim(c(0.96, 1.01)) + xlab("Less consistent                       More consistent") + ylab("") + 
+  ggtitle(expression(paste("Week-to-week evolution of team strength (", gamma[week],")"))) + theme(plot.title = element_text(hjust = 0.5)) + 
+  theme_grey(base_size = 12)  + theme(legend.position ="none") 
+
 p2
 ```
 
@@ -414,18 +407,18 @@ How often does the best team win?
 <img src="parity.png" style="width:800px; height=300px">
 
 
-## Home advantage
+## &nbsp; { .fullpage }
 
-```{r home-advantage, echo = FALSE, fig.width = 5.8, fig.height = 4.4}
+```{r home-advantage}
 ggplot(params, aes(x = alpha, y = toupper(sport), fill = sport)) + 
   geom_joy() + xlab("Home advantage (log odds scale)") + ylab("") + 
   ggtitle(expression(paste("Home advantage (", alpha[q],")"))) + theme(plot.title = element_text(hjust = 0.5))+ 
   theme_grey(base_size = 12)  + theme(legend.position="none") 
 ```
 
-## Home advantage
+## &nbsp; { .fullpage }
 
-```{r home-advantage-nba, echo = FALSE, fig.width = 6, fig.height = 4.5}
+```{r home-advantage-nba}
 load(file.path(root, "data", "tidy_alphas.R1.rda"))
 tidy_alpha_prob <- tidy_alphas %>%
   mutate(alpha_prob = mosaic::ilogit(alpha.team.overall), 
@@ -462,33 +455,32 @@ gg4 <- ggplot(data = filter(tidy_alpha_prob, sport == "nba"),
 gg4
 ```
 
+# Who cares?
 
-## Practical implications for decision-makers
+## GMs need to predict the future
 
-
-<p class="double">
-<img src="herm.png" style="width:250px; height=250px">
-</p>
- 
-
-> * Our team strengths are better at predicting future W-L 
+<div class="double">
+<img src="herm.png" class="one-col-image">
 
 
-## Practical implications for decision-makers
+> - Our team strengths are better at predicting future W-L 
+</div>
 
-Patriots rest starters in 2015 against Dolphins
-
-<p class="double">
-<img src="pats_dolphins.jpg" style="width:250px; height=150px">
-</p>
+## GMs need to strategize
 
 
-> * Home advantage matters in `r emo::ji("football")` and `r emo::ji("basketball")`
+<div class="double">
+> - Patriots rest starters in 2015 against Dolphins
+> - Home advantage matters in `r emo::ji("football")` and `r emo::ji("basketball")`
+
+<img src="pats_dolphins.jpg" width="350px">
+</div>
 
 
 
-## Practical implications for decision-makers
 
+
+## GMs need a longe-term plan
 
 > "They have to rethink their whole philosophy"
 
@@ -503,17 +495,18 @@ Patriots rest starters in 2015 against Dolphins
 ## Acknowledgements: Greg
 
 <p class="double">
-<img src="greg.png" class="one-col-image" style="width:150px; height=150px">
+<img src="greg.png" class="one-col-image">
 </p>
 
  
 ## Summary: parity in sports
 
-> * Unpredictability at a fixed time: `r emo::ji("trophy")` (NHL), `r emo::ji("baseball")`
-> * Within season unpredictability `r emo::ji("football")`
-> * Between season unpredictability `r emo::ji("trophy")` (NHL)
-> * Largest home advantage `r emo::ji("basketball")`
+> - Unpredictability at a fixed time: `r emo::ji("trophy")` (NHL), `r emo::ji("baseball")`
+> - Within season unpredictability `r emo::ji("football")`
+> - Between season unpredictability `r emo::ji("trophy")` (NHL)
+> - Largest home advantage `r emo::ji("basketball")`
 
-
-More info: Paper ([https://arxiv.org/abs/1701.05976](https://arxiv.org/abs/1701.05976)) & Github ([https://github.com/bigfour/competitiveness](https://github.com/bigfour/competitiveness))
+More info: 
+- Paper (https://arxiv.org/abs/1701.05976) 
+- Github (https://github.com/bigfour/competitiveness)
 
