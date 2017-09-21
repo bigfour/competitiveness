@@ -473,7 +473,7 @@ gg4
 > - Patriots rest starters in 2015 against Dolphins
 > - Home advantage matters in `r emo::ji("football")` and `r emo::ji("basketball")`
 
-<img src="pats_dolphins.jpg" width="350px">
+<img src="pats_dolphins.jpg" class="one-col-image">
 </div>
 
 
