@@ -20,7 +20,7 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,
 </br></br></br></br></br>
 
 <p class="black">
-Michael Lopez, Gregory Matthews, Benjamin Baumer</br>
+Michael J. Lopez, Gregory J. Matthews, Benjamin S. Baumer</br>
 https://github.com/bigfour/competitiveness
 </p>
 
@@ -499,14 +499,20 @@ gg4
 </p>
 
  
-## Summary: parity in sports
+## Parity in sports
+
+<div class="double">
+Summary:
 
 > - Unpredictability at a fixed time: `r emo::ji("trophy")` (NHL), `r emo::ji("baseball")`
 > - Within season unpredictability `r emo::ji("football")`
 > - Between season unpredictability `r emo::ji("trophy")` (NHL)
 > - Largest home advantage `r emo::ji("basketball")`
 
-More info: 
-- Paper (https://arxiv.org/abs/1701.05976) 
-- Github (https://github.com/bigfour/competitiveness)
 
+More info: 
+
+- Paper (https://arxiv.org/abs/1701.05976) 
+- Code (https://github.com/bigfour/competitiveness)
+- Slides (http://bit.ly/2jQTgrm)
+</div>
