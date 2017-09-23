@@ -102,11 +102,13 @@ p  + geom_point(data = xander, colour = "black", size = 3) +
 
 ## Using statistics to assess luck in sports
 
-> * The best team does not always win. Sorry, Detroit
+> * The best team does not always win. (Sorry, Detroit)
 
 > * How to untangle luck from skill? 
 
-> * How often does the best team win in each sport?  Luck ---> parity
+> * How often does the best team win in each sport?  
+
+> * Luck ---> parity
 
 
 
@@ -147,7 +149,7 @@ p  + geom_point(data = xander, colour = "black", size = 3) +
 <div class="double">
 > - Problem 1: wins and losses alone insufficient (noisy)
 > - Problem 2: point differential non-generalizable
-> - Solution: if you can't beat em, use their numbers in a statistical model
+> - Solution: if you can't beat 'em, use their numbers in a statistical model
 
 <img src="sportsbook.png" class="one-col-image">
 </div>
@@ -340,8 +342,8 @@ ggplot(data = df.2013,
 ```{r full-spaghetti}
 spag <- ggplot(data = tidy_thetas_division, 
        aes(x = time_val, y = theta,  group = name)) +
-  geom_line(alpha = 0.5) + 
-  geom_point(shape = 21, size = 0.5, alpha = 0.8) + 
+  geom_line(alpha = 0.1) + 
+  geom_point(shape = 21, size = 0.5, alpha = 0.2) + 
   #geom_text(aes(label = annotation), color = "black", hjust = "left", nudge_x = 0.25) + 
   #scale_color_manual(name = NULL, values = primary) + 
   #scale_fill_manual(name = NULL, values = secondary) + 
@@ -464,6 +466,7 @@ gg4
 
 
 > - Our team strengths are better at predicting future W-L 
+> - Buyers or sellers at trade deadline?
 </div>
 
 ## GMs need to strategize
@@ -502,17 +505,17 @@ gg4
 ## Parity in sports
 
 <div class="double">
+More info: 
+
+- Paper (https://arxiv.org/abs/1701.05976) 
+- Code (https://github.com/bigfour/competitiveness)
+- Slides (http://bit.ly/2jQTgrm)
+
+
 Summary:
 
 > - Unpredictability at a fixed time: `r emo::ji("trophy")` (NHL), `r emo::ji("baseball")`
 > - Within season unpredictability `r emo::ji("football")`
 > - Between season unpredictability `r emo::ji("trophy")` (NHL)
 > - Largest home advantage `r emo::ji("basketball")`
-
-
-More info: 
-
-- Paper (https://arxiv.org/abs/1701.05976) 
-- Code (https://github.com/bigfour/competitiveness)
-- Slides (http://bit.ly/2jQTgrm)
 </div>
