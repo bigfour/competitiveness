@@ -1,6 +1,6 @@
 ---
 title: "How often does the best team win?"
-author: "Benjamin Baumer & Michael Lopez (with Gregory Matthews)"
+author: "Benjamin Baumer (with Michael Lopez and Gregory Matthews)"
 output:
   rmdshower::shower_presentation:
     self_contained: false
@@ -497,10 +497,11 @@ gg4
 
 
 
-## Acknowledgements: Greg
+## Acknowledgements: Greg & Mike
 
 <p class="double">
 <img src="greg.png" class="one-col-image">
+<img src="http://ww4.hdnux.com/photos/34/33/15/7451459/11/1024x1024.jpg" class="one-col-image">
 </p>
 
  
