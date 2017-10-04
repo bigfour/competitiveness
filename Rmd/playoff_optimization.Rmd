@@ -145,7 +145,7 @@ sim_series <- function(data, n, series_length = 1) {
 }
 ``` 
 
-```{r how_long, eval=FALSE}
+```{r how_long, eval=TRUE}
 # benchmark
 get_r_squared(res)
 series_lengths <- c(1, 3, 5, 7, 11, 15, 21, 35, 51, 75)
@@ -158,7 +158,7 @@ save(how_long, file = "../data/how_long.rda", compress = "xz")
 
 ```{r}
 ggplot(how_long, aes(x = series_length, y = r_squared, color = sport)) + 
-  geom_hline(yintercept = max(r_squared$r_squared), color = "darkgray", linetype = 3) + 
+  geom_hline(yintercept = pull(filter(how_long, sport == "nba" & series_length == 7), r_squared), color = "darkgray", linetype = 2) + 
   geom_point(aes(size = actual)) + 
 #  geom_line() + 
   geom_smooth(se = FALSE) + 
