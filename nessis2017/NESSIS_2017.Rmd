@@ -6,11 +6,13 @@ output:
     self_contained: false
     katex: true
     ratio: 16x10
+    lib_dir: rmdshower
 ---
 
 ```{r, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, 
                       fig.width = 8, fig.height = 4.5)
+knitr::opts_chunk$set(fig.path = 'figures/')
 ```
 
 ## How often does the best team win? 
@@ -60,7 +62,7 @@ p
 ### Note: Using GAMs, 81% chance that Boegarts pitch is called a strike (not accounting for superstar/rookie/home team effects)
 
 library(jpeg); library(grid)
-image <- jpeg::readJPEG(file.path(root, "NESSIS2017_files", "xander.jpg"))
+image <- jpeg::readJPEG(file.path(root, "nessis2017", "xander.jpg"))
 
 p  + geom_point(data = xander, colour = "black", size = 3) + 
   geom_segment(aes(x = 1, xend=xander$plate_x+.05, y=0.3, yend=xander$plate_z - 0.15), 
@@ -298,13 +300,13 @@ div.teams.MLB <- c(div[6], div[4], div[1],
                div[3], div[1], div[4])
 divisions_mlb <- data_frame(sport = "mlb", division = div.teams.MLB)
 divisions_mlb$team <- teamcolors %>%
-  filter(sport == "mlb") %>%
+  filter(league == "mlb") %>%
   select(name) %>%
   unlist()
 
 divisions <- divisions_mlb
 teamcolors <- teamcolors %>%
-  left_join(divisions, by = c("sport" = "sport", "name" = "team"))
+  left_join(divisions, by = c("league" = "sport", "name" = "team"))
 tidy_thetas_division <- tidy_thetas %>%
   left_join(select(teamcolors, name, division), by = c("name" = "name")) %>%
   mutate(time_val = ifelse(sport == "NFL" | sport == "MLB",  time_val + 1, time_val))

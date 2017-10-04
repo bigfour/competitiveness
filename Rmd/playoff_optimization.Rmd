@@ -40,7 +40,7 @@ sim_data %>%
   do(one_simulation(., series_length = 7))
 ```
 
-```{r}
+```{r 7-games, eval=TRUE}
 # takes a few minutes
 res <- sim_data %>%
   group_by(sport, season) %>%
@@ -105,7 +105,7 @@ ggplot(res, aes(x = seed, y = finish, color = sport)) +
 #  geom_curve(x = 15, y = 3.5, xend = 16, yend = 4.0625, arrow = arrow(length = unit(0.1, "cm"))) + 
   facet_wrap(~sport) + 
   ggtitle("Simulated 16-Team Tournaments, 2004-2016")
-ggsave(filename = "gfx/playoff_sims.pdf", width = 10, height = 8)
+ggsave(filename = "../gfx/playoff_sims.pdf", width = 10, height = 8)
 ```
 
 ## How long should series be to equalize parity? 
@@ -145,22 +145,26 @@ sim_series <- function(data, n, series_length = 1) {
 }
 ``` 
 
-```{r}
+```{r how_long, eval=FALSE}
 # benchmark
 get_r_squared(res)
-how_long <- lapply(c(1, 3, 5, 7, 11, 15, 21, 35, 51, 75), sim_series, data = sim_data, n = 10) %>% 
-  bind_rows()
+series_lengths <- c(1, 3, 5, 7, 11, 15, 21, 35, 51, 75)
+how_long <- lapply(series_lengths, sim_series, data = sim_data, n = 100) %>% 
+  bind_rows() %>%
+  mutate(actual = sport == "nfl" & series_length == 1,
+         actual = ifelse(sport != "nfl" & series_length == 7, TRUE, actual))
+save(how_long, file = "../data/how_long.rda", compress = "xz")
 ```
 
 ```{r}
 ggplot(how_long, aes(x = series_length, y = r_squared, color = sport)) + 
   geom_hline(yintercept = max(r_squared$r_squared), color = "darkgray", linetype = 3) + 
-  geom_point() + 
-  geom_line() + 
-#  geom_smooth(se = FALSE) + 
+  geom_point(aes(size = actual)) + 
+#  geom_line() + 
+  geom_smooth(se = FALSE) + 
   ggtitle("Equivalence of Playoff Series Length", 
           subtitle = "Simulated 16-Team Tournaments") + 
   scale_y_continuous("Pseudo-R^2") + 
-  scale_x_continuous("Length of Series (each round)")
-ggsave(filename = "gfx/series_length.pdf", width = 10, height = 8)
+  scale_x_continuous("Length of Series (each round)", breaks = series_lengths)
+ggsave(filename = "../gfx/series_length.pdf", width = 10, height = 8)
 ```
