@@ -49,7 +49,3 @@ bigfour: Rmd/data_wrangling_moneyline_sportsinsights.Rmd
 mcmc: R/jagsFunction.R
 	Rscript R/jagsFunction.R
 	Rscript R/tidy_mcmc.R
-	
-	
-playoff_optimization.html: playoff_optimization.Rmd
-	Rscript -e "knitr::knit('Rmd/playoff_optimization.Rmd')"
