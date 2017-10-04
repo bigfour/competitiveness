@@ -944,7 +944,7 @@ ggplot(all.sport.both, aes(x = day.season, y = corr.day, color = type)) +
 
 Across each sport, our estimates of team strength consistently outperform past team win percentage and point differential in predicting future win percentage. This gap is most pronounced earlier in each season, which is not surprising given the instability of won-loss percentage and point differential in a small number of games. Differences remain throughout most of the regular season in MLB, the NHL, and the NFL. However, by the NBA's mid-season, won-loss ratio and point differential are similar to our estimates of team strength in assessing future performance. By and large, this confirms the findings of \cite{wolfson2015s}, who identified that most of the information needed to predict the remainder of the NBA season is contained within the first third of the year. 
 
-As a second check of predictive accuracy, we assess the game-level probabilities shown in Figure~\ref{fig:plotCompare} by comparing to known game outcomes. Table \ref{tab:ll} highlights the area under the receiver operating characteristic curve (AUC), which shows the expectation that a randomly drawn probability from a winning home team is greater than a randomly drawn probability of a losing home team (higher is better).   
+\hl{As a second check of predictive accuracy, we assess the game-level probabilities shown in} Figure~\ref{fig:plotCompare} by comparing to known game outcomes. Table \ref{tab:ll} \hl{highlights the area under the receiver operating characteristic curve (AUC), which shows the expectation that a randomly drawn probability from a winning home team is greater than a randomly drawn probability of a losing home team (higher is better). Also included is the Brier score, along with an accompanying p-value as implemented for calibration in} \cite{spiegelhalter1986probabilistic}.    
 
 <<validation2>>=
 load(file.path(root, "data", "tidy_thetas.R2.rda"))
@@ -1018,7 +1018,7 @@ aucs <- bigfour.last.ll %>%
   }) %>%
   ungroup()
 
-
+ 
 briers <- bigfour.last.ll %>% 
   filter(!is.na(p_homeS)) %>%
   ungroup() %>%
@@ -1051,7 +1051,7 @@ aucs <- aucs %>%
 aucs %>% 
   rename(`League ($q$)` = sport, 
          `AUC observed` = auc.observed, 
-         `AUC sequential)` = auc.sequential,
+         `AUC sequential` = auc.sequential,
          `Brier observed (p-value)` = brier.observed.sum, 
          `Brier sequential (p-value)` = brier.sequential.sum)  %>%
   xtable(caption = "AUC values and Brier scores (p-values) by sport", 
@@ -1067,7 +1067,7 @@ aucs %>%
 #  summarise(cor.sport = cor(p_homeC, p_homeS, use = "pairwise.complete.obs"))
 @
 
-\hl{A few sentences about AUC and Brier score.} Although these results do not suggest an arbitrage opportunity exists (recall that sports books add a vig to each team's price), they do imply that both our team strength and home advantage estimates can be used to extract accurate game-level projections.
+\hl{A few sentences about AUC and Brier score. Implement once revised model (without intercept) is implemented} Although these results do not suggest an arbitrage opportunity exists (recall that sports books add a vig to each team's price), they do imply that both our team strength and home advantage estimates can be used to extract accurate game-level projections.
 
 \subsection{How often does the best team win?  A new measure of league parity}
 
