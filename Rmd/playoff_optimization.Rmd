@@ -9,18 +9,8 @@ output: html_document
 
 ```{r}
 library(tidyverse)
-load("data/tidy_thetas.R1.rda")
-ggplot(filter(tidy_thetas, name == "Boston Celtics"), aes(x = time_val, y = theta)) + 
-  geom_line()
-end_thetas <- tidy_thetas %>%
-  mutate(end_season = max.week - week <= 4) %>%
-  filter(end_season) %>%
-  group_by(sport, season, team_id, name) %>%
-  summarize(N = n(), mean_theta = mean(theta))
-```
+library(tourneyr)
 
-
-```{r}
 best_teams <- function(data, k = 8) {
   data %>%
     arrange(desc(mean_theta)) %>%
@@ -28,22 +18,17 @@ best_teams <- function(data, k = 8) {
 }
 ```
 
+
 ## Simulations
 
 ```{r}
-library(tourneyr)
-sim_data <- end_thetas %>%
+sim_data <- bigfour_end %>%
 #  filter(season == 10) %>%
 #  filter(sport == "nba", season == 10) %>%
   group_by(sport, season) %>%
   do(best_teams(., k = 16))
 
-# Test Spurs-Bulls
-spurs_bulls <- sim_data %>%
-  filter(sport == "nba", season == 10, 
-         team_id %in% c(27, 5)) 
-
-# should be around 54%
+# should be around 46%
 long_run_prob(spurs_bulls, n = 1000)
 long_run_prob(spurs_bulls, n = 1000, series_length = 7)
 # should be nearly certain
@@ -56,6 +41,7 @@ sim_data %>%
 ```
 
 ```{r}
+# takes a few minutes
 res <- sim_data %>%
   group_by(sport, season) %>%
   do(many_simulations(., n = 100, series_length = 7))
@@ -75,9 +61,46 @@ res %>%
   group_by(sport) %>%
   summarize(cor(seed, finish))
 
+res_grouped <- res %>%
+  group_by(sport, seed) %>%
+  summarize(mean_finish = mean(finish)) %>%
+  mutate(predestination_finish = ceiling(log2(seed)) + 1)
+
+parity <- res_grouped %>%
+  summarize(parity_finish = mean(predestination_finish)) 
+
+res_grouped <- res_grouped %>%
+  inner_join(parity, by = "sport") %>%
+  mutate(SSM = (mean_finish - parity_finish)^2,
+         SST = (predestination_finish - parity_finish)^2,
+         weight = 17 - seed)
+
+labels <- parity %>%
+  # hack for labels
+  mutate(seed = 15, finish = 3.5, label = "perfect\nparity")
+
+labels2 <- labels %>%
+  mutate(seed = 2, finish = 1, label = "predestination")
+
+r_squared <- res_grouped %>%
+  group_by(sport) %>%
+  summarize(r_squared = sum(SSM) / sum(SST),
+            weighted_r_squared = sum(weight * SSM) / sum(weight * SST))
+
 ggplot(res, aes(x = seed, y = finish, color = sport)) + 
+  geom_point(data = res_grouped, aes(y = predestination_finish), color = "darkgray") + 
+  geom_line(data = res_grouped, aes(y = predestination_finish), color = "darkgray") +
+  geom_point(data = res_grouped, aes(y = parity_finish), color = "darkgray") + 
+  geom_line(data = res_grouped, aes(y = parity_finish), color = "darkgray") +
+  geom_point(data = res_grouped, aes(y = mean_finish)) + 
+  geom_line(data = res_grouped, aes(y = mean_finish)) +
   geom_jitter(alpha = 0.01) + 
   geom_smooth() + 
+  geom_text(data = labels, aes(label = label)) + 
+  geom_text(data = labels2, aes(label = label), hjust = "left") + 
+  geom_text(data = r_squared, x = 15, y = 1, 
+            aes(label = paste("~R^2 =\n", round(r_squared, 3)))) + 
+#  geom_curve(x = 15, y = 3.5, xend = 16, yend = 4.0625, arrow = arrow(length = unit(0.1, "cm"))) + 
   facet_wrap(~sport)
 ggsave(filename = "gfx/playoff_sims.pdf", width = 10, height = 8)
 ```
