@@ -44,7 +44,8 @@ sim_data %>%
 # takes a few minutes
 res <- sim_data %>%
   group_by(sport, season) %>%
-  do(many_simulations(., n = 100, series_length = 7))
+  do(many_simulations(., n = 1000, series_length = 7))
+save(res, file = "../data/res.rda", compress = "xz")
 ``` 
   
 ```{r}
@@ -96,7 +97,7 @@ ggplot(res, aes(x = seed, y = finish, color = sport)) +
   geom_line(data = res_grouped, aes(y = parity_finish), color = "darkgray") +
   geom_point(data = res_grouped, aes(y = mean_finish)) + 
   geom_line(data = res_grouped, aes(y = mean_finish)) +
-  geom_jitter(alpha = 0.01) + 
+  geom_jitter(alpha = 0.007) + 
   geom_smooth() + 
   geom_text(data = labels, aes(label = label)) + 
   geom_text(data = labels2, aes(label = label), hjust = "left") + 
@@ -149,7 +150,7 @@ sim_series <- function(data, n, series_length = 1) {
 # benchmark
 get_r_squared(res)
 series_lengths <- c(1, 3, 5, 7, 11, 15, 21, 35, 51, 75)
-how_long <- lapply(series_lengths, sim_series, data = sim_data, n = 100) %>% 
+how_long <- lapply(series_lengths, sim_series, data = sim_data, n = 1000) %>% 
   bind_rows() %>%
   mutate(actual = sport == "nfl" & series_length == 1,
          actual = ifelse(sport != "nfl" & series_length == 7, TRUE, actual))
