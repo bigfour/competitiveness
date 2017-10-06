@@ -23,7 +23,8 @@ knitr::opts_chunk$set(fig.path = 'figures/')
 
 <p class="black">
 Michael J. Lopez, Gregory J. Matthews, Benjamin S. Baumer</br>
-https://github.com/bigfour/competitiveness
+https://github.com/bigfour/competitiveness</br>
+UMass, October 10th, 2017
 </p>
 
 # An anecdote
