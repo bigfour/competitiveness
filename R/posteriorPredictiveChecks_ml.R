@@ -264,10 +264,14 @@ df.all %>% filter(!real) %>% ggplot(aes(y.tilde.team, group = sim.number)) +
   facet_wrap(~sport, scales = "free")
 
 adjust <- 1/4
-df.all %>% filter(!real) %>% ggplot(aes(y.tilde.team, group = sim.number)) + 
+p1 <- df.all %>% filter(!real) %>% ggplot(aes(y.tilde.team, group = sim.number)) + 
   geom_density(colour = "grey", adjust = adjust) + 
   geom_density(data = filter(df.all, real), aes(y.tilde.team), colour = "red", adjust = adjust) + 
-  facet_wrap(~sport, scales = "free")
+  xlab("logit(p)") + ylab("Density") + 
+  facet_wrap(~toupper(sport), scales = "free")
+
+ggsave(p1, "~/post.pred.pdf")
+
 
 df.all %>% group_by(sport, y.obs) %>% count() %>% ungroup() %>% mutate(n = n/21) %>% group_by(sport) %>% arrange(-n) %>% slice(1:5)
 bigfour %>% group_by(sport, p_home) %>% count() %>% ungroup() %>% group_by(sport) %>% arrange(-n) %>% slice(1:5)

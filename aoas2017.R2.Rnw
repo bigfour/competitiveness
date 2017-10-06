@@ -578,8 +578,9 @@ Table \ref{tab:params} shows the mean and standard deviation of posterior draws 
 <<echo=FALSE, results='asis'>>=
 load(file.path("data", "params.R2.rda"))
 params %>%
-  #select(-alpha) %>%
-  mutate(sport = toupper(sport), sigma_w = sqrt(sigma_w), sigma_g = sqrt(sigma_g), sigma_s = sqrt(sigma_s)) %>%
+  select(-alpha) %>%
+  mutate(sport = toupper(sport), sigma_w = sqrt(sigma_w), 
+         sigma_g = sqrt(sigma_g), sigma_s = sqrt(sigma_s)) %>%
   tidyr::gather(key = "param", value = "val", -sport) %>%
   group_by(sport, param) %>%
   summarize(mean.sport = mean(val), lb = quantile(val, 0.025), ub = quantile(val, 0.975), 

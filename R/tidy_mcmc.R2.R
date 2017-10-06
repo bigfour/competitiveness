@@ -5,14 +5,14 @@ sports <- c("nba", "nhl", "mlb", "nfl")
 
 get_sport <- function(sport) {
   message(paste("reading", sport, "data..."))
-  load(file.path(mcmc_dir, paste0(sport, "_paper_teamHFA.R2.RData")))
+  load(file.path(mcmc_dir, paste0(sport, "_paper_teamHFA.logit.R2.RData")))
   out <- data.frame(
     sigma_g = 1/z$tauGame[,,1],
     sigma_w = 1/z$tauWeek[,,1],
     sigma_s = 1/z$tauSeason[,,1],
     gamma_w = z$gammaWeek[,,1],
-    gamma_s = z$gammaSeason[,,1]
-    #alpha = z$alpha[,,1]
+    gamma_s = z$gammaSeason[,,1],
+    alpha = z$alpha[,,1]
   ) %>%
     mutate(sport = sport)
   alphaInd <- z$alphaInd
@@ -40,7 +40,7 @@ names(alphaInds) <- sports
 # to save memory!
 rm(dat)
 
-n_sports <- sapply(thetas, length) / 1200
+n_sports <- sapply(thetas, length) / 12000
 ## want the above to be 8250, 9240, etc
 
 
@@ -70,7 +70,7 @@ tidy_thetas <- lapply(thetas, tidy) %>%
 
 
 # crosscheck
-# the means should all be relatively close to 0, right??
+# the means should all be 0
 tidy_thetas %>%
   group_by(sport, season, week) %>%
   summarize(N = n(), mean_theta = mean(theta), sd_theta = sd(theta)) %>%
@@ -111,6 +111,10 @@ save(tidy_thetas, file = file.path(root, "data", "tidy_thetas.R2.rda"), compress
 
 
 ### Alphas
+sport.est <- params %>% 
+  group_by(sport) %>% 
+  summarise(alpha.sport = mean(alpha))
+
 
 makeAlphas <- function(sport){
   teamnames <- sort(t(unique(bigfour_public[bigfour_public$sport==sport,"home_team"])))
@@ -127,9 +131,10 @@ makeAlphas <- function(sport){
 dat.alphas <- lapply(sports[1:4], makeAlphas) 
 alphas.all <- lapply(dat.alphas,function(x){return(x[])}) %>%  
   bind_rows() %>% 
-  mutate(alpha.team.overall = alpha.team, 
-         alpha.team.lower = alpha.lower, 
-         alpha.team.upper = alpha.upper)
+  left_join(sport.est) %>%
+  mutate(alpha.team.overall = alpha.team + alpha.sport,  
+         alpha.team.lower = alpha.lower+ alpha.sport,  
+         alpha.team.upper = alpha.upper+ alpha.sport)
 
 colors.new <- data.frame(name = c("Seattle Supersonics", "Atlanta Thrashers"), 
                          primary = c("#025736", "#0A2351"),

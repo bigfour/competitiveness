@@ -38,7 +38,8 @@ jagsModel <- function(data,
   head(test)
   
   
-  y <- asinTransform(test$p_home)
+  #y <- asinTransform(test$p_home)
+  y <- logit(test$p_home)
   w <- test$week
   s <- test$season - min(test$season) + 1
   table(s, w)
@@ -92,7 +93,7 @@ jagsModel <- function(data,
   #dic.popt <- dic.samples(jags, 100, type = "popt") # Penalized expected deviance
   z <- jags.samples(jags, posteriorDraws, n.draws, thin = thin)
   #z$dic <- dic.pD
-  filename <- file.path(mcmc_dir, paste0(league, "_paper_", fit.type, "HFA.R2", ".RData"))
+  filename <- file.path(mcmc_dir, paste0(league, "_paper_", fit.type, "HFA.logit.R2", ".RData"))
   save(z, file = filename, compress = "xz")
 }
 
@@ -103,11 +104,11 @@ library(doParallel)
 library(foreach)
 
 ### Function inputs
-num_adapt <- 100
-num_update <- 500
-num_draws <- 2000
+num_adapt <- 1000
+num_update <- 2000
+num_draws <- 20000
 
-posteriorDraws = c('theta','tauGame','tauWeek',
+posteriorDraws = c('alpha','theta','tauGame','tauWeek',
                    'tauSeason','gammaWeek','gammaSeason', 'alphaInd', 'tauAlpha')
 leaguestodo <- c("nhl", "nba", "nfl", "mlb")
 
