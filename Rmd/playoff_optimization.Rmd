@@ -114,7 +114,7 @@ ggsave(filename = "../gfx/playoff_sims.pdf", width = 10, height = 8)
 ```{r}
 get_r_squared <- function(data) {
   res_grouped <- data %>%
-    group_by(sport, seed) %>%
+    group_by(sport, num_teams, seed) %>%
     summarize(mean_finish = mean(finish)) %>%
     mutate(predestination_finish = ceiling(log2(seed)) + 1)
 
@@ -122,13 +122,13 @@ get_r_squared <- function(data) {
     summarize(parity_finish = mean(predestination_finish)) 
 
   res_grouped <- res_grouped %>%
-    inner_join(parity, by = "sport") %>%
+    inner_join(parity, by = c("sport", "num_teams")) %>%
     mutate(SSM = (mean_finish - parity_finish)^2,
            SST = (predestination_finish - parity_finish)^2,
            weight = 17 - seed)
 
   r_squared <- res_grouped %>%
-    group_by(sport) %>%
+    group_by(sport, num_teams) %>%
     summarize(r_squared = sum(SSM) / sum(SST),
               weighted_r_squared = sum(weight * SSM) / sum(weight * SST))
   return(r_squared)
@@ -139,33 +139,52 @@ get_r_squared <- function(data) {
 ```{r}
 sim_series <- function(data, n, series_length = 1) {
   data %>%
-    group_by(sport, season) %>%
+    group_by(sport, season, num_teams) %>%
     do(many_simulations(., n = n, series_length = series_length)) %>%
     get_r_squared() %>%
     mutate(series_length = series_length)
 }
 ``` 
 
+```{r}
+sim_data8 <- bigfour_end %>%
+  group_by(sport, season) %>%
+  do(best_teams(., k = 8)) %>%
+  mutate(num_teams = 8)
+
+sim_data16 <- bigfour_end %>%
+  group_by(sport, season) %>%
+  do(best_teams(., k = 16)) %>%
+  mutate(num_teams = 16)
+
+sim_data <- sim_data16 %>%
+  bind_rows(sim_data8)
+```
+
+
 ```{r how_long, eval=TRUE}
 # benchmark
-get_r_squared(res)
 series_lengths <- c(1, 3, 5, 7, 11, 15, 21, 35, 51, 75)
 how_long <- lapply(series_lengths, sim_series, data = sim_data, n = 1000) %>% 
   bind_rows() %>%
-  mutate(actual = sport == "nfl" & series_length == 1,
-         actual = ifelse(sport != "nfl" & series_length == 7, TRUE, actual))
+  mutate(actual = case_when(
+    sport == "nfl" & num_teams == 8 & series_length == 1 ~ TRUE,
+    sport == "mlb" & num_teams == 8 & series_length == 7 ~ TRUE,
+    sport %in% c("nba", "nhl") & num_teams == 16 & series_length == 7 ~ TRUE,
+    TRUE ~ FALSE))
 save(how_long, file = "../data/how_long.rda", compress = "xz")
 ```
 
 ```{r}
 ggplot(how_long, aes(x = series_length, y = r_squared, color = sport)) + 
   geom_hline(yintercept = pull(filter(how_long, sport == "nba" & series_length == 7), r_squared), color = "darkgray", linetype = 2) + 
-  geom_point(aes(size = actual)) + 
+  geom_point(aes(size = actual, shape = factor(num_teams))) + 
 #  geom_line() + 
-  geom_smooth(se = FALSE) + 
+  geom_smooth(se = FALSE, aes(linetype = factor(num_teams))) + 
   ggtitle("Equivalence of Playoff Series Length", 
-          subtitle = "Simulated 16-Team Tournaments") + 
+          subtitle = "Simulated 8-Team and 16-Team Tournaments") + 
   scale_y_continuous("Pseudo-R^2") + 
-  scale_x_continuous("Length of Series (each round)", breaks = series_lengths)
+  scale_x_continuous("Length of Series (each round)", breaks = series_lengths) + 
+  scale_shape_discrete("teams") + scale_linetype_discrete("teams")
 ggsave(filename = "../gfx/series_length.pdf", width = 10, height = 8)
 ```

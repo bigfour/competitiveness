@@ -438,7 +438,7 @@ div.teams.NFL <- c(div[6], div[8], div[3], div[1], div[8],
                div[4], div[5])
 divisions_nfl <- data_frame(sport = "nfl", division = div.teams.NFL)
 divisions_nfl$team <- teamcolors %>%
-  filter(sport == "nfl") %>%
+  filter(league == "nfl") %>%
   select(name) %>%
   unlist()
 # divisions %>% arrange(division)
@@ -458,7 +458,7 @@ div.teams.MLB <- c(div[6], div[4], div[1],
                div[3], div[1], div[4])
 divisions_mlb <- data_frame(sport = "mlb", division = div.teams.MLB)
 divisions_mlb$team <- teamcolors %>%
-  filter(sport == "mlb") %>%
+  filter(league == "mlb") %>%
   select(name) %>%
   unlist()
 # divisions_mlb %>% arrange(division) %>% print(n = Inf)
@@ -479,7 +479,7 @@ div.teams.NBA <- c(div[3], div[1], div[1],
                div[1], div[6], div[3])
 divisions_nba <- data_frame(sport = "nba", division = div.teams.NBA)
 divisions_nba$team <- teamcolors %>%
-  filter(sport == "nba") %>%
+  filter(league == "nba") %>%
   select(name) %>%
   unlist()
 # divisions_nba %>% arrange(division) %>% print(n = Inf)
@@ -496,14 +496,14 @@ div.teams.NHL <- c(div[4], div[4], div[2], div[2], div[4],
                div[2], div[2], div[4], div[1], div[3])
 divisions_nhl <- data_frame(sport = "nhl", division = div.teams.NHL)
 divisions_nhl$team <- teamcolors %>%
-  filter(sport == "nhl") %>%
+  filter(league == "nhl" & !grepl("Vegas", name)) %>%
   select(name) %>%
   unlist()
 # divisions_nhl %>% arrange(division) %>% print(n = Inf)
 
 divisions <- rbind(divisions_nfl, divisions_mlb, divisions_nba, divisions_nhl)
 teamcolors1 <- teamcolors %>%
-  left_join(divisions, by = c("sport" = "sport", "name" = "team")) %>%
+  left_join(divisions, by = c("league" = "sport", "name" = "team")) %>%
   mutate(name = ifelse(name == "Los Angeles Angels of Anaheim", "Los Angeles Angels", name),
          name = ifelse(name == "St Louis Blues", "St. Louis Blues", name)) %>%
   select(name, division)
@@ -1132,6 +1132,28 @@ where we multiply by 2 in order to scale so that $0 \leq Parity_q \leq 1$, where
 
 For games with no home advantage, $Parity_{\text{MLB}} = 0.87$, followed by the NHL (0.84), NFL (0.70), and NBA (0.66). When the best team has a home advantage, parity is again the greatest in the MLB (0.79), followed by the NHL (0.73), NFL (0.55), and NBA (0.47). These results suggest that when the best team is playing at home, the NBA is closer to a world where every game outcome is predetermined than to one where every game outcome is a coin flip. Meanwhile, even when giving the best team a HA, MLB game outcomes remain lightly-weighted coin flips. 
 
+\subsection{Playoffs}
+
+<<playoff-series, fig.cap="Parity measures for simulated playoff tournaments. Each line shows how our pseudo-$R^2$ parity metric changes as a function of tournament series length for both 8- and 16-team tournaments in each sport. We note that in order for MLB to achieve the same lack of parity as the NBA, it would have to play 75-game series in a 16-team tournament. Conversely, the NBA would have to switch to an 8-team, single-game tournament to match the parity of the other three sports. ">>=
+load("data/how_long.rda")
+y_breaks <- how_long %>%
+  filter(actual == TRUE) %>%
+  pull(r_squared) %>%
+  append(seq(0, 1, by = 0.5)) %>%
+  round(3)
+ggplot(how_long, aes(x = series_length, y = r_squared, color = toupper(sport))) + 
+  geom_hline(yintercept = pull(filter(how_long, sport == "nba" & series_length == 7), r_squared), color = "darkgray", linetype = 2) + 
+  geom_point(aes(size = actual, shape = factor(num_teams))) + 
+#  geom_line() + 
+  geom_smooth(se = FALSE, aes(linetype = factor(num_teams))) + 
+  ggtitle("Equivalence of Playoff Series Length", 
+          subtitle = "Simulated 8-Team and 16-Team Tournaments") + 
+  scale_y_continuous(expression(Pseudo-R^2), breaks = y_breaks, minor_breaks = NULL) + 
+  scale_x_continuous("Length of Series (each round)", breaks = sort(unique(how_long$series_length))) + 
+  scale_size_discrete("Actual") + 
+  scale_shape_discrete("Teams") + scale_linetype_discrete("Teams") + 
+  scale_color_discrete("League")
+@
 
 \section{Conclusion}
 
@@ -1233,6 +1255,61 @@ p.gamma
 plot.compare + theme_bw(14)
 @
 
+
+<<playoff-sims, fig.cap="Relationship between seed and finish in simulated 16-team, 7-game series playoff tournaments. One thousand tournaments were simulated for each sport in each year. The horizontal dotted gray line represent how the tournaments would play out with perfect parity, while the stepped gray line represents tournaments that play out in perfect accordance with seed. ", out.extra="angle=90", out.width="7.5in">>=
+load("data/res.rda")
+res_grouped <- res %>%
+  group_by(sport, seed) %>%
+  summarize(mean_finish = mean(finish)) %>%
+  mutate(predestination_finish = ceiling(log2(seed)) + 1)
+
+parity <- res_grouped %>%
+  summarize(parity_finish = mean(predestination_finish)) 
+
+res_grouped <- res_grouped %>%
+  inner_join(parity, by = "sport") %>%
+  mutate(SSM = (mean_finish - parity_finish)^2,
+         SST = (predestination_finish - parity_finish)^2,
+         weight = 17 - seed)
+
+labels <- parity %>%
+  # hack for labels
+  mutate(seed = 15, mean_finish = 3.5, label = "perfect\nparity")
+
+labels2 <- labels %>%
+  mutate(seed = 2, mean_finish = 1, label = "predestination")
+
+r_squared <- res_grouped %>%
+  group_by(sport) %>%
+  summarize(r_squared = sum(SSM) / sum(SST),
+            weighted_r_squared = sum(weight * SSM) / sum(weight * SST))
+
+res_tile <- res %>%
+  group_by(sport, seed, finish) %>%
+  summarize(N = n())
+
+ggplot(res_grouped, aes(x = seed, y = mean_finish, color = toupper(sport))) + 
+  geom_tile(data = res_tile, aes(y = finish, fill = N), color = NA) + 
+#  geom_point(aes(y = predestination_finish), color = "darkgray") + 
+  geom_line(aes(y = predestination_finish), color = "darkgray", linetype = 3) +
+#  geom_point(aes(y = parity_finish), color = "darkgray") + 
+  geom_line(aes(y = parity_finish), color = "darkgray", linetype = 3) +
+  geom_point() + 
+  geom_line() +
+#  geom_jitter(alpha = 0.007) + 
+  geom_smooth(se = FALSE) + 
+  geom_text(data = labels, aes(label = label)) + 
+  geom_text(data = labels2, aes(label = label), hjust = "left") + 
+  geom_text(data = r_squared, x = 15, y = 1, 
+            aes(label = paste("~R^2 =\n", round(r_squared, 3)))) + 
+  geom_curve(x = 15, y = 3.5, xend = 16, yend = 4.0625, arrow = arrow(length = unit(0.1, "cm"))) + 
+  scale_fill_gradient(low = "gray92", high = "darkgray") + 
+  scale_color_discrete(guide = FALSE) +
+  scale_x_continuous("Tournament Seed", breaks = 2^(0:4), expand = c(0.01, 0.01)) +
+  scale_y_continuous("Tournament Finish (round)", expand = c(0.01, 0.01)) + 
+  facet_wrap(~toupper(sport)) + 
+  ggtitle("Simulated 16-Team Tournaments, 2004-2016")
+@
 
 
 
