@@ -1132,7 +1132,23 @@ where we multiply by 2 in order to scale so that $0 \leq Parity_q \leq 1$, where
 
 For games with no home advantage, $Parity_{\text{MLB}} = 0.87$, followed by the NHL (0.84), NFL (0.70), and NBA (0.66). When the best team has a home advantage, parity is again the greatest in the MLB (0.79), followed by the NHL (0.73), NFL (0.55), and NBA (0.47). These results suggest that when the best team is playing at home, the NBA is closer to a world where every game outcome is predetermined than to one where every game outcome is a coin flip. Meanwhile, even when giving the best team a HA, MLB game outcomes remain lightly-weighted coin flips. 
 
-\subsection{Playoffs}
+\subsubsection{Playoffs}
+
+\hl{Notions of parity in the regular season govern which teams make the playoffs, but each league conducts a single-elimination postseason tournament with a different structure. To what extent do those structures mitigate or reinforce the parity levels discussed in the previous section? Should leagues consider alternative postseason formats in order to maximize revenue and/or fan engagement? We address these questions using our team strength estimates.}
+
+First, we collect the $k=16$ \hl{teams with the highest average team strength estimates over the last four weeks of each season, in each sport. Then we seed (in descending order of team strength) and simulate 1000 postseason tournaments, in which each round consists of a best-of-7-game series, with the higher seed having the home field advantage in each round. The results shown in} Figure~\ref{fig:playoff-sims} \hl{(in the Appendix) confirm that the relationship between seed and tournament finish is strongest in the NBA and the NFL, and considerably weaker in MLB and the NHL. 
+These findings accords with our regular season parity measures. }
+
+
+Specifically, we construct a postseason tournament parity metric that acts as a pseudo-$R^2$.
+
+$$
+  PostParity_q = \frac{\sum_{i=1}^{16} (obs_i - parity_i)^2}{\sum_{i=1}^{16} (noparity_i - parity_i)^2} \,,
+$$
+
+where $i=1, \ldots, 16$ iterates over the seeds, $obs_i$ is the average round in which the $i^{th}$ seeds finished in the simulated tournaments, $parity_i$ is seed-weighted expected finish round (4.0625), and $noparity_i$ is the expected finish if the tournament proceeds exactly according to seed (i.e. $\lceil \log_2{i} + 1 \rceil$). A $PostParity_q$ value of 1 indicates that the higher seed always wins, while a $PostParity$ value of 0 occurs when seeds are irrelevant. The NBA and NFL's $PostParity$ values ($0.57$ and $0.48$) far exceed those of MLB and the NHL ($0.12$ and $0.16$, respectively).
+
+\hl{While the previous set of simulations force all sports to use the same postseason tournament format, the reality is quite different. We then simulate tournaments while varying the number of teams who qualify (8 or 16) as well as the length of each postseason series (selected odd numbers between 1 and 75).} Figure~\ref{fig:playoff-series} \hl{allows us to compare values of} $PostParity$ \hl{for different tournament structures across all four sports. We note that the 1-game series played in the NFL results in parity comparable to MLB and the NHL. This leaves the NBA alone as the sport whose postseason tournament largely coronates the strongest regular season teams. Conversely, the playoff structure in MLB, which includes a single-game wild card play-in and a 5-game division series, serves to undermine advantages conferred based on seed. Higher seeds in MLB are also not aided by home field advantage, since it is statistically insignificant in that sport (except for Colorado). In order to approach the level of parity (or lack thereof) of the NBA playoffs, MLB would have to switch to a 16-team tournament in which each round was approximately 75-game series. Conversely, in order to the achieve the level of parity in the other three sports, the NBA would have to reduce the number of playoff teams to 8, and play a single-game tournament. }
 
 <<playoff-series, fig.cap="Parity measures for simulated playoff tournaments. Each line shows how our pseudo-$R^2$ parity metric changes as a function of tournament series length for both 8- and 16-team tournaments in each sport. We note that in order for MLB to achieve the same lack of parity as the NBA, it would have to play 75-game series in a 16-team tournament. Conversely, the NBA would have to switch to an 8-team, single-game tournament to match the parity of the other three sports. ">>=
 load("data/how_long.rda")
@@ -1184,6 +1200,7 @@ Opportunities to improve our model are also plentiful. \hl{To estimate predictio
 
 To maintain consistency with the NFL's calendar, we considered time on a weekly basis; more refined approaches may be appropriate in other sports. As an example, investigation into starting pitchers in baseball---who change daily---could lead to novel findings. Additionally, another model specification could consider the possibility that time-varying estimates of team strength follow something other than an autoregressive structure. One alternative specification, for example, is a stochastic volatility process \citep{glickman2001dynamic}. In this respect, our model can be considered a starting point for those looking to dig deeper in any sport witout losing an ability to make cross-league or cross-sport comparisons. 
 
+\hl{Postseason parity cuts both ways: a tournament in which the higher seeds always win is boring and pointless, but a tournament in which seeds don't matter might compromise the competitiveness of late-season games for playoff teams. This represents a philosophical choice for commissioners. The NBA has clearly chosen a postseason structure that---relative to other sports---largely ensures that the best teams will win most of the time. We suspect that this arrangement is comforting for players and team executives, since the hard work of building a good team is remunerated with postseason success. On the other hand, early-round games may suffer from lack of interest, since fans may consider the outcomes predetermined. Conversely, the MLB (and to a slightly less extent NFL and NHL) postseason structure serves to maximize fan interest, while offering few rewards for regular season success. This may be an acceptable trade-off, since the regular season is so long and relatively few teams make the playoffs. Still, it may be profoundly frustrating to players and team executives (see Beane, Billy).}
 
 
 \bibliographystyle{imsart-nameyear}

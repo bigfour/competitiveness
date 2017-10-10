@@ -22,7 +22,7 @@ knitr::opts_chunk$set(fig.path = 'figures/')
 </br></br></br></br></br>
 
 <p class="black">
-Michael J. Lopez, Gregory J. Matthews, Benjamin S. Baumer</br>
+Michael J. Lopez, Gregory J. Matthews, **Benjamin S. Baumer**</br>
 https://github.com/bigfour/competitiveness</br>
 UMass, October 10th, 2017
 </p>
@@ -107,9 +107,9 @@ p  + geom_point(data = xander, colour = "black", size = 3) +
 
 > * The best team does not always win. (Sorry, Detroit)
 
-> * How to untangle luck from skill? 
-
 > * How often does the best team win in each sport?  
+
+> * How to untangle luck from skill? 
 
 > * Luck ---> parity
 
@@ -468,8 +468,8 @@ gg4
 <img src="herm.png" class="one-col-image">
 
 
-> - Our team strengths are better at predicting future W-L 
 > - Buyers or sellers at trade deadline?
+> - Our team strengths are better at predicting future W-L 
 </div>
 
 ## GMs need to strategize
@@ -477,6 +477,7 @@ gg4
 
 <div class="double">
 > - Patriots rest starters in 2015 against Dolphins
+> - Lost HFA, lost in Denver
 > - Home advantage matters in `r emo::ji("football")` and `r emo::ji("basketball")`
 
 <img src="pats_dolphins.jpg" class="one-col-image">
@@ -514,12 +515,16 @@ More info:
 - Paper (https://arxiv.org/abs/1701.05976) 
 - Code (https://github.com/bigfour/competitiveness)
 - Slides (http://bit.ly/2jQTgrm)
+</br></br>
 
 
 Summary:
 
-> - Unpredictability at a fixed time: `r emo::ji("trophy")` (NHL), `r emo::ji("baseball")`
-> - Within season unpredictability `r emo::ji("football")`
-> - Between season unpredictability `r emo::ji("trophy")` (NHL)
-> - Largest home advantage `r emo::ji("basketball")`
+> - Unpredictability at a fixed time: `r emo::ji("hockey")`, `r emo::ji("baseball")`
+> - Within season unpredictability: `r emo::ji("football")`, `r emo::ji("basketball")`
+> - Between season unpredictability: `r emo::ji("hockey")` 
+> - Largest home advantage: `r emo::ji("basketball")`
 </div>
+
+# Thank you!!
+

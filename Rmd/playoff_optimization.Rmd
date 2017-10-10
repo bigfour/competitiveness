@@ -28,7 +28,7 @@ sim_data <- bigfour_end %>%
   group_by(sport, season) %>%
   do(best_teams(., k = 16))
 
-# should be around 46%
+# should be around 40%
 long_run_prob(spurs_bulls, n = 1000)
 long_run_prob(spurs_bulls, n = 1000, series_length = 7)
 # should be nearly certain
@@ -97,7 +97,7 @@ ggplot(res, aes(x = seed, y = finish, color = sport)) +
   geom_line(data = res_grouped, aes(y = parity_finish), color = "darkgray") +
   geom_point(data = res_grouped, aes(y = mean_finish)) + 
   geom_line(data = res_grouped, aes(y = mean_finish)) +
-  geom_jitter(alpha = 0.007) + 
+#  geom_jitter(alpha = 0.007) + 
   geom_smooth() + 
   geom_text(data = labels, aes(label = label)) + 
   geom_text(data = labels2, aes(label = label), hjust = "left") + 
