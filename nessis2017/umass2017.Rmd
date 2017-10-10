@@ -23,7 +23,7 @@ knitr::opts_chunk$set(fig.path = 'figures/')
 
 <p class="black">
 Michael J. Lopez, Gregory J. Matthews, **Benjamin S. Baumer**</br>
-https://github.com/bigfour/competitiveness</br>
+http://bit.ly/2fZedeV</br>
 UMass, October 10th, 2017
 </p>
 
@@ -135,8 +135,9 @@ p  + geom_point(data = xander, colour = "black", size = 3) +
 ## Parity checklist
 
 1. Equality at a fixed time 
-2. Within season equality 
-3. Between season equality
+2. Postseason tournament
+3. Within season equality 
+4. Between season equality
 
 # A cross-sport model 
 
@@ -411,6 +412,85 @@ How often does the best team win?
  
 <img src="parity.png" style="width:800px; height=300px">
 
+## &nbsp; { .fullpage }
+
+```{r playoff-sims}
+load(file.path(root, "data", "res.rda"))
+res_grouped <- res %>%
+  group_by(sport, seed) %>%
+  summarize(mean_finish = mean(finish)) %>%
+  mutate(predestination_finish = ceiling(log2(seed)) + 1)
+
+parity <- res_grouped %>%
+  summarize(parity_finish = mean(predestination_finish)) 
+
+res_grouped <- res_grouped %>%
+  inner_join(parity, by = "sport") %>%
+  mutate(SSM = (mean_finish - parity_finish)^2,
+         SST = (predestination_finish - parity_finish)^2,
+         weight = 17 - seed)
+
+labels <- parity %>%
+  # hack for labels
+  mutate(seed = 15, mean_finish = 3.5, label = "perfect\nparity")
+
+labels2 <- labels %>%
+  mutate(seed = 2, mean_finish = 1, label = "predestination")
+
+r_squared <- res_grouped %>%
+  group_by(sport) %>%
+  summarize(r_squared = sum(SSM) / sum(SST),
+            weighted_r_squared = sum(weight * SSM) / sum(weight * SST))
+
+res_tile <- res %>%
+  group_by(sport, seed, finish) %>%
+  summarize(N = n())
+
+ggplot(res_grouped, aes(x = seed, y = mean_finish, color = toupper(sport))) + 
+  geom_tile(data = res_tile, aes(y = finish, fill = N), color = NA) + 
+#  geom_point(aes(y = predestination_finish), color = "darkgray") + 
+  geom_line(aes(y = predestination_finish), color = "darkgray", linetype = 3) +
+#  geom_point(aes(y = parity_finish), color = "darkgray") + 
+  geom_line(aes(y = parity_finish), color = "darkgray", linetype = 3) +
+  geom_point() + 
+  geom_line() +
+#  geom_jitter(alpha = 0.007) + 
+  geom_smooth(se = FALSE) + 
+  geom_text(data = labels, aes(label = label)) + 
+  geom_text(data = labels2, aes(label = label), hjust = "left") + 
+  geom_text(data = r_squared, x = 15, y = 1, 
+            aes(label = paste("~R^2 =\n", round(r_squared, 3)))) + 
+  geom_curve(x = 15, y = 3.5, xend = 16, yend = 4.0625, arrow = arrow(length = unit(0.1, "cm"))) + 
+  scale_fill_gradient(low = "gray92", high = "darkgray") + 
+  scale_color_discrete(guide = FALSE) +
+  scale_x_continuous("Tournament Seed", breaks = 2^(0:4), expand = c(0.01, 0.01)) +
+  scale_y_continuous("Tournament Finish (round)", expand = c(0.01, 0.01)) + 
+  facet_wrap(~toupper(sport)) + 
+  ggtitle("Simulated 16-Team Tournaments, 2004-2016")
+```
+
+## &nbsp; { .fullpage }
+
+```{r}
+load(file.path(root, "data", "how_long.rda"))
+y_breaks <- how_long %>%
+  filter(actual == TRUE) %>%
+  pull(r_squared) %>%
+  append(seq(0, 1, by = 0.5)) %>%
+  round(3)
+ggplot(how_long, aes(x = series_length, y = r_squared, color = toupper(sport))) + 
+  geom_hline(yintercept = pull(filter(how_long, sport == "nba" & series_length == 7), r_squared), color = "darkgray", linetype = 2) + 
+  geom_point(aes(size = actual, shape = factor(num_teams))) + 
+#  geom_line() + 
+  geom_smooth(se = FALSE, aes(linetype = factor(num_teams))) + 
+  ggtitle("Equivalence of Playoff Series Length", 
+          subtitle = "Simulated 8-Team and 16-Team Tournaments") + 
+  scale_y_continuous(expression(Pseudo-R^2), breaks = y_breaks, minor_breaks = NULL) + 
+  scale_x_continuous("Length of Series (each round)", breaks = sort(unique(how_long$series_length))) + 
+  scale_size_discrete("Actual") + 
+  scale_shape_discrete("Teams") + scale_linetype_discrete("Teams") + 
+  scale_color_discrete("League")
+```
 
 ## &nbsp; { .fullpage }
 
@@ -514,7 +594,7 @@ More info:
 
 - Paper (https://arxiv.org/abs/1701.05976) 
 - Code (https://github.com/bigfour/competitiveness)
-- Slides (http://bit.ly/2jQTgrm)
+- Slides (http://bit.ly/2fZedeV)
 </br></br>
 
 
