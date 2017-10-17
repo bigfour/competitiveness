@@ -671,7 +671,8 @@ Figure~\ref{fig:alphaAll} shows the 2.5th percentile, median, and 97.5th percent
 load(file.path("data", "tidy_alphas.R2.rda"))
 i.arcsin <- function(x){(sin(x))^2}
 tidy_alpha_prob <- tidy_alphas %>%
-  mutate(alpha_prob = i.arcsin(alpha.team.overall), ## alpha_prob = mosaic::ilogit(alpha.team.overall)
+  mutate(alpha_prob = mosaic::ilogit(alpha.team.overall), 
+         #alpha_prob = i.arcsin(alpha.team.overall),
          top_half = alpha_prob < 0.58)
 tidy_alpha_summary <- tidy_alpha_prob %>%
   group_by(sport) %>%
@@ -683,8 +684,8 @@ gg4 <- ggplot(data = tidy_alpha_prob,
                   color = toupper(sport))) + 
   geom_hline(data = tidy_alpha_summary, alpha = 0.5,
              aes(yintercept = median_ha, color = toupper(sport))) + 
-  geom_errorbar(aes(ymin = i.arcsin(alpha.team.lower), 
-                    ymax = i.arcsin(alpha.team.upper))) +
+  geom_errorbar(aes(ymin = mosaic::i.logit(alpha.team.lower), 
+                    ymax = mosaic::i.logit(alpha.team.upper))) +
   geom_point() + 
   coord_flip() + 
   scale_x_discrete(NULL) + 
