@@ -1171,23 +1171,26 @@ where $i=1, \ldots, 16$ iterates over the seeds, $obs_i$ is the average round in
 
 <<playoff-series, fig.cap="Parity measures for simulated playoff tournaments. Each line shows how our pseudo-$R^2$ parity metric changes as a function of tournament series length for both 8- and 16-team tournaments in each sport. We note that in order for MLB to achieve the same lack of parity as the NBA, it would have to play 75-game series in a 16-team tournament. Conversely, the NBA would have to switch to an 8-team, single-game tournament to match the parity of the other three sports. ">>=
 load("data/how_long.rda")
+how_long_16 <- how_long %>%
+  filter(num_teams == 16)
 y_breaks <- how_long %>%
   filter(actual == TRUE) %>%
   pull(r_squared) %>%
-  append(seq(0, 1, by = 0.5)) %>%
+  append(seq(0, 1, by = 0.25)) %>%
   round(3)
 ggplot(how_long, aes(x = series_length, y = r_squared, color = toupper(sport))) + 
-  geom_hline(yintercept = pull(filter(how_long, sport == "nba" & series_length == 7), r_squared), color = "darkgray", linetype = 2) + 
-  geom_point(aes(size = actual, shape = factor(num_teams))) + 
+  geom_hline(yintercept = pull(filter(how_long, sport == "nba" & series_length == 7 & num_teams == 16), r_squared), color = "darkgray", linetype = 2) + 
+  geom_point(aes(size = actual)) + 
 #  geom_line() + 
-  geom_smooth(se = FALSE, aes(linetype = factor(num_teams))) + 
+  geom_smooth(se = FALSE) + 
   ggtitle("Equivalence of Playoff Series Length", 
           subtitle = "Simulated 8-Team and 16-Team Tournaments") + 
   scale_y_continuous(expression(Pseudo-R^2), breaks = y_breaks, minor_breaks = NULL) + 
   scale_x_continuous("Length of Series (each round)", breaks = sort(unique(how_long$series_length))) + 
   scale_size_discrete("Actual") + 
   scale_shape_discrete("Teams") + scale_linetype_discrete("Teams") + 
-  scale_color_discrete("League")
+  scale_color_brewer("League", palette = "Spectral") + 
+  facet_wrap(~num_teams)
 @
 
 \section{Conclusion}
@@ -1310,10 +1313,10 @@ res_grouped <- res_grouped %>%
 
 labels <- parity %>%
   # hack for labels
-  mutate(seed = 15, mean_finish = 3.5, label = "perfect\nparity")
+  mutate(seed = 16, mean_finish = 4, label = "perfect parity")
 
 labels2 <- labels %>%
-  mutate(seed = 2, mean_finish = 1, label = "predestination")
+  mutate(seed = 1.5, mean_finish = 1, label = "predestination")
 
 r_squared <- res_grouped %>%
   group_by(sport) %>%
@@ -1327,20 +1330,20 @@ res_tile <- res %>%
 ggplot(res_grouped, aes(x = seed, y = mean_finish, color = toupper(sport))) + 
   geom_tile(data = res_tile, aes(y = finish, fill = N), color = NA) + 
 #  geom_point(aes(y = predestination_finish), color = "darkgray") + 
-  geom_line(aes(y = predestination_finish), color = "darkgray", linetype = 3) +
+  geom_line(aes(y = predestination_finish), color = "black", linetype = 3) +
 #  geom_point(aes(y = parity_finish), color = "darkgray") + 
-  geom_line(aes(y = parity_finish), color = "darkgray", linetype = 3) +
+  geom_line(aes(y = parity_finish), color = "black", linetype = 3) +
   geom_point() + 
   geom_line() +
 #  geom_jitter(alpha = 0.007) + 
   geom_smooth(se = FALSE) + 
-  geom_text(data = labels, aes(label = label)) + 
-  geom_text(data = labels2, aes(label = label), hjust = "left") + 
+  geom_text(data = labels, aes(label = label), color = "black", vjust = "top", hjust = "right", size = 3) + 
+  geom_text(data = labels2, aes(label = label), color = "black", hjust = "left", size = 3) + 
   geom_text(data = r_squared, x = 15, y = 1, 
             aes(label = paste("~R^2 =\n", round(r_squared, 3)))) + 
-  geom_curve(x = 15, y = 3.5, xend = 16, yend = 4.0625, arrow = arrow(length = unit(0.1, "cm"))) + 
+#  geom_curve(x = 15, y = 3.5, xend = 16, yend = 4.0625, arrow = arrow(length = unit(0.1, "cm"))) + 
   scale_fill_gradient(low = "gray92", high = "darkgray") + 
-  scale_color_discrete(guide = FALSE) +
+  scale_color_brewer("League", palette = "Spectral") +
   scale_x_continuous("Tournament Seed", breaks = 2^(0:4), expand = c(0.01, 0.01)) +
   scale_y_continuous("Tournament Finish (round)", expand = c(0.01, 0.01)) + 
   facet_wrap(~toupper(sport)) + 
