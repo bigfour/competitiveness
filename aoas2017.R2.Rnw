@@ -374,6 +374,24 @@ NHL & -18357  & -18128 & -228.6 (37.9)\\
 
 These results suggest that chance alone likely does not account for observed differences in the home advantage among teams in the NBA and NHL. For consistency, results that follow use model estimates from Model IHA. 
 
+\subsection{Posterior predictive check plots}
+
+Posterior predictive distribution density plots. 20 gray lines (simulated) with one red line (real)
+
+\begin{figure}[h]
+\includegraphics[]{figure/ppd-all.pdf}
+\caption{Posterior predictive distributions\label{fig:ppd-all}}
+\end{figure}
+
+
+Team level differences, comparing average posterior predictive distribution to the truth for models IHA and CHA. Each dot is the average difference using each team's home games. 
+
+\begin{figure}[h]
+\includegraphics[]{figure/ppd-model.pdf}
+\caption{Posterior predictive distributions by model type\label{fig:ppd-model}}
+\end{figure}
+
+
 \subsection{Team strength}
 
 Table \ref{tab:thetas} shows summary statistics of the team strength estimates, approximated using posterior mean draws for all weeks $k$ and seasons $s$ across all four sports leagues. Overall, there tends to be a larger variability in team strength at any given point in time in both the NFL and NBA, with average posterior coefficient estimates tending to vary between -1.3 and 1.2 in the NBA and -1.0 and 1.0 in the NFL (on the logit scale) about 95\% of the time. For reference, a team-strength of 1.0 on the log-odds scale implies a $\frac{e^{1.0}}{1+e^{1.0}} = 73.1$\% chance of beating a league average team in a game played at a neutral site. The standard deviation of team strength is smallest in MLB, suggesting that---relative to the other leagues---team strength is more tightly packed. Relative to MLB, spread of team strengths are about 1.3, 3.1, and 3.6 times wider in the NHL, NFL, and NBA, respectively. 
