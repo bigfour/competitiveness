@@ -375,9 +375,36 @@ NHL & -18357  & -18128 & -228.6 (37.9)\\
 These results suggest that chance alone likely does not account for observed differences in the home advantage among teams in the NBA and NHL. For consistency, results that follow use model estimates from Model IHA. 
 
 \subsection{Posterior predictive check plots}
+Additionally, posterior predictive checks were performed to check the validity of the models.  Specifically, we are interested in the posterior predictive distribution of the logit of implid probabilities
+$p(\text{logit}({\bf \widetilde{p}}_{(q,s,k)})|\text{logit}({\bf p}_{(q,s,k)}))$.  A simple way to draw values from this distribution is to first randomly sample from the joint posterior distribution of the parameters (i.e. Team strength parameters, home field advantage parameters, and variance parameters.)  Then, conditional on the drawm parameters, randomly draw from the distribution of \text{logit}({\bf \widetilde{p}}_{(q,s,k)}).  Recall that in the IHA model, this distribution was assumed to be normal of the following form: 
+
+\begin{eqnarray}
+\text{logit}({\bf p}_{(q,s,k)}) \sim N(\mathbf{\theta}_{(q,s,k)}\mathbf{X}_{(q,s,k)} + \alpha_{q_0}\mathbf{J}_{g_{(q,s,k)}} + \balpha_{q}\mathbf{Z}_{(q,s,k)}, \sigma^{2}_{q,game}\mathbf{I}_{g_{(q,s,k)}}),   \nonumber
+\end{eqnarray}.  
+
+Once values were drawn from the posterior predictive distribution, the results were analyzed.  First, the overall distribution of implied probabilities on the logit scale was examined.  Figure \ref{fig:ppd-all} shows the results of 20 simulated sets of logit probabilties in gray lines over laid on one another, while the red line displays the density of the actual logit probabilities from the real data.  The actual distribution of logit transformed probabilities is very similar to the simulated distributions from the posterior predictive distribution for all four sports with some small, interesting discrepancies to note.  
+
+First, notice that the actual distribution of logit tansformed probabilities in the NHL is nearly identical to the simulated draws from the posterior predictive distribution.  The other three leagues, MLB, NBA, and NFL, also have simulated distributions that are very close the actual distributions of implied logit probabilites with some notable, but small, issues.  In the NBA and NFL, the true distribution is slightly lower that the simulated distributions when the logit probabilities are near 0 (i.e. both teams have a win probability of 0.5) with this phenomenon being much more pronounced in the NFL.  This is likely occurring because SOMETHING.
+
+Additionally, posterior predictive checks were performed individually by team for both models CHA and IHA.  In order to summarize these results 
+
+-185 is most commont, -300, -500, -400, -230, -102
+In this data that we have certain tend to be used more often particulatl yon round numbrers.  
+
+We believe it is because.  Use numbers rounds to the nearest 5 and in NFL it is nearest 10. So it is jagged around 0.  We do not believe this is a big problem.   
+
+1.) Glickman and Stern their predictive distribution wasa not going to match because of 3 and 7.  
+
+2.) Tail behaviour is promising.  
+
+
+\ref{fig:ppd-model}
+%Did we simulate a different set of thetas for each game?  Or one therta for all games? Then repeat that 25 times?  
 
 Posterior predictive distribution density plots. 20 gray lines (simulated) with one red line (real)
 
+
+%This is for the IHA model, correct?  
 \begin{figure}[h]
 \includegraphics[]{figure/ppd-all.pdf}
 \caption{Posterior predictive distributions\label{fig:ppd-all}}
@@ -444,19 +471,93 @@ names(secondary) <- colors$name
 <<set-divisions-all>>=
 library(teamcolors)
 
-tm_colors <- teamcolors %>%
-  mutate(name = case_when(
-#    name == "Los Angeles Angels of Anaheim" ~ "Los Angeles Angels",
-    name == "St. Louis Cardinals" ~ "St Louis Cardinals",
-    name == "Los Angeles Chargers" ~ "San Diego Chargers",
-    TRUE ~ name
-  )) %>%
+###### Football only
+div <- c("AFC East", "AFC West", "AFC North", "AFC South", 
+         "NFC East", "NFC West", "NFC North", "NFC South")
+div.teams.NFL <- c(div[6], div[8], div[3], div[1], div[8], 
+               div[3], div[3], div[5], div[7], div[2],
+               div[7], div[7], div[4], div[4], div[4],
+               div[2], div[6], div[1], div[7], div[1], div[8],
+               div[5], div[1], div[2], div[5], div[3], 
+               div[2], div[6], div[6],  div[8], 
+               div[4], div[5])
+divisions_nfl <- data_frame(sport = "nfl", division = div.teams.NFL)
+divisions_nfl$team <- teamcolors %>%
+  filter(league == "nfl") %>%
+  select(name) %>%
+  unlist()
+# divisions %>% arrange(division)
+
+###### MLB only
+div <- c("AL East", "AL Central", "AL West",
+         "NL East", "NL Central", "NL West")
+div.teams.MLB <- c(div[6], div[4], div[1], 
+               div[1], div[5], div[2],
+               div[5], div[6], div[2], 
+               div[2], div[3], div[2], 
+               div[3], div[6], div[4],
+               div[5], div[2], div[4], 
+               div[1], div[3], div[4],
+               div[5], div[6], div[6], 
+               div[3], div[5], div[1], 
+               div[3], div[1], div[4])
+divisions_mlb <- data_frame(sport = "mlb", division = div.teams.MLB)
+divisions_mlb$team <- teamcolors %>%
+  filter(league == "mlb") %>%
+  select(name) %>%
+  unlist()
+# divisions_mlb %>% arrange(division) %>% print(n = Inf)
+
+
+###### NBA only
+div <- c("Atlantic", "Central", "Southeast",
+         "Pacific", "Southwest", "Northwest")
+div.teams.NBA <- c(div[3], div[1], div[1], 
+               div[3], div[2], div[2],
+               div[5], div[6], div[2], 
+               div[4], div[5], div[2], 
+               div[4], div[4], div[5],
+               div[3], div[2], div[6], 
+               div[5], div[1], div[6],
+               div[3], div[1], div[4], 
+               div[6], div[4], div[5], 
+               div[1], div[6], div[3])
+divisions_nba <- data_frame(sport = "nba", division = div.teams.NBA)
+divisions_nba$team <- teamcolors %>%
+  filter(league == "nba") %>%
+  select(name) %>%
+  unlist()
+# divisions_nba %>% arrange(division) %>% print(n = Inf)
+
+
+
+###### Hockey only
+div <- c("Metro", "Atlantic", "Central", "Pacific")
+div.teams.NHL <- c(div[4], div[4], div[2], div[2], div[4], 
+               div[1], div[3], div[3], div[1], div[3],
+               div[2], div[4], div[2], div[4], div[3], 
+               div[2], div[3], div[1], div[1], div[1],
+               div[2], div[1], div[1], div[4], div[3], 
+               div[2], div[2], div[4], div[1], div[3])
+divisions_nhl <- data_frame(sport = "nhl", division = div.teams.NHL)
+divisions_nhl$team <- teamcolors %>%
+  filter(league == "nhl" & !grepl("Vegas", name)) %>%
+  select(name) %>%
+  unlist()
+# divisions_nhl %>% arrange(division) %>% print(n = Inf)
+
+divisions <- rbind(divisions_nfl, divisions_mlb, divisions_nba, divisions_nhl)
+teamcolors1 <- teamcolors %>%
+  left_join(divisions, by = c("league" = "sport", "name" = "team")) %>%
+  mutate(name = ifelse(name == "Los Angeles Angels of Anaheim", "Los Angeles Angels", name),
+         name = ifelse(name == "St Louis Blues", "St. Louis Blues", name)) %>%
   select(name, division)
+teamcolors <- teamcolors1
 @
 
 <<>>=
 tidy_thetas_division <- tidy_thetas %>%
-  left_join(tm_colors, by = c("name" = "name")) %>%
+  left_join(teamcolors, by = c("name" = "name")) %>%
   mutate(time_val = ifelse(sport == "NFL" | sport == "MLB", 
                            time_val + 1, time_val))
 max.theta <- round(max(tidy_thetas_division$theta), 2)
