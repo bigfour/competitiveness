@@ -376,7 +376,7 @@ These results suggest that chance alone likely does not account for observed dif
 
 \subsection{Posterior predictive check plots}
 Additionally, posterior predictive checks were performed to check the validity of the models.  Specifically, we are interested in the posterior predictive distribution of the logit of implid probabilities
-$p(\text{logit}({\bf \widetilde{p}}_{(q,s,k)})|\text{logit}({\bf p}_{(q,s,k)}))$.  A simple way to draw values from this distribution is to first randomly sample from the joint posterior distribution of the parameters (i.e. Team strength parameters, home field advantage parameters, and variance parameters.)  Then, conditional on the drawm parameters, randomly draw from the distribution of \text{logit}({\bf \widetilde{p}}_{(q,s,k)}).  Recall that in the IHA model, this distribution was assumed to be normal of the following form: 
+$p(\text{logit}({\bf \widetilde{p}}_{(q,s,k)})|\text{logit}({\bf p}_{(q,s,k)}))$.  A simple way to draw values from this distribution is to first randomly sample from the joint posterior distribution of the parameters (i.e. Team strength parameters, home field advantage parameters, and variance parameters.)  Then, conditional on the drawm parameters, randomly draw from the distribution of $\text{logit}({\bf \widetilde{p}}_{(q,s,k)})$.  Recall that in the IHA model, this distribution was assumed to be normal of the following form: 
 
 \begin{eqnarray}
 \text{logit}({\bf p}_{(q,s,k)}) \sim N(\mathbf{\theta}_{(q,s,k)}\mathbf{X}_{(q,s,k)} + \alpha_{q_0}\mathbf{J}_{g_{(q,s,k)}} + \balpha_{q}\mathbf{Z}_{(q,s,k)}, \sigma^{2}_{q,game}\mathbf{I}_{g_{(q,s,k)}}),   \nonumber
@@ -1139,19 +1139,25 @@ Given sport $q$ with season length $K_{q}$, number of seasons $S_{q}$, and numbe
 
 \begin{enumerate}
 \item Draw season $\tilde{s}$ from $\left\{1, \ldots, S_{q} \right \}$, and week $\tilde{k}$ from $\left\{1, \ldots , K_{q} \right \}$.
+
 \item Draw teams $\tilde{i}$ and $\tilde{j}$ from $\left \{1, \ldots , t_{q} \right \}$ without replacement.
-\item Sample one posterior draw of team strength for $\tilde{i}$ and $\tilde{j}$, $\tilde{\theta}_{(q,\tilde{s},\tilde{k}) \tilde{i}}$ and $\tilde{\theta}_{(q,\tilde{s},\tilde{k}) \tilde{j}}$, respectively, from the posterior distributions of $\tilde{i}$ and $\tilde{j}$'s team strength estimates during season $\tilde{s}$ at week $\tilde{k}$.
-\item Sample one posterior draw of the HA, $\tilde{\alpha}_{q_0}$, from the posterior distribution of $\alpha_{q_0}$.
+
+\item Sample one posterior draw of team strength for $\tilde{i}$ and $\tilde{j}$, $\tilde{\theta}_{(q,\tilde{s},\tilde{k}) \tilde{i}}$ and $\tilde{\theta}_{(q,\tilde{s},\tilde{k}) \tilde{j}}$, respectively, from the posterior distributions of $\tilde{i}$ and $\tilde{j}$'s team strength estimates during season $\tilde{s}$ at week $\tilde{k}$. For simplicity, assume $\tilde{i} > \tilde{j}$. 
+
+\item Sample one posterior draw of the HA, $\tilde{\alpha}_{q_0}$, from the posterior distribution of $\alpha_{q_0}$, as well as one posterior draw of team $\tilde{i}$'s home advantage, $\tilde{\alpha}_{(q)\tilde{i}*}$. 
+
 \item Sample one posterior draw of the game-level variance parameter, $\tilde{\sigma}^2_{q, game}$, and draw a game-level error, $\tilde{\epsilon}_{q, game}$, from $\tilde{\epsilon}_{q, game} \sim N(0, \tilde{\sigma}_{q, game})$
-\item Impute the simulated log-odds of the better team winning between $\tilde{i}$ and $\tilde{j}$, $\text{logit}(\tilde{p}_{(q,\tilde{s},\tilde{k}) \tilde{i}\tilde{j}}) = \tilde{\alpha}_{q_0} + |\tilde{\theta}_{(q,\tilde{s},\tilde{k}) \tilde{i}} - \tilde{\theta}_{(q,\tilde{s},\tilde{k}) \tilde{j}} + \tilde{\epsilon}_{q, game}|$, where the $better$ team's log-odds are based on $\tilde{\theta}_{(q,\tilde{s},\tilde{k}) \tilde{i}}$, $\tilde{\theta}_{(q,\tilde{s},\tilde{k}) \tilde{j}}$, and $\tilde{\epsilon}_{q, game}$. 
+
+\item Impute the simulated log-odds of the $\tilde{i}$ beating $\tilde{j}$, $\text{logit}(\tilde{p}_{(q,\tilde{s},\tilde{k}) \tilde{i}\tilde{j}}) = \tilde{\alpha}_{q_0} + \tilde{\alpha}_{(q)\tilde{i}*} + \tilde{\theta}_{(q,\tilde{s},\tilde{k}) \tilde{i}} - \tilde{\theta}_{(q,\tilde{s},\tilde{k}) \tilde{j}} + \tilde{\epsilon}_{q, game}$. 
+
 \item Transform $\text{logit}(\tilde{p}_{(q,\tilde{s},\tilde{k}) \tilde{i}\tilde{j}})$ into a probability to obtain a simulated estimate, $\tilde{p}_{q, sim}$, where  $\tilde{p}_{q, sim} = \tilde{p}_{(q,\tilde{s},\tilde{k}) \tilde{i}\tilde{j}}$
 \item Repeat the above steps $n_{sim}$ times to obtain $\mathbf{\tilde{p}_{q}} = \left\{\tilde{p}_{q, 1}, \ldots, \tilde{p}_{q, n_{sim}}\right\}$.
 \end{enumerate}
 
-For each $q$, we simulated with $n_{sim} = 1000$. Additionally, to remove the effect of each league's HA on simulated probabilities, we repeated the process fixing $\tilde{\alpha}_{q_0} = 0$ for each league to reflect game probabilities played at neutral sites.
+For each $q$, we simulated with $n_{sim} = 1000$. Additionally, to remove the effect of each league's HA on simulated probabilities, we repeated the process fixing $\tilde{\alpha}_{q_0} = \tilde{\alpha}_{(q)\tilde{i}*} = 0$ for each league to reflect game probabilities played at neutral sites.
 
 <<bestwin-plot>>=
-load(file.path("data", "bestwin.R1.rda"))
+load(file.path("data", "bestwin.R2.rda"))
 
 cdf.all$sport <- as.character(cdf.all$sport)
 gg5 <- ggplot(cdf.all) + 
