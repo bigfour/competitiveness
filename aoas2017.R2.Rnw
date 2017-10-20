@@ -382,26 +382,23 @@ $p(\text{logit}({\bf \widetilde{p}}_{(q,s,k)})|\text{logit}({\bf p}_{(q,s,k)}))$
 \text{logit}({\bf p}_{(q,s,k)}) \sim N(\mathbf{\theta}_{(q,s,k)}\mathbf{X}_{(q,s,k)} + \alpha_{q_0}\mathbf{J}_{g_{(q,s,k)}} + \balpha_{q}\mathbf{Z}_{(q,s,k)}, \sigma^{2}_{q,game}\mathbf{I}_{g_{(q,s,k)}}),   \nonumber
 \end{eqnarray}.  
 
-Once values were drawn from the posterior predictive distribution, the results were analyzed.  First, the overall distribution of implied probabilities on the logit scale was examined.  Figure \ref{fig:ppd-all} shows the results of 20 simulated sets of logit probabilties in gray lines over laid on one another, while the red line displays the density of the actual logit probabilities from the real data.  The actual distribution of logit transformed probabilities is very similar to the simulated distributions from the posterior predictive distribution for all four sports with some small, interesting discrepancies to note.  
+Once values were drawn from the posterior predictive distribution, the results were analyzed.  First, the overall distribution of implied probabilities on the logit scale was examined.  Figure \ref{fig:ppd-all} shows the results of 20 simulated sets of logit probabilties in gray lines over laid on one another, while the red line displays the density of the actual logit probabilities from the real data.  The actual distributions of logit transformed probabilities are very similar to the simulated distributions from the posterior predictive distribution.  Particularly, the behaviour of the tails in the posterior predictive distributions across all four leagues is promising and does not show any serious departure from the real distribution of implied logit probabilities.
 
-First, notice that the actual distribution of logit tansformed probabilities in the NHL is nearly identical to the simulated draws from the posterior predictive distribution.  The other three leagues, MLB, NBA, and NFL, also have simulated distributions that are very close the actual distributions of implied logit probabilites with some notable, but small, issues.  In the NBA and NFL, the true distribution is slightly lower that the simulated distributions when the logit probabilities are near 0 (i.e. both teams have a win probability of 0.5) with this phenomenon being much more pronounced in the NFL.  This is likely occurring because SOMETHING.
+While we do not believe these to be substantially problematic in our analysis, there are, however, some small discrepancies to note.  First, starting with the league with the least discrepancy, notice that the actual distribution of logit tansformed probabilities in the NHL is nearly identical to the simulated draws from the posterior predictive distribution.  The other three leagues, MLB, NBA, and NFL, also have simulated distributions that are very close the actual distributions of implied logit probabilites with some notable, but small, issues.  In the NBA and NFL, the true distribution is slightly lower that the simulated distributions when the logit probabilities are near 0 (i.e. both teams have a win probability of 0.5) with this phenomenon being much more pronounced in the NFL.  This is likely occurring because of the preferences for sportsbooks to set odds that are rounded to the nearest 5 (e.g. -105, -110, -155, etc.). Note that in \cite{glickman1998state}, they note some discrepancies between the real distribution and the posterior predictive distribution because of the increased likelihood of games ending with margins of victory of 3 or 7.  We believe that we are observing a similar phenomenon, but based on the increaed likelihood of a sportsbook to assign odds rounded to the nearest 5 to games.    
 
-Additionally, posterior predictive checks were performed individually by team for both models CHA and IHA.  In order to summarize these results 
+Additionally, posterior predictive checks were performed individually by team for both models CHA and IHA.  For each team, the average discrepancy between the posterior predictive data and the real data was calculated for both the CHA and IHA models.  The results of this can be seen in figure \ref{fig:ppd-model} with the CHA results displayed as a red circle and the IHA results displayed at a blue triangle.  The vertical black line in each plot is 0 on the x-axis and corresponds to where the mean discrepancy between the posterior predictive draws ands the real data is 0.  
 
--185 is most commont, -300, -500, -400, -230, -102
-In this data that we have certain tend to be used more often particulatl yon round numbrers.  
-
-We believe it is because.  Use numbers rounds to the nearest 5 and in NFL it is nearest 10. So it is jagged around 0.  We do not believe this is a big problem.   
-
-1.) Glickman and Stern their predictive distribution wasa not going to match because of 3 and 7.  
-
-2.) Tail behaviour is promising.  
+Upon inspection, one can see that the blue triangle is almsot always closer to the black vertical line at 0 than the respective red circle indicating that the IHA model is a better fit in most cases that the CHA model.  In the MLB, the two models perform nearly the same with the exception of the Colorado Rockies, whos home field advantage is underestimated when using the CHA model.  The NHL is similar to the MLB model in that both models give similar results with a few small discrepancies, but none as large as the Colorado Rockies in MLB.  In the NFL, there are more sizeable discrepancies between the posterior predictive distribution on average than in the other sports, which we atrribute to there being a much smaller number of games as well as the issue that was mentioned before about the propensity of sportsbooks to round odds to the nearest 5.  While there are some minor discrepancies in the NFL, it does not appear that the IHA or CHA performes substantially better than the other.  The NBA is perhaps the most interesting case as the IHA model vastly outperforms the CHA model.  Using the CHA, the home court advantage of teams like, for examples, Denver, Utah, and Golden State, is significantly underestimated.  Further, large differences are observed in the opposite direction with home court advantage being over estimated for teams like Brooklyn, Detroit, New York, and Philadelphia, for example.  While in the other three sports that IHA outperforms the CHA to some degree, the superiority of the IHA over the CHA is most evident in the NBA. Overall, there do not appear to be any major problematic issues in the IHA model in terms of posterior predictive checks.  
 
 
-\ref{fig:ppd-model}
+
+
+
+
+
 %Did we simulate a different set of thetas for each game?  Or one therta for all games? Then repeat that 25 times?  
 
-Posterior predictive distribution density plots. 20 gray lines (simulated) with one red line (real)
+%Posterior predictive distribution density plots. 20 gray lines (simulated) with one red line (real)
 
 
 %This is for the IHA model, correct?  
@@ -411,7 +408,7 @@ Posterior predictive distribution density plots. 20 gray lines (simulated) with 
 \end{figure}
 
 
-Team level differences, comparing average posterior predictive distribution to the truth for models IHA and CHA. Each dot is the average difference using each team's home games. 
+%Team level differences, comparing average posterior predictive distribution to the truth for models IHA and CHA. Each dot is the average difference using each team's home games. 
 
 \begin{figure}[h]
 \includegraphics[]{figure/ppd-model.pdf}
@@ -419,7 +416,7 @@ Team level differences, comparing average posterior predictive distribution to t
 \end{figure}
 
 \hl{Tie in a few sentences about how we tried arcsin, and probabiltiies looked similar to what we observed in our data (as well as league level rankings)}
-
+\hl{Do we really still want to mention arcsin here?  }
 
 
 \subsection{Team strength}
