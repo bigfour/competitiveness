@@ -480,93 +480,19 @@ names(secondary) <- colors$name
 <<set-divisions-all>>=
 library(teamcolors)
 
-###### Football only
-div <- c("AFC East", "AFC West", "AFC North", "AFC South", 
-         "NFC East", "NFC West", "NFC North", "NFC South")
-div.teams.NFL <- c(div[6], div[8], div[3], div[1], div[8], 
-               div[3], div[3], div[5], div[7], div[2],
-               div[7], div[7], div[4], div[4], div[4],
-               div[2], div[6], div[1], div[7], div[1], div[8],
-               div[5], div[1], div[2], div[5], div[3], 
-               div[2], div[6], div[6],  div[8], 
-               div[4], div[5])
-divisions_nfl <- data_frame(sport = "nfl", division = div.teams.NFL)
-divisions_nfl$team <- teamcolors %>%
-  filter(league == "nfl") %>%
-  select(name) %>%
-  unlist()
-# divisions %>% arrange(division)
-
-###### MLB only
-div <- c("AL East", "AL Central", "AL West",
-         "NL East", "NL Central", "NL West")
-div.teams.MLB <- c(div[6], div[4], div[1], 
-               div[1], div[5], div[2],
-               div[5], div[6], div[2], 
-               div[2], div[3], div[2], 
-               div[3], div[6], div[4],
-               div[5], div[2], div[4], 
-               div[1], div[3], div[4],
-               div[5], div[6], div[6], 
-               div[3], div[5], div[1], 
-               div[3], div[1], div[4])
-divisions_mlb <- data_frame(sport = "mlb", division = div.teams.MLB)
-divisions_mlb$team <- teamcolors %>%
-  filter(league == "mlb") %>%
-  select(name) %>%
-  unlist()
-# divisions_mlb %>% arrange(division) %>% print(n = Inf)
-
-
-###### NBA only
-div <- c("Atlantic", "Central", "Southeast",
-         "Pacific", "Southwest", "Northwest")
-div.teams.NBA <- c(div[3], div[1], div[1], 
-               div[3], div[2], div[2],
-               div[5], div[6], div[2], 
-               div[4], div[5], div[2], 
-               div[4], div[4], div[5],
-               div[3], div[2], div[6], 
-               div[5], div[1], div[6],
-               div[3], div[1], div[4], 
-               div[6], div[4], div[5], 
-               div[1], div[6], div[3])
-divisions_nba <- data_frame(sport = "nba", division = div.teams.NBA)
-divisions_nba$team <- teamcolors %>%
-  filter(league == "nba") %>%
-  select(name) %>%
-  unlist()
-# divisions_nba %>% arrange(division) %>% print(n = Inf)
-
-
-
-###### Hockey only
-div <- c("Metro", "Atlantic", "Central", "Pacific")
-div.teams.NHL <- c(div[4], div[4], div[2], div[2], div[4], 
-               div[1], div[3], div[3], div[1], div[3],
-               div[2], div[4], div[2], div[4], div[3], 
-               div[2], div[3], div[1], div[1], div[1],
-               div[2], div[1], div[1], div[4], div[3], 
-               div[2], div[2], div[4], div[1], div[3])
-divisions_nhl <- data_frame(sport = "nhl", division = div.teams.NHL)
-divisions_nhl$team <- teamcolors %>%
-  filter(league == "nhl" & !grepl("Vegas", name)) %>%
-  select(name) %>%
-  unlist()
-# divisions_nhl %>% arrange(division) %>% print(n = Inf)
-
-divisions <- rbind(divisions_nfl, divisions_mlb, divisions_nba, divisions_nhl)
-teamcolors1 <- teamcolors %>%
-  left_join(divisions, by = c("league" = "sport", "name" = "team")) %>%
-  mutate(name = ifelse(name == "Los Angeles Angels of Anaheim", "Los Angeles Angels", name),
-         name = ifelse(name == "St Louis Blues", "St. Louis Blues", name)) %>%
+tm_colors <- teamcolors %>%
+  mutate(name = case_when(
+#    name == "Los Angeles Angels of Anaheim" ~ "Los Angeles Angels",
+    name == "St. Louis Cardinals" ~ "St Louis Cardinals",
+    name == "Los Angeles Chargers" ~ "San Diego Chargers",
+    TRUE ~ name
+  )) %>%
   select(name, division)
-teamcolors <- teamcolors1
 @
 
 <<>>=
 tidy_thetas_division <- tidy_thetas %>%
-  left_join(teamcolors, by = c("name" = "name")) %>%
+  left_join(tm_colors, by = c("name" = "name")) %>%
   mutate(time_val = ifelse(sport == "NFL" | sport == "MLB", 
                            time_val + 1, time_val))
 max.theta <- round(max(tidy_thetas_division$theta), 2)
@@ -1165,7 +1091,7 @@ Given sport $q$ with season length $K_{q}$, number of seasons $S_{q}$, and numbe
 For each $q$, we simulated with $n_{sim} = 1000$. Additionally, to remove the effect of each league's HA on simulated probabilities, we repeated the process fixing $\tilde{\alpha}_{q_0} = \tilde{\alpha}_{(q)\tilde{i}*} = 0$ for each league to reflect game probabilities played in absence of a home advantage.
 
 <<bestwin-plot>>=
-load(file.path("data", "bestwin.R2.rda"))
+load(file.path(root, "data", "bestwin.R2.rda"))
 
 cdf.all$sport <- as.character(cdf.all$sport)
 gg5 <- ggplot(cdf.all) + 
