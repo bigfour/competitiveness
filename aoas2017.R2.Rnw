@@ -384,11 +384,11 @@ $p(\text{logit}({\bf \widetilde{p}}_{(q,s,k)})|\text{logit}({\bf p}_{(q,s,k)}))$
 \end{eqnarray}
 
 
-Once values were drawn from the posterior predictive distribution, the results were analyzed.  First, the overall distribution of implied probabilities on the logit scale was examined.  Figure \ref{fig:ppd-all} shows the results of 20 simulated sets of logit probabilties in gray lines over laid on one another, while the red line displays the density of the actual logit probabilities from the real data.  The actual distributions of logit transformed probabilities are very similar to the simulated distributions from the posterior predictive distribution.  Particularly, the behaviour of the tails in the posterior predictive distributions across all four leagues is promising and does not show any serious departure from the real distribution of implied logit probabilities.
+Once values were drawn from the posterior predictive distribution, the results were analyzed.  First, the overall distribution of implied probabilities on the logit scale was examined.  Figure~\ref{fig:ppd-all} shows the results of 20 simulated sets of logit probabilties in gray lines over laid on one another, while the red line displays the density of the actual logit probabilities from the real data.  The actual distributions of logit transformed probabilities are very similar to the simulated distributions from the posterior predictive distribution.  Particularly, the behaviour of the tails in the posterior predictive distributions across all four leagues is promising and does not show any serious departure from the real distribution of implied logit probabilities.
 
 While we do not believe these to be substantially problematic in our analysis, there are, however, some small discrepancies to note.  First, starting with the league with the least discrepancy, notice that the actual distribution of logit tansformed probabilities in the NHL is nearly identical to the simulated draws from the posterior predictive distribution.  The other three leagues, MLB, NBA, and NFL, also have simulated distributions that are very close the actual distributions of implied logit probabilites with some notable, but small, issues.  In the NBA and NFL, the true distribution is slightly lower that the simulated distributions when the logit probabilities are near 0 (i.e. both teams have a win probability of 0.5) with this phenomenon being much more pronounced in the NFL.  This is likely occurring because of the preferences for sportsbooks to set odds that are rounded to the nearest 5 (e.g. -105, -110, -155, etc.). Note that in \cite{glickman1998state}, they note some discrepancies between the real distribution and the posterior predictive distribution because of the increased likelihood of games ending with margins of victory of 3 or 7.  We believe that we are observing a similar phenomenon, but based on the increaed likelihood of a sportsbook to assign odds rounded to the nearest 5 to games.    
 
-Additionally, posterior predictive checks were performed individually by team for both models CHA and IHA.  For each team, the average discrepancy between the posterior predictive data and the real data was calculated for both the CHA and IHA models.  The results of this can be seen in figure \ref{fig:ppd-model} with the CHA results displayed as a red circle and the IHA results displayed at a blue triangle.  The vertical black line in each plot is 0 on the x-axis and corresponds to where the mean discrepancy between the posterior predictive draws ands the real data is 0.  
+Additionally, posterior predictive checks were performed individually by team for both models CHA and IHA.  For each team, the average discrepancy between the posterior predictive data and the real data was calculated for both the CHA and IHA models.  The results of this can be seen in Figure~\ref{fig:ppd-model} with the CHA results displayed as a red circle and the IHA results displayed at a blue triangle.  The vertical black line in each plot is 0 on the x-axis and corresponds to where the mean discrepancy between the posterior predictive draws ands the real data is 0.  
 
 Upon inspection, one can see that the blue triangle is almsot always closer to the black vertical line at 0 than the respective red circle indicating that the IHA model is a better fit in most cases that the CHA model.  In the MLB, the two models perform nearly the same with the exception of the Colorado Rockies, whos home field advantage is underestimated when using the CHA model.  The NHL is similar to the MLB model in that both models give similar results with a few small discrepancies, but none as large as the Colorado Rockies in MLB.  In the NFL, there are more sizeable discrepancies between the posterior predictive distribution on average than in the other sports, which we atrribute to there being a much smaller number of games as well as the issue that was mentioned before about the propensity of sportsbooks to round odds to the nearest 5.  While there are some minor discrepancies in the NFL, it does not appear that the IHA or CHA performes substantially better than the other.  The NBA is perhaps the most interesting case as the IHA model vastly outperforms the CHA model.  Using the CHA, the home court advantage of teams like, for examples, Denver, Utah, and Golden State, is significantly underestimated.  Further, large differences are observed in the opposite direction with home court advantage being over estimated for teams like Brooklyn, Detroit, New York, and Philadelphia, for example.  While in the other three sports that IHA outperforms the CHA to some degree, the superiority of the IHA over the CHA is most evident in the NBA. Overall, there do not appear to be any major problematic issues in the IHA model in terms of posterior predictive checks.  
 
@@ -414,9 +414,11 @@ Upon inspection, one can see that the blue triangle is almsot always closer to t
 %Team level differences, comparing average posterior predictive distribution to the truth for models IHA and CHA. Each dot is the average difference using each team's home games. 
 
 \begin{figure}[h]
-\includegraphics[]{figure/ppd-model.pdf}
+\includegraphics[width=\textwidth]{figure/ppd-model.pdf}
 \caption{Posterior predictive distributions by model type\label{fig:ppd-model}}
 \end{figure}
+
+\ben{This figure needs work. Can you drop the code in here?}
 
 \hl{Tie in a few sentences about how we tried arcsin, and probabiltiies looked similar to what we observed in our data (as well as league level rankings)}
 
@@ -430,7 +432,7 @@ In this section we present our results. We discuss the implications of our estim
 
 \subsection{Team strength}
 
-Table \ref{tab:thetas} shows summary statistics of the team strength estimates, approximated using posterior mean draws for all weeks $k$ and seasons $s$ across all four sports leagues. Overall, there tends to be a larger variability in team strength at any given point in time in both the NFL and NBA, with average posterior coefficient estimates tending to vary between -1.3 and 1.2 in the NBA and -1.0 and 1.0 in the NFL (on the logit scale) about 95\% of the time. For reference, a team-strength of 1.0 on the log-odds scale implies a $\frac{e^{1.0}}{1+e^{1.0}} = 73.1$\% chance of beating a league average team in a game played at a neutral site. The standard deviation of team strength is smallest in MLB, suggesting that---relative to the other leagues---team strength is more tightly packed. Relative to MLB, spread of team strengths are about 1.3, 3.1, and 3.6 times wider in the NHL, NFL, and NBA, respectively. 
+Table~\ref{tab:thetas} shows summary statistics of the team strength estimates, approximated using posterior mean draws for all weeks $k$ and seasons $s$ across all four sports leagues. Overall, there tends to be a larger variability in team strength at any given point in time in both the NFL and NBA, with average posterior coefficient estimates tending to vary between -1.3 and 1.2 in the NBA and -1.0 and 1.0 in the NFL (on the logit scale) about 95\% of the time. For reference, a team-strength of 1.0 on the log-odds scale implies a $\frac{e^{1.0}}{1+e^{1.0}} = 73.1$\% chance of beating a league average team in a game played at a neutral site. The standard deviation of team strength is smallest in MLB, suggesting that---relative to the other leagues---team strength is more tightly packed. Relative to MLB, spread of team strengths are about 1.3, 3.1, and 3.6 times wider in the NHL, NFL, and NBA, respectively. 
 
 
 <<echo=FALSE, results='asis'>>=
@@ -454,7 +456,7 @@ tidy_thetas %>%
 @
 
 
-Figure~\ref{fig:spaghetti} shows estimated team strength coefficients over time. Figures~\ref{fig:spaghetti-mlb}--\ref{fig:spaghetti-nhl} (shown in the Appendix) provide an individual plot for each sport, which include divisional facets to allow easier identification of individual teams. Teams in Figures~\ref{fig:spaghetti} and \ref{fig:spaghetti-mlb}--\ref{fig:spaghetti-nhl} are depicted using their two primary colors, scraped from \url{http://jim-nielsen.com/teamcolors/} via the \pkg{teamcolors} package (\url{https://github.com/beanumber/teamcolors}) in \R. 
+Figure~\ref{fig:spaghetti} shows estimated team strength coefficients over time. Figures~\ref{fig:spaghetti-mlb}--\ref{fig:spaghetti-nhl} (shown in the Appendix) provide an individual plot for each sport, which include divisional facets to allow easier identification of individual teams. Teams in Figures~\ref{fig:spaghetti} and \ref{fig:spaghetti-mlb}--\ref{fig:spaghetti-nhl} are depicted using their two primary colors, scraped from \url{http://jim-nielsen.com/teamcolors/} via the \pkg{teamcolors} package~\citep{teamcolors} in \R. \hl{A color key for all teams appears in} Figure~\ref{fig:teamcolors}.
 
 <<set-color, echo=FALSE>>=
 source("config.R")
@@ -516,7 +518,7 @@ spag <- ggplot(data = tidy_thetas_division,
   theme_grey(base_size = 18)
 @
 
-<<spaghetti-plot, fig.height=13.5, fig.cap="Mean team strength parameters over time for all four sports leagues. MLB and NFL seasons follow each yearly tick mark on the $x$-axis, while NBA and NHL seasons begin during years labeled by the preceding tick marks.">>=
+<<spaghetti, fig.height=13.5, fig.cap="Mean team strength parameters over time for all four sports leagues. MLB and NFL seasons follow each yearly tick mark on the $x$-axis, while NBA and NHL seasons begin during years labeled by the preceding tick marks.">>=
 spag + facet_wrap(~sport, ncol = 1)
 @
 
@@ -533,13 +535,13 @@ spag_sport <- function(sport_name) {
 }
 @
 
-As in Table \ref{tab:thetas}, these figures suggest that the NBA and NFL boast larger between-team gaps in quality than the NHL and MLB, implying more competitive balance in the latter pair of leagues. On one level, this stands somewhat in contrast to competitive balance as measured using Noll-Scully, which alternatively argues that the NFL is more competitively balanced than MLB \citep{WagesWins}. One likely explanation for this difference is Null-Scully's link to number of games played, which artificially makes MLB (162 games) appear less balanced than it actually is and the NFL (16) appear more balanced. Like Noll-Scully, we conclude that the NBA \hl{shows less} competitive balance relative to other leagues.
+As in Table~\ref{tab:thetas}, these figures suggest that the NBA and NFL boast larger between-team gaps in quality than the NHL and MLB, implying more competitive balance in the latter pair of leagues. On one level, this stands somewhat in contrast to competitive balance as measured using Noll-Scully, which alternatively argues that the NFL is more competitively balanced than MLB~\citep{WagesWins}. One likely explanation for this difference is Null-Scully's link to number of games played, which artificially makes MLB (162 games) appear less balanced than it actually is and the NFL (16) appear more balanced. Like Noll-Scully, we conclude that the NBA \hl{shows less} competitive balance relative to other leagues.
 
 Our figures also illustrate several other observations. For example, the New England Patriots of the NFL stand out as having the top single week performance in the last decade, with an average team strength of \Sexpr{max.theta} on the log-odds scale, observed during Week 11 of 2007.  In that season, New England finished the regular season 16-0 before eventually losing in the Super Bowl. The worst performance belongs to the NBA's Miami Heat, who during week 23 of the 2007--08 season had a posterior mean team strength of \Sexpr{min.theta}.  That Heat team finished with an overall record of 15-67, at one point losing 15 consecutive games. Related, it is interesting that the team strength estimates of bad teams in the NBA (e.g. the Heat in 2007--08) lie further from 0 than the estimates for good teams. This possibly reveals the tendency for teams in this league to ``tank"---a strategy of fielding a weak team intentionally to improve the chances of having better selection preference in the upcoming player draft \citep{soebbing2013gamblers}.
 
 Another observation is that in the NHL, top teams appear less dominant than a decade ago. For example, there are seven NHL team-seasons in which at least one team reached an average posterior strength estimate of 0.55 or greater; each of these came during or prior to the 2008--09 season.  In addition to increased parity, the league's point system change in 2005--06---which unintentionally encouraged teams to play more overtime games \citep{lopez2013inefficiencies}---could be responsible. More overtime contests could lead to different perceptions in how betting markets view team strengths, as overtime sessions and the resulting shootouts are roughly equivalent to coin flips \citep{lopez2016predicting}.
 
-As a final point of clarification in Figures \ref{fig:spaghetti}, \ref{fig:spaghetti-nba}, and \ref{fig:spaghetti-nhl}, the periods of time with straight lines of team strength estimates during the 2012--13 season (NHL) and 2011--12 season (NBA) reflect time lost due to lockouts. 
+As a final point of clarification in Figures~\ref{fig:spaghetti}, \ref{fig:spaghetti-nba}, and \ref{fig:spaghetti-nhl}, the periods of time with straight lines of team strength estimates during the 2012--13 season (NHL) and 2011--12 season (NBA) reflect time lost due to lockouts. 
 
 <<include=FALSE>>=
 tidy_thetas_division %>%
@@ -579,7 +581,7 @@ params %>%
   print(include.rownames = FALSE, sanitize.text.function = identity)
 @
 
-Posterior draws of $\sigma_{q, \text{game}}$ suggest that the highest game-level errors in our log-odds probability estimates occur in the NBA (median posterior draw of $\sigma_{NBA, game}$ = 0.274), followed in order by the NFL, MLB, and the NHL. Interestingly, although Figure \ref{fig:spaghetti} identifies that the talent gap between teams is smallest in MLB, $\sigma_{\text{MLB}, \text{game}} \approx 2 \times \sigma_{\text{NHL}, \text{game}}$ in our posterior draws. We posit that this additional game-level error in MLB is a function of the league's pitching match-ups, in which teams rotate through a handful of starting pitchers of varying calibers. 
+Posterior draws of $\sigma_{q, \text{game}}$ suggest that the highest game-level errors in our log-odds probability estimates occur in the NBA (median posterior draw of $\sigma_{NBA, game}$ = 0.274), followed in order by the NFL, MLB, and the NHL. Interestingly, although Figure~\ref{fig:spaghetti} identifies that the talent gap between teams is smallest in MLB, $\sigma_{\text{MLB}, \text{game}} \approx 2 \times \sigma_{\text{NHL}, \text{game}}$ in our posterior draws. We posit that this additional game-level error in MLB is a function of the league's pitching match-ups, in which teams rotate through a handful of starting pitchers of varying calibers. 
 
 We also examine the joint distribution of the variability in team strength on a season-to-season ($\sigma_{q, \text{season}}$) and week-to-week ($\sigma_{q, \text{week}}$) basis via the contour plot in Figure~\ref{fig:contourSigma} (Appendix), using separate colors for each $q$. Figure~\ref{fig:contourSigma} reveals that the highest uncertainty with respect to team strength occurs in the NBA, followed in order by the NFL, NHL, and MLB. 
 
@@ -1117,7 +1119,7 @@ Figure~\ref{fig:BestWin} shows the cumulative distribution functions (CDFs) for 
 
 Factoring in each league's home advantage works to exaggerate league-level differences. When the best team plays at home in the NBA, it is always favored to win at least 60\% of the time, with the middle 50\% of games ranging from a 68\% probability to an 84\% probability. Meanwhile, even with a home advantage, it is rare that the best MLB team is \emph{ever} given a 70\% probability of winning, with the middle 50\% of games ranging from 57\% to 63\%. 
 
-Finally, we use the CDFs displayed in Figure \ref{fig:BestWin} to quantify the cumulative difference between each league's game-level probabilities and a league of coin flips by estimating the approximate area under each curve. Let $Parity_q$ be our parity measure, such that
+Finally, we use the CDFs displayed in Figure~\ref{fig:BestWin} to quantify the cumulative difference between each league's game-level probabilities and a league of coin flips by estimating the approximate area under each curve. Let $Parity_q$ be our parity measure, such that
 
 $$Parity_q = 2 \int_{0.5}^1 P(\mathbf{\tilde{p}_{q}} \leq x) dx \, ,$$
 
@@ -1233,7 +1235,6 @@ To maintain consistency with the NFL's calendar, we considered time on a weekly 
 
 \newpage
 
-
 <<spaghetti-mlb, fig.height=11, fig.width = 8, fig.cap="Team strength coefficients over time for Major League Baseball.">>=
 # mlb.team
 spag_sport("MLB")
@@ -1252,6 +1253,23 @@ spag_sport("NHL")
 @
 
 
+<<teamcolors, fig.height=11, fig.width=8, fig.cap="Team-color mappings used throughout the paper.~\\citep{teamcolors}">>=
+library(teamcolors)
+teams <- teamcolors %>%
+  filter(league %in% c("mlb", "nba", "nfl", "nhl"))
+ggplot(teams, aes(x = name, color = name, fill = name)) + 
+  geom_bar() +
+  facet_wrap(~toupper(league), scales = "free_y") +
+  coord_flip() + 
+  scale_x_discrete(name = NULL) + 
+  scale_y_continuous(NULL) + 
+  scale_fill_manual(name = NULL, values = teams$primary) + 
+  scale_color_manual(name = NULL, values = teams$secondary) + 
+  guides(color = FALSE, fill = FALSE) + 
+  theme(axis.text.x = element_blank(), 
+        axis.ticks.x = element_blank())
+@
+
 <<contourSigma, fig.cap="Contour plot of the estimated season-to-season and week-to-week variability across all four major sports leagues. By both measures, uncertainty is lowest in MLB and highest in the NBA.">>=
 p.sigma
 @
@@ -1263,7 +1281,7 @@ p.gamma
 @
 
 
-<<plotCompare, fig.cap="Comparison of game-level predictions made by $sequential$ and $cumulative$ state space fits. The light line reflects the line of best fit, while the dark line reflects equal probabilities.">>=
+<<plotCompare, eval=FALSE, include=FALSE, fig.cap="Comparison of game-level predictions made by $sequential$ and $cumulative$ state space fits. The light line reflects the line of best fit, while the dark line reflects equal probabilities.">>=
 plot.compare + theme_bw(14)
 @
 
