@@ -467,10 +467,10 @@ tidy_thetas <- tidy_thetas %>%
   mutate(sport = toupper(sport),
          annotation = "",
          annotation = ifelse(theta == max(theta), 
-                             paste0("Strongest team (", name, ")"), 
+                             paste0("Most likely to win (", name, ")"), 
                              annotation),
          annotation = ifelse(theta == min(theta), 
-                             paste0("Weakest team (", name, ")"), 
+                             paste0("Least likely to win (", name, ")"), 
                              annotation))
 colors <- tidy_thetas %>%
   select(name, primary, secondary) %>%
