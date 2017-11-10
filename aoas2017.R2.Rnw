@@ -415,12 +415,30 @@ Upon inspection, one can see that the blue triangle is almsot always closer to t
 
 %Team level differences, comparing average posterior predictive distribution to the truth for models IHA and CHA. Each dot is the average difference using each team's home games. 
 
-\begin{figure}[h]
-\includegraphics[width=\textwidth]{figure/ppd-model.pdf}
-\caption{Posterior predictive distributions by model type\label{fig:ppd-model}}
-\end{figure}
+<<ppd-model, fig.height=13.5, fig.cap="Posterior predictive distributions by model type. Each dot represents the average difference between the posterior predictive distribution and the truth for each team's home games under the CHA model. The tip of the corresponding arrow represents the same quantity under the IHA model. The difference is smaller under IHA for more than three quarters of the teams, with the NFL being the only league that doesn't show nearly universal improvement. ">>=
+load(file.path(root, "data", "postPred.teamplot.RData"))
 
-\ben{This figure needs work. Can you drop the code in here?}
+team_ppd_wide <- team.ppd %>%
+  spread(key = Model, value = Average_difference) %>%
+  mutate(in_or_out = abs(IHA) < abs(CHA))
+
+#team_ppd_wide %>%
+#  group_by(in_or_out) %>%
+#  summarize(N = n())
+
+ggplot(team_ppd_wide, 
+       aes(y = hteam.obs, x = CHA, color = in_or_out)) + 
+  geom_vline(aes(xintercept = 0), linetype = 2) +  
+  geom_point() + 
+  geom_segment(aes(xend = IHA, yend = hteam.obs), 
+               arrow = arrow(length = unit(0.15, "cm"))) + 
+  facet_wrap(~toupper(sport), scales = "free_y") + 
+  scale_y_discrete(NULL) + 
+  scale_x_continuous("Difference (log odds scale)") + 
+  scale_color_discrete("IHA better") + 
+  theme_gray(12)
+@
+
 
 \hl{Tie in a few sentences about how we tried arcsin, and probabiltiies looked similar to what we observed in our data (as well as league level rankings)}
 
