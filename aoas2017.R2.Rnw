@@ -1144,6 +1144,16 @@ First, we collect the $k \in \{8, 16\}$ \hl{teams with the highest average team 
 We define a pseudo-$R^2$}
 
 \mike{Do we worry about using subscript $i$ again? We could change to subscript $d$ as to avoid readers from thinking that we are using $i$ for each team}
+\greg{Yeah, we can't use $i$ again.}
+\greg{So if went want to get really fancy, we could define the distribution of $F_i$ with a parameter that is the vector of $\theta$'s.  Then in the first case where the highers seeded teams always wins the theta's are all very far apart and when the seed doesn't matter is the setting where all the $\theta$'s are the exact same.}  
+\greg{$F_{i}$ also depends on $k$.  So does $F^{\star}_{i}$.  Should we have a $k$ in the subscript for these?  What if we wrote the distribution of $F$ as a r.v. with two parameters: $k$ and $\theta$ where $\theta$ is a vector of length $k$.  }
+\greg{Really $F$ should be defined as a multivariate distribution with dimension $k$ and parameter vector $\theta$.}
+\greg{If we define this as a vector, you can write out the metric in a very nice form.  
+
+$\frac{(E[{\bf F}]-f_{k}J_{k})'(E[{\bf F}]-f_{k}J_{k})}{\sum_{i=1}^{k} (\lceil \log_2{i} + 1 \rceil - f_{k})^2}$
+}
+
+
 
 $$
   PostParity_k = \frac{\sum_{i=1}^{k} (\bar{F}_i - f_k)^2}{\sum_{i=1}^{k} (F_i^* - f_k)^2} \,,
