@@ -1038,18 +1038,22 @@ aucs <- aucs %>%
   select(sport, auc.observed, auc.sequential, brier.observed.sum, brier.sequential.sum)
 
 
+addtorow <- list(pos = list(0, 0),
+                 command = c(
+' & \\multicolumn{2}{c|}{AUC} & \\multicolumn{2}{c|}{Brier Score} \\\\\n',
+" League ($q$) & observed & sequential & observed (p-value) & sequential (p-value)  \\\\\n"))
 
 aucs %>% 
-  rename(`League ($q$)` = sport, 
-         `AUC observed` = auc.observed, 
-         `AUC sequential` = auc.sequential,
-         `Brier observed (p-value)` = brier.observed.sum, 
-         `Brier sequential (p-value)` = brier.sequential.sum)  %>%
   xtable(caption = "AUC values and Brier scores (p-values) by sport. Observed probabilities use known probabilities from betting markets, while sequential probabiltiies use predictions from posterior draws using sequential fits of Model IHA.", 
+         align = "c|c|cc|cc|",
          digits = 3, label = "tab:ll") %>%
-  print(include.rownames = FALSE, sanitize.text.function = identity)
+  print(include.rownames = FALSE, include.colnames = FALSE, 
+        add.to.row = addtorow, 
+        sanitize.text.function = identity)
 
 
+#print(xtable(tab, align="rrccccccc"), add.to.row=addtorow,
+ #      include.rownames=FALSE, hline.after = c(-1, 0, 4, nrow(tab)))
 
 #bigfour.last.ll %>% group_by(sport) %>% 
 #  summarise(cor.sport = cor(p_homeC, p_homeS, use = "pairwise.complete.obs"))
@@ -1057,6 +1061,8 @@ aucs %>%
 #bigfour.last.ll %>% group_by(sport, week) %>% 
 #  summarise(cor.sport = cor(p_homeC, p_homeS, use = "pairwise.complete.obs"))
 @
+
+
 
 \hl{For each of the NBA, NFL, and NHL, the AUC and Brier metrics suggest that predictions made from sequential fits can closely approximate the observed game probabilities. However, our predictions yield a lower AIC and a higher Brier score in MLB, which is likely accounted for our inability to account for each game's starting pitcher.} 
 
