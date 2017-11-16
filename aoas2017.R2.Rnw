@@ -229,11 +229,9 @@ bigfour %>%
 @
 
 
-We also compared the observed probabilities of a home win to the corresponding probabilities implied by our betting market data (Figure~\ref{fig:betting}). In each of the four sports, the efficient market hypothesis cannot be rejected for any range of implied home win probabilities, based on visual inspection of a LOESS regression model. \hl{Additionally, Hosmer-Lemeshow tests using 10 equal-sized bins of games within each sport did not show evidence of a lack of fit when comparing the number of observed and expected wins in each bin.} Thus, we find no evidence to suggest that the probabilities implied by our betting market data are biased or inaccurate---a conclusion that is supported by the body of academic literature referenced above. Accordingly, we interpret these probabilities as ``true." 
+We also compared the observed probabilities of a home win to the corresponding probabilities implied by our betting market data (Figure~\ref{fig:betting}). In each of the four sports, \hl{Hosmer-Lemeshow tests of an efficient market hypothesis using 10 equal-sized bins of games did not show evidence of a lack of fit when comparing the number of observed and expected wins in each bin.} Thus, we find no evidence to suggest that the probabilities implied by our betting market data are biased or inaccurate---a conclusion that is supported by the body of academic literature referenced above. Accordingly, we interpret these probabilities as ``true." 
 
-\ben{we should probably just cut the bit about LOESS, since the H-L test is more rigorous. The caption also would need editing.}
-
-<<betting, fig.height=10, fig.cap="Accuracy of probabilities implied by betting markets. Each dot represents a bin of implied probabilities rounded to the nearest hundredth. The size of each dot (N) is proportional to the number of games that lie in that bin. We note that across all four major sports, the observed winning percentages accord with those implied by the betting markets. The dotted diagonal line indicates a completely fair market where probabilities from the betting markets correspond exactly to observed outcomes. In each sport, this diagonal line lies entirely within the standard error surrounding a LOESS regression line, suggesting that an efficient market hypothesis cannot be rejected.">>=
+<<betting, fig.height=10, fig.cap="Accuracy of probabilities implied by betting markets. Each dot represents a bin of implied probabilities rounded to the nearest hundredth. The size of each dot (N) is proportional to the number of games that lie in that bin. We note that across all four major sports, the observed winning percentages accord with those implied by the betting markets. The dotted diagonal line indicates a completely fair market where probabilities from the betting markets correspond exactly to observed outcomes. In each sport, Hosmer-Lemeshow tests suggest that an efficient market hypothesis cannot be rejected.">>=
 bigfour_summary <- bigfour %>%
   group_by(sport) %>%
   summarize(N = n(), num_seasons = n_distinct(season), 
@@ -377,7 +375,7 @@ These results suggest that chance alone likely does not account for observed dif
 
 \subsection{Posterior predictive checks}
 
-\hl{We next address the fit of Models IHA and CHA by looking at the posterior predictive distribution of each. Formally, we assess whether combining Models IHA and CHA with draws from their respective posterior distributions can generate game-level data that roughly matches the observed data.} \ben{combinig?}
+\hl{We next address the fit of Models IHA and CHA by looking at the posterior predictive distribution of each. Formally, we assess whether combining Models IHA and CHA with draws from their respective posterior distributions can generate game-level data that roughly matches the observed data.} \ben{combining?}
 
 \hl{Our specific interest lies in the posterior predictive distribution of the logit of implied probabilities, $p(\text{logit}({\bf \widetilde{p}}_{(q,s,k)})|\text{logit}({\bf p}_{(q,s,k)}))$.  To draw values, we randomly sample from the joint posterior distribution of the parameters (i.e. team strength parameters, home field advantage parameters, and variance parameters.)  Then, conditional on the drawn parameters, we randomly draw from the distribution of $\text{logit}({\bf \widetilde{p}}_{(q,s,k)})$.  Recall that in the IHA model, this distribution is assumed to be normal and of the following form:}
 
@@ -1170,20 +1168,28 @@ $$
 
 \mike{One current issue: RegParity values of 1 indicate lots of parity, while PostParity values of 1 indicate no parity. We should consider addressing this}
 
-\noindent \hl{where $i=1, \ldots, 16$ iterates over the seeds, $\bar{F}_i$ is the average round in which the $i^{th}$ seeds finished in the simulated tournaments, $f_k$ is the seed-weighted expected finish round (e.g., 4.0625 for a 16-team tournament), and $F_i^*$ is the expected finish if the tournament proceeds exactly according to seed. A $PostParity$ value of 1 indicates that the higher seed always wins, while a $PostParity$ value of 0 occurs when all seeds have the same expected finish. In a 16-team, 7-game series tournament, the NBA and NFL's $PostParity$ values ($0.57$ and $0.48$) far exceed those of MLB and the NHL ($0.12$ and $0.16$, respectively).}
+<<how_long_breaks, include=FALSE>>=
+load(file.path(root, "data", "how_long.rda"))
+how_long <- how_long %>%
+  mutate(pseudo_r2 = 1 - r_squared)
+pseudo_help <- how_long %>%
+  filter(num_teams == 16, series_length == 7)
+post_parity <- pseudo_help %>%
+  pull(pseudo_r2)
+names(post_parity) <- pseudo_help$sport
+y_breaks <- how_long %>%
+  filter(actual == TRUE) %>%
+  pull(pseudo_r2) %>%
+  append(seq(0, 1, by = 0.25)) %>%
+  round(3)
+@
+
+\noindent \hl{where $i=1, \ldots, 16$ iterates over the seeds, $\bar{F}_i$ is the average round in which the $i^{th}$ seeds finished in the simulated tournaments, $f_k$ is the seed-weighted expected finish round (e.g., 4.0625 for a 16-team tournament), and $F_i^*$ is the expected finish if the tournament proceeds exactly according to seed. A $PostParity$ value of 1 indicates that the higher seed always wins, while a $PostParity$ value of 0 occurs when all seeds have the same expected finish. In a 16-team, 7-game series tournament, the NBA and NFL's $PostParity$ values (\Sexpr{round(post_parity["nba"], 2)} and \Sexpr{round(post_parity["nfl"], 2)}) lag far behind those of MLB and the NHL (\Sexpr{round(post_parity["mlb"], 2)} and \Sexpr{round(post_parity["nhl"], 2)}, respectively).}
 
 \hl{While these simulations force all sports to use the same postseason tournament format, reality is quite different. Accordingly, we simulate tournaments while varying the number of teams who qualify (8 or 16) as well as the length of each postseason series (selected odd numbers between 1 and 75).} Figure~\ref{fig:playoff-series} \hl{allows us to compare values of} $PostParity_k$ \hl{for different tournament structures across all four sports. While $PostParity_8$ and $PostParity_{16}$ values may not be directly comparable, we note that the 1-game series played in the NFL results in parity similar to MLB and the NHL. This leaves the NBA alone as the sport whose postseason tournament most likely coronates the strongest regular season teams. Conversely, the playoff structure in MLB, which includes a single-game wild card play-in and a 5-game division series, serves to undermine advantages conferred based on seed. Higher seeds in MLB are also not aided by home field advantage, since it is not statistically significant in that sport (except for Colorado). In order to approach the level of parity (or lack thereof) of the NBA playoffs, MLB would have to switch to a 16-team tournament in which each round was approximately 75-game series. Conversely, in order to the achieve the level of parity in the other three sports, the NBA would have to reduce the number of playoff teams to 8, and play a single-game tournament. }
 
 <<playoff-series, fig.cap="Parity measures for simulated playoff tournaments. Each line shows how our pseudo-$R^2$ parity metric changes as a function of tournament series length for both 8- and 16-team tournaments in each sport. We note that in order for MLB to achieve the same lack of parity as the NBA, it would have to play 75-game series in a 16-team tournament. Conversely, the NBA would have to switch to an 8-team, single-game tournament to match the parity of the other three sports. ">>=
-load(file.path(root, "data", "how_long.rda"))
-how_long_16 <- how_long %>%
-  filter(num_teams == 16)
-y_breaks <- how_long %>%
-  filter(actual == TRUE) %>%
-  pull(r_squared) %>%
-  append(seq(0, 1, by = 0.25)) %>%
-  round(3)
-ggplot(how_long, aes(x = series_length, y = r_squared, color = toupper(sport))) + 
+ggplot(how_long, aes(x = series_length, y = pseudo_r2, color = toupper(sport))) + 
   geom_hline(yintercept = pull(filter(how_long, sport == "nba" & series_length == 7 & num_teams == 16), r_squared), color = "darkgray", linetype = 2) + 
   geom_point(aes(size = actual)) + 
 #  geom_line() + 
@@ -1197,6 +1203,9 @@ ggplot(how_long, aes(x = series_length, y = r_squared, color = toupper(sport))) 
   scale_color_brewer("League", palette = "Spectral") + 
   facet_wrap(~num_teams)
 @
+
+
+\hl{Postseason parity cuts both ways: a tournament in which the higher seeds always win is boring and pointless, but a tournament in which seeds don't matter might compromise the competitiveness of late-season games for playoff teams. This represents a philosophical choice for commissioners. The NBA has clearly chosen a postseason structure that---relative to other sports---largely ensures that the best teams will win most of the time. We suspect that this arrangement is comforting for players and team executives, since the hard work of building a good team is remunerated with postseason success. On the other hand, early-round games may suffer from lack of interest, since fans may consider the outcomes predetermined. Conversely, MLB (and to a slightly lesser extent the NFL and NHL) postseason structure serves to maximize fan interest (recall the outcome uncertainty hypothesis), while offering few rewards for regular season success. This may be an acceptable trade-off, since the regular season is so long and relatively few teams make the playoffs. Still, it may be profoundly frustrating to players and team executives.}
 
 \section{Conclusion}
 
@@ -1225,7 +1234,6 @@ Opportunities to improve our model are also plentiful. \hl{To estimate predictio
 
 To maintain consistency with the NFL's calendar, we considered time on a weekly basis; more refined approaches may be appropriate in other sports. As an example, investigation into starting pitchers in baseball---who change daily---could lead to novel findings. Additionally, another model specification could consider the possibility that time-varying estimates of team strength follow something other than an autoregressive structure. One alternative assumption, for example, is a stochastic volatility process \citep{glickman2001dynamic}. In this respect, our model can be considered a starting point for those looking to dig deeper in any sport witout losing an ability to make cross-league or cross-sport comparisons. 
 
-\hl{Postseason parity cuts both ways: a tournament in which the higher seeds always win is boring and pointless, but a tournament in which seeds don't matter might compromise the competitiveness of late-season games for playoff teams. This represents a philosophical choice for commissioners. The NBA has clearly chosen a postseason structure that---relative to other sports---largely ensures that the best teams will win most of the time. We suspect that this arrangement is comforting for players and team executives, since the hard work of building a good team is remunerated with postseason success. On the other hand, early-round games may suffer from lack of interest, since fans may consider the outcomes predetermined. Conversely, MLB (and to a slightly lesser extent the NFL and NHL) postseason structure serves to maximize fan interest (recall the outcome uncertainty hypothesis), while offering few rewards for regular season success. This may be an acceptable trade-off, since the regular season is so long and relatively few teams make the playoffs. Still, it may be profoundly frustrating to players and team executives (see Beane, Billy).}
 
 
 \bibliographystyle{imsart-nameyear}
@@ -1346,7 +1354,7 @@ res_tile <- res %>%
   group_by(sport, seed, finish) %>%
   summarize(N = n())
 
-ggplot(res_grouped, aes(x = seed, y = mean_finish, color = toupper(sport))) + 
+ggplot(res_grouped, aes(x = seed, y = mean_finish)) + 
   geom_tile(data = res_tile, aes(y = finish, fill = N), color = NA) + 
 #  geom_point(aes(y = predestination_finish), color = "darkgray") + 
   geom_line(aes(y = predestination_finish), color = "black", linetype = 3) +
@@ -1362,7 +1370,7 @@ ggplot(res_grouped, aes(x = seed, y = mean_finish, color = toupper(sport))) +
             aes(label = paste("~R^2 =\n", round(r_squared, 3)))) + 
 #  geom_curve(x = 15, y = 3.5, xend = 16, yend = 4.0625, arrow = arrow(length = unit(0.1, "cm"))) + 
   scale_fill_gradient(low = "gray92", high = "darkgray") + 
-  scale_color_brewer("League", palette = "Spectral") +
+#  scale_color_brewer("League", palette = "Spectral") +
   scale_x_continuous("Tournament Seed", breaks = 2^(0:4), expand = c(0.01, 0.01)) +
   scale_y_continuous("Tournament Finish (round)", expand = c(0.01, 0.01)) + 
   facet_wrap(~toupper(sport)) + 
