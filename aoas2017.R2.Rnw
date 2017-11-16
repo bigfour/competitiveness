@@ -492,7 +492,7 @@ tm_colors <- teamcolors %>%
     name == "Los Angeles Chargers" ~ "San Diego Chargers",
     TRUE ~ name
   )) %>%
-  select(name)
+  select(name, division)
 @
 
 <<>>=
