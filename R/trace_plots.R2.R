@@ -1,15 +1,15 @@
 library(ggplot2)
 library(dplyr)
-load("~/Dropbox/Posterior_Draws/nhl_paper_teamHFA.R1.RData")
+load("~/Dropbox/Posterior_Draws/nhl_paper_teamHFA.logit.R2.RData")
 nhlJAGS<-z
 
-load("~/Dropbox/Posterior_Draws/mlb_paper_teamHFA.R1.RData")
+load("~/Dropbox/Posterior_Draws/mlb_paper_teamHFA.logit.R2.RData")
 mlbJAGS<-z
 
-load("~/Dropbox/Posterior_Draws/nfl_paper_teamHFA.R1.RData")
+load("~/Dropbox/Posterior_Draws/nfl_paper_teamHFA.logit.R2.RData")
 nflJAGS<-z
 
-load("~/Dropbox/Posterior_Draws/nba_paper_teamHFA.R1.RData")
+load("~/Dropbox/Posterior_Draws/nba_paper_teamHFA.logit.R2.RData")
 nbaJAGS<-z
 rm(z)
 
@@ -67,8 +67,8 @@ NHL.trace <- func.trace(nhlJAGS, "NHL")
 MLB.trace <- func.trace(mlbJAGS, "MLB")
 NFL.trace <- func.trace(nflJAGS, "NFL")
 
-ggsave(plot = NBA.trace, width = 8, height = 6, filename = "~/Dropbox/Compete/figure/NBAtrace_R1.pdf")
-ggsave(plot = NHL.trace, width = 8, height = 6, filename = "~/Dropbox/Compete/figure/NHLtrace_R1.pdf")
-ggsave(plot = MLB.trace, width = 8, height = 6, filename = "~/Dropbox/Compete/figure/MLBtrace_R1.pdf")
-ggsave(plot = NFL.trace, width = 8, height = 6, filename = "~/Dropbox/Compete/figure/NFLtrace_R1.pdf")
+ggsave(plot = NBA.trace, width = 8, height = 6, filename = "~/Dropbox/Compete/figure/NBAtrace_R2.pdf")
+ggsave(plot = NHL.trace, width = 8, height = 6, filename = "~/Dropbox/Compete/figure/NHLtrace_R2.pdf")
+ggsave(plot = MLB.trace, width = 8, height = 6, filename = "~/Dropbox/Compete/figure/MLBtrace_R2.pdf")
+ggsave(plot = NFL.trace, width = 8, height = 6, filename = "~/Dropbox/Compete/figure/NFLtrace_R2.pdf")
 
