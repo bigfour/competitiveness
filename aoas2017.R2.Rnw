@@ -1147,7 +1147,7 @@ First, we collect the $z \in \{8, 16\}$ \hl{teams with the highest average team 
 
 \mike{Can we make each league the same color? When I printed in black and white, the MLB appeared to have the least parity}
 
-\hl{Next, we construct a postseason tournament parity metric that acts as a pseudo-$R^2$. Let ${\bf F}=(F_{1},F_{2},\cdots,F_{z})$ be a $z$-dimensional random vector with the $d^{th}$ element indicating the tournament finish of the $d^{th}$ seed that depends on the vector of team strengths $\theta$.  That is, $F_d=1$, $F_d=2$, and $F_d=3$ indicates that the team seeded $d$ finished as tournament champions, finalists, and semi-finalists, respectively.  In a $z$-team tournament in which the higher seeded team always wins (i.e. the seeds determine the finish), the vector ${\bf F}$ is constant with $F_1=1$, $F_2=2$, $F_3=F_4=3$, $F_5=F_6=F_7=F_8=4$, etc, and, in general, $\Ex[F_d] = F_d =  \lceil \log_2{d} + 1 \rceil$ for $d = 1, 2, \cdots, z$.  In the other extreme, where the seed is irrelevant (i.e. All values of $\theta$ are equal and there is no home advantage), $\Ex[F_d] = \sum_{d=1}^z \frac{1}{z} \cdot \lceil \log_2{d} + 1 \rceil = f_z$ where $f_z$ is a constant that depends on $z$.  
+\hl{Next, we construct a postseason tournament parity metric that acts as a pseudo-$R^2$. Let ${\bf F}=(F_{1},F_{2},\cdots,F_{z})$ be a $z$-dimensional random vector with the $d^{th}$ element indicating the tournament finish of the $d^{th}$ seed that depends on the vector of team strengths $\theta$.  That is, $F_d=1$, $F_d=2$, and $F_d=3$ indicates that the team seeded $d$ finished as tournament champions, finalists, and semi-finalists, respectively.  In a $z$-team tournament in which the higher seeded team always wins (i.e. the seeds determine the finish), the vector ${\bf F}$ is constant with $F_1=1$, $F_2=2$, $F_3=F_4=3$, $F_5=F_6=F_7=F_8=4$, etc, and, in general, $\Ex[F_d] = F_d =  \lceil \log_2{d} + 1 \rceil$ for $d = 1, 2, \cdots, z$.  In the other extreme, where the seed is irrelevant (i.e. All values of $\theta$ are equal and there is no home advantage), $\Ex[F_d] = \sum_{d=1}^z \frac{1}{z} \cdot \lceil \log_2{d} + 1 \rceil = f_z$ where $f_z$ is a constant that depends on $z$.  }
 
 A pseudo-$R^2$ is then defined as follows:
 $$
@@ -1247,14 +1247,14 @@ To maintain consistency with the NFL's calendar, we considered time on a weekly 
 
 
 \begin{figure}[h]
-\includegraphics[angle=90]{figure/MLBtrace.pdf}
+\includegraphics[angle=90]{figure/MLBtrace_R2.pdf}
 \caption{Trace plots of MLB parameters\label{fig:MLBtrace}}
 \end{figure}
 
 \newpage
 
 \begin{figure}[h]
-\includegraphics[angle=90]{figure/NBAtrace.pdf}
+\includegraphics[angle=90]{figure/NBAtrace_R2.pdf}
 \caption{Trace plots of NBA parameters\label{fig:NBAtrace}}
 \end{figure}
 
@@ -1262,14 +1262,14 @@ To maintain consistency with the NFL's calendar, we considered time on a weekly 
 
 
 \begin{figure}[h]
-\includegraphics[angle=90]{figure/NFLtrace.pdf}
+\includegraphics[angle=90]{figure/NFLtrace_R2.pdf}
 \caption{Trace plots of NFL parameters\label{fig:NFLtrace}}
 \end{figure}
 
 \newpage 
 
 \begin{figure}[h]
-\includegraphics[angle=90]{figure/NHLtrace.pdf}
+\includegraphics[angle=90]{figure/NHLtrace_R2.pdf}
 \caption{Trace plots of NHL parameters\label{fig:NHLtrace}}
 \end{figure}
 
