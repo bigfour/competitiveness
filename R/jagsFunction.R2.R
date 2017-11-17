@@ -89,10 +89,10 @@ jagsModel <- function(data,
                      n.chains = n.chains, n.adapt = n.adapt)
   
   update(jags, n.update)
-  #dic.pD <- dic.samples(jags, 20, type = "pD") # Deviance Information Criterion
+  dic.pD <- dic.samples(jags, 20, type = "pD") # Deviance Information Criterion
   #dic.popt <- dic.samples(jags, 100, type = "popt") # Penalized expected deviance
   z <- jags.samples(jags, posteriorDraws, n.draws, thin = thin)
-  #z$dic <- dic.pD
+  z$dic <- dic.pD
   filename <- file.path(mcmc_dir, paste0(league, "_paper_", fit.type, "HFA.logit.R2", ".RData"))
   save(z, file = filename, compress = "xz")
 }
@@ -139,7 +139,7 @@ stopCluster(cl)
 
 
 ## Constant home advantage model 
-bugFile <- file.path("R", "jags_model_constantHFA_R1.bug")
+bugFile <- file.path("R", "jags_model_constantHFA_R2.bug")
 fit.type <- "constant"
 
 

@@ -361,10 +361,10 @@ Table~\ref{tab:DIC} shows the deviance information criterion (DIC) for each fit 
 \begin{tabular}{l r r r}
 \hline
  & Model IHA & Model CHA & Difference (SE) \\ \hline
-MLB &  -8519 & -8481  & -37.7 (38.4) \\
-NBA & 6923 & 7188 & -264.7 (32.9) \\
-NFL & 1245  & 1288 & -42.9 (25.6) \\
-NHL & -18357  & -18128 & -228.6 (37.9)\\
+MLB &  -8587 & -8481  & -106.6 (37.5) \\
+NBA & 6822  & 7188 & -366.2 (40.1) \\
+NFL & 1100  & 1288 & -187.8 (24.4) \\
+NHL & -18374  & -18128 & -244.7 (37.2)\\
 \hline
 \end{tabular}
 }
@@ -497,7 +497,7 @@ tm_colors <- teamcolors %>%
 
 <<>>=
 tidy_thetas_division <- tidy_thetas %>%
-  left_join(tm_colors, by = c("name" = "name")) %>%
+  left_join(select(tm_colors, -division), by = c("name" = "name")) %>%
   mutate(time_val = ifelse(sport == "NFL" | sport == "MLB", 
                            time_val + 1, time_val))
 max.theta <- round(max(tidy_thetas_division$theta), 2)

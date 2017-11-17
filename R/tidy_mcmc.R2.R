@@ -81,12 +81,14 @@ tidy_thetas %>%
 # match up the colors
 library(teamcolors)
 colors <- teamcolors %>%
-  filter(sport %in% sports) %>%
-  #Our data has the St. Louis Rams.  The colors has LA Rams.  
+  filter(league %in% sports, name!= "Vegas Golden Knights") %>%
+  #Our data has the St. Louis Rams.  The colors has LA Rams.  Also, there are other mismatches
   mutate(name = ifelse(name == "Los Angeles Angels of Anaheim", "Los Angeles Angels", name),
-         name = ifelse(name == "St Louis Blues", "St. Louis Blues", name)) %>%
-  arrange(sport, name) %>%
-  group_by(sport) %>%
+         name = ifelse(name == "St Louis Blues", "St. Louis Blues", name),
+         name = ifelse(name == "St. Louis Cardinals", "St Louis Cardinals", name),
+         name = ifelse(name == "Los Angeles Chargers", "San Diego Chargers", name)) %>%
+  arrange(league, name) %>%
+  group_by(league) %>%
   mutate(team_id = 1:n())
 
 # check to make sure that names all match up
@@ -104,7 +106,7 @@ teams %>%
 
 
 tidy_thetas <- tidy_thetas %>%
-  inner_join(colors, by = c("sport" = "sport", "team_id" = "team_id"))
+  inner_join(colors, by = c("sport" = "league", "team_id" = "team_id"))
 
 # save the results so we don't have to do this everytime. 
 save(tidy_thetas, file = file.path(root, "data", "tidy_thetas.R2.rda"), compress = "xz")
@@ -147,7 +149,7 @@ colors.hfa <- bind_rows(colors, colors.new)
 
 
 tidy_alphas <- alphas.all %>%
-  inner_join(colors.hfa, by = c("team" = "name", "sport" = "sport"))
+  inner_join(colors.hfa, by = c("team" = "name", "sport" = "league"))
 
 tidy_alphas %>% group_by(sport) %>% summarise(ave.alpha = mean(alpha.team))
 
