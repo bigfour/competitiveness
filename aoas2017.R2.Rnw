@@ -287,7 +287,7 @@ $$
 E[\text{logit}(p_{(q,s,k) ij}) | \theta_{(q,s,k) i}, \theta_{(q, s, k) j}, \alpha_{q_{0}}, \alpha_{(q) i^{\star}}] = \theta_{(q,s,k) i} - \theta_{(q, s, k) j} + \alpha_{q_0} + \alpha_{(q) i^{\star}},
 $$
 
-\noindent where $\text{logit}(.)$ is the log-odds transform. We center team strength \hl{and individual home advantage} estimates about 0 to ensure that our model is identifiable (e.g., $\sum_{i=1}^{t_{q}} \theta_{(q,s,k)i} = 0$ for all $q,s,k$ and $\sum_{i^{\star}=1}^{t^{\star}_{q}} \alpha_{(q) i^{\star}} = 0$ )
+\noindent where $\text{logit}(.)$ is the log-odds transform. \hl{Note that $\theta_{(q,s,k) i}$ and $\theta_{(q,s,k) j}$reflect absolute measures of team strength, reflecting each team's probability of beating a league average team.} We center team strength \hl{and individual home advantage} estimates about 0 to ensure that our model is identifiable (e.g., $\sum_{i=1}^{t_{q}} \theta_{(q,s,k)i} = 0$ for all $q,s,k$ and $\sum_{i^{\star}=1}^{t^{\star}_{q}} \alpha_{(q) i^{\star}} = 0$ )
 
 Let ${\bf p}_{(q,s,k)}$ represent the vector of length $g_{(q,s,k)}$, the number of games in league $q$ during week $k$ of season $s$, containing all of league $q$'s probabilities in week $k$ of season $s$. Our first model of game outcomes, henceforth referred to as the individual home advantage model (Model IHA), assumes that
 \begin{eqnarray}
