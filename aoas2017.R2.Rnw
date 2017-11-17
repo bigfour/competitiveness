@@ -287,7 +287,7 @@ $$
 E[\text{logit}(p_{(q,s,k) ij}) | \theta_{(q,s,k) i}, \theta_{(q, s, k) j}, \alpha_{q_{0}}, \alpha_{(q) i^{\star}}] = \theta_{(q,s,k) i} - \theta_{(q, s, k) j} + \alpha_{q_0} + \alpha_{(q) i^{\star}},
 $$
 
-\noindent where $\text{logit}(.)$ is the log-odds transform. \hl{Note that $\theta_{(q,s,k) i}$ and $\theta_{(q,s,k) j}$reflect absolute measures of team strength, reflecting each team's probability of beating a league average team.} We center team strength \hl{and individual home advantage} estimates about 0 to ensure that our model is identifiable (e.g., $\sum_{i=1}^{t_{q}} \theta_{(q,s,k)i} = 0$ for all $q,s,k$ and $\sum_{i^{\star}=1}^{t^{\star}_{q}} \alpha_{(q) i^{\star}} = 0$ )
+\noindent where $\text{logit}(.)$ is the log-odds transform. \hl{Note that $\theta_{(q,s,k) i}$ and $\theta_{(q,s,k) j}$ reflect absolute measures of team strength, and translate into each team's probability of beating a league average team.} We center team strength \hl{and individual home advantage} estimates about 0 to ensure that our model is identifiable (e.g., $\sum_{i=1}^{t_{q}} \theta_{(q,s,k)i} = 0$ for all $q,s,k$ and $\sum_{i^{\star}=1}^{t^{\star}_{q}} \alpha_{(q) i^{\star}} = 0$ )
 
 Let ${\bf p}_{(q,s,k)}$ represent the vector of length $g_{(q,s,k)}$, the number of games in league $q$ during week $k$ of season $s$, containing all of league $q$'s probabilities in week $k$ of season $s$. Our first model of game outcomes, henceforth referred to as the individual home advantage model (Model IHA), assumes that
 \begin{eqnarray}
@@ -1139,19 +1139,15 @@ For games with no home advantage, $RegParity_{\text{MLB}} = 0.87$, followed by t
 
 \subsubsection{Parity in postseason tournaments}
 
-\hl{Notions of parity in the regular season influence which teams make the playoffs, but each league conducts a single-elimination postseason tournament with a different structure. To what extent do those structures mitigate or reinforce the parity levels discussed in the previous section? Should leagues consider alternative postseason formats in order to maximize revenue and/or fan engagement? We address these questions using our team strength estimates.}
-
-\mike{Not sure we address the revenue/fan engagement angle, so possibly worth dropping that sentence.}
+\hl{Notions of parity in the regular season influence which teams make the playoffs, but each league conducts a single-elimination postseason tournament with a different structure. To what extent do those structures mitigate or reinforce the parity levels discussed in the previous section? We address these questions using our team strength estimates.}
 
 First, we collect the $z \in \{8, 16\}$ \hl{teams with the highest average team strength estimates over the last four weeks of each season, in each sport. We then seed (in descending order of team strength, irrespective of division or conference) and simulate 1000 postseason tournaments, in which each round consists of a best-of-7-game series, with the higher seed having the home field advantage in each round. The results shown in} Figure~\ref{fig:playoff-sims} \hl{(in the Appendix) confirm that the relationship between seed and tournament finish is strongest in the NBA and the NFL, and considerably weaker in MLB and the NHL. These findings accord with our regular season parity measures. }
 
-\mike{Can we make each league the same color? When I printed in black and white, the MLB appeared to have the least parity}
+\hl{Next, we construct a postseason tournament parity metric that acts as a pseudo-$R^2$. Let ${\bf F}=(F_{1},F_{2},\ldots,F_{z})$ be a $z$-dimensional random vector with the $d^{th}$ element indicating the round of tournament finish of the $d^{th}$ seed. (We note that $\mathbf{F}$ depends on the vector of team strengths $\theta$.)  That is, $F_d=1$ indicates that the team seeded $d$ finished as tournament champions, $F_d=2$ suggest they finished as finalists, $F_d=3$ that they finished as semi-finalists, and so on.  In a $z$-team tournament in which the higher seeded team always wins (i.e. the seeds determine the finish), the vector ${\bf F}$ is constant with $F_1=1$, $F_2=2$, $F_3=F_4=3$, $F_5=F_6=F_7=F_8=4$, etc., and in general, $\Ex[F_d] = F_d =  \lceil \log_2{d} + 1 \rceil$ for $d = 1, 2, \ldots, z$.  In the other extreme, where the seed is irrelevant (i.e., all values of $\theta$ are equal and there is no home advantage), $\Ex[F_d] = \sum_{d=1}^z \frac{1}{z} \cdot \lceil \log_2{d} + 1 \rceil = f_z$, where $f_z$ is a constant that depends on $z$.  }
 
-\hl{Next, we construct a postseason tournament parity metric that acts as a pseudo-$R^2$. Let ${\bf F}=(F_{1},F_{2},\cdots,F_{z})$ be a $z$-dimensional random vector with the $d^{th}$ element indicating the tournament finish of the $d^{th}$ seed that depends on the vector of team strengths $\theta$.  That is, $F_d=1$, $F_d=2$, and $F_d=3$ indicates that the team seeded $d$ finished as tournament champions, finalists, and semi-finalists, respectively.  In a $z$-team tournament in which the higher seeded team always wins (i.e. the seeds determine the finish), the vector ${\bf F}$ is constant with $F_1=1$, $F_2=2$, $F_3=F_4=3$, $F_5=F_6=F_7=F_8=4$, etc, and, in general, $\Ex[F_d] = F_d =  \lceil \log_2{d} + 1 \rceil$ for $d = 1, 2, \cdots, z$.  In the other extreme, where the seed is irrelevant (i.e. All values of $\theta$ are equal and there is no home advantage), $\Ex[F_d] = \sum_{d=1}^z \frac{1}{z} \cdot \lceil \log_2{d} + 1 \rceil = f_z$ where $f_z$ is a constant that depends on $z$.  }
-
-A pseudo-$R^2$ is then defined as follows:
+We define a pseudo-$R^2$ as:
 $$
-PostParity_z = \frac{(E[{\bf F}]-f_{z}J_{z})'(E[{\bf F}]-f_{z}J_{z})}{\sum_{d=1}^{z} (\lceil \log_2{d} + 1 \rceil - f_{z})^2}\,,
+PostParity_z = 1 - \frac{(E[{\bf F}]-f_{z} 1_{z})'(E[{\bf F}]-f_{z} 1_{z})}{\sum_{d=1}^{z} (\lceil \log_2{d} + 1 \rceil - f_{z})^2}\,,
 $$
 
 
@@ -1169,8 +1165,6 @@ $$
 %  PostParity_k = \frac{\sum_{i=1}^{k} (\bar{F}_i - f_k)^2}{\sum_{i=1}^{k} (F_i^* - f_k)^2} \,,
 %$$
 
-\mike{One current issue: RegParity values of 1 indicate lots of parity, while PostParity values of 1 indicate no parity. We should consider addressing this}
-
 <<how_long_breaks, include=FALSE>>=
 load(file.path(root, "data", "how_long.rda"))
 how_long <- how_long %>%
@@ -1187,14 +1181,13 @@ y_breaks <- how_long %>%
   round(3)
 @
 
-\noindent \hl{where $d=1, \ldots, z$ iterates over the seeds, $f_z$ is the seed-weighted expected finish round (e.g., 4.0625 for a 16-team tournament), and $J_{z}$ is a vector of ones of length $z$. A $PostParity_{z}$ value of 1 indicates that the higher seed always wins, while a $PostParity_{z}$ value of 0 occurs when all seeds have the same expected finish. In a 16-team, 7-game series tournament, the NBA and NFL's $PostParity_{z}$ values (\Sexpr{round(post_parity["nba"], 2)} and \Sexpr{round(post_parity["nfl"], 2)}) lag far behind those of MLB and the NHL (\Sexpr{round(post_parity["mlb"], 2)} and \Sexpr{round(post_parity["nhl"], 2)}, respectively).}
-\greg{Did we agree to change the postParity so that 1 indicates the most parity?}
+\noindent \hl{where $d=1, \ldots, z$ iterates over the seeds, $f_z$ is the seed-weighted expected finish round (e.g., 4.0625 for a 16-team tournament), and $1_{z}$ is a vector of ones of length $z$. A $PostParity_{z}$ value of 0 indicates that the higher seed always wins, while a $PostParity_{z}$ value of 1 occurs when all seeds have the same expected finish. In a 16-team, 7-game series tournament, the NBA and NFL's $PostParity_{16}$ values (\Sexpr{round(post_parity["nba"], 2)} and \Sexpr{round(post_parity["nfl"], 2)}) lag far behind those of MLB and the NHL (\Sexpr{round(post_parity["mlb"], 2)} and \Sexpr{round(post_parity["nhl"], 2)}, respectively).}
 
 \hl{While these simulations force all sports to use the same postseason tournament format, reality is quite different. Accordingly, we simulate tournaments while varying the number of teams who qualify (8 or 16) as well as the length of each postseason series (selected odd numbers between 1 and 75).} Figure~\ref{fig:playoff-series} \hl{allows us to compare values of} $PostParity_z$ \hl{for different tournament structures across all four sports. While $PostParity_8$ and $PostParity_{16}$ values may not be directly comparable, we note that the 1-game series played in the NFL results in parity similar to MLB and the NHL. This leaves the NBA alone as the sport whose postseason tournament most likely coronates the strongest regular season teams. Conversely, the playoff structure in MLB, which includes a single-game wild card play-in and a 5-game division series, serves to undermine advantages conferred based on seed. Higher seeds in MLB are also not aided by home field advantage, since it is not statistically significant in that sport (except for Colorado). In order to approach the level of parity (or lack thereof) of the NBA playoffs, MLB would have to switch to a 16-team tournament in which each round was approximately 75-game series. Conversely, in order to the achieve the level of parity in the other three sports, the NBA would have to reduce the number of playoff teams to 8, and play a single-game tournament. }
 
 <<playoff-series, fig.cap="Parity measures for simulated playoff tournaments. Each line shows how our pseudo-$R^2$ parity metric changes as a function of tournament series length for both 8- and 16-team tournaments in each sport. We note that in order for MLB to achieve the same lack of parity as the NBA, it would have to play 75-game series in a 16-team tournament. Conversely, the NBA would have to switch to an 8-team, single-game tournament to match the parity of the other three sports. ">>=
 ggplot(how_long, aes(x = series_length, y = pseudo_r2, color = toupper(sport))) + 
-  geom_hline(yintercept = pull(filter(how_long, sport == "nba" & series_length == 7 & num_teams == 16), r_squared), color = "darkgray", linetype = 2) + 
+  geom_hline(yintercept = pull(filter(how_long, sport == "nba" & series_length == 7 & num_teams == 16), pseudo_r2), color = "darkgray", linetype = 2) + 
   geom_point(aes(size = actual)) + 
 #  geom_line() + 
   geom_smooth(se = FALSE) + 
@@ -1209,7 +1202,7 @@ ggplot(how_long, aes(x = series_length, y = pseudo_r2, color = toupper(sport))) 
 @
 
 
-\hl{Postseason parity cuts both ways: a tournament in which the higher seeds always win is boring and pointless, but a tournament in which seeds don't matter might compromise the competitiveness of late-season games for playoff teams. This represents a philosophical choice for commissioners. The NBA has clearly chosen a postseason structure that---relative to other sports---largely ensures that the best teams will win most of the time. We suspect that this arrangement is comforting for players and team executives, since the hard work of building a good team is remunerated with postseason success. On the other hand, early-round games may suffer from lack of interest, since fans may consider the outcomes predetermined. Conversely, MLB (and to a slightly lesser extent the NFL and NHL) postseason structure serves to maximize fan interest (recall the outcome uncertainty hypothesis), while offering few rewards for regular season success. This may be an acceptable trade-off, since the regular season is so long and relatively few teams make the playoffs. Still, it may be profoundly frustrating to players and team executives.}
+\hl{Postseason parity cuts both ways: a tournament in which the higher seeds always win is boring and pointless, but a tournament in which seeds don't matter might compromise the competitiveness of late-season games for playoff teams. This represents a philosophical choice for commissioners. The NBA has clearly chosen a postseason structure that---relative to other sports---largely ensures that the best teams will win most of the time. We suspect that this arrangement is comforting for players and team executives, since the hard work of building a good team is remunerated with postseason success. On the other hand, early-round games may suffer from lack of interest, since fans may consider the outcomes predetermined. Conversely, MLB (and to a slightly lesser extent the NFL and NHL) postseason structure serves to maximize fan interest (recall the outcome uncertainty hypothesis), while offering few postseason rewards (other than entry) for regular season success. This may be an acceptable trade-off, since the regular season is so long and relatively few teams make the playoffs. Still, it may be profoundly frustrating to players and team executives.}
 
 \section{Conclusion}
 
@@ -1352,12 +1345,14 @@ labels2 <- labels %>%
 r_squared <- res_grouped %>%
   group_by(sport) %>%
   summarize(r_squared = sum(SSM) / sum(SST),
-            weighted_r_squared = sum(weight * SSM) / sum(weight * SST))
+            weighted_r_squared = sum(weight * SSM) / sum(weight * SST)) %>%
+  mutate(pseudo_r2 = 1 - r_squared)
 
 res_tile <- res %>%
   group_by(sport, seed, finish) %>%
   summarize(N = n())
 
+library(latex2exp)
 ggplot(res_grouped, aes(x = seed, y = mean_finish)) + 
   geom_tile(data = res_tile, aes(y = finish, fill = N), color = NA) + 
 #  geom_point(aes(y = predestination_finish), color = "darkgray") + 
@@ -1370,13 +1365,13 @@ ggplot(res_grouped, aes(x = seed, y = mean_finish)) +
   geom_smooth(se = FALSE) + 
   geom_text(data = labels, aes(label = label), color = "black", vjust = "top", hjust = "right", size = 3) + 
   geom_text(data = labels2, aes(label = label), color = "black", hjust = "left", size = 3) + 
-  geom_text(data = r_squared, x = 15, y = 1, 
-            aes(label = paste("~R^2 =\n", round(r_squared, 3)))) + 
+  geom_text(data = r_squared, x = 14, y = 1, 
+            aes(label = paste("Pseudo-R^2\n=", round(pseudo_r2, 3)))) + 
 #  geom_curve(x = 15, y = 3.5, xend = 16, yend = 4.0625, arrow = arrow(length = unit(0.1, "cm"))) + 
   scale_fill_gradient(low = "gray92", high = "darkgray") + 
 #  scale_color_brewer("League", palette = "Spectral") +
-  scale_x_continuous("Tournament Seed", breaks = 2^(0:4), expand = c(0.01, 0.01)) +
-  scale_y_continuous("Tournament Finish (round)", expand = c(0.01, 0.01)) + 
+  scale_x_continuous(TeX("Tournament Seed ($d$)"), breaks = 2^(0:4), expand = c(0.01, 0.01)) +
+  scale_y_continuous(TeX("Tournament Finish ($F_d$, round)"), expand = c(0.01, 0.01)) + 
   facet_wrap(~toupper(sport)) + 
   ggtitle("Simulated 16-Team Tournaments, 2004-2016")
 @
