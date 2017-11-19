@@ -36,7 +36,7 @@ param_labeller <- function(variable,value){
 func.trace <- function(league, league.name){
 df.all <- NULL
 param.id <- c(1, 3, 4, 6:8)
-len <- 4000
+len <- 8000
 for (i in param.id){
   chain <- c(rep(1, len), rep(2, len), rep(3, len))
   iter <- c(1:len, 1:len, 1:len)

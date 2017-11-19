@@ -40,7 +40,7 @@ names(alphaInds) <- sports
 # to save memory!
 rm(dat)
 
-n_sports <- sapply(thetas, length) / 12000
+n_sports <- sapply(thetas, length) / 24000
 ## want the above to be 8250, 9240, etc
 
 
