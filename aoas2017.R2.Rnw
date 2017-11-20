@@ -354,24 +354,24 @@ We begin by validating and comparing the fits of Models IHA and CHA.
 
 Trace plots of $\alpha_{q_0}$, $\gamma_{q, \text{season}}$, $\gamma_{q, \text{week}}$, $\sigma_{q, game}$, $\sigma_{q, season}$, and $\sigma_{q, week}$ are shown for each $q$ in Figures \ref{fig:MLBtrace}--\ref{fig:NHLtrace} in the Appendix. Visual inspection of these plots does not provide evidence of a lack of convergence or of autocorrelation between draws. These trace plots stem from Model IHA; conclusions are similar when plotting draws from Model CHA. 
 
-Table~\ref{tab:DIC} shows the deviance information criterion (DIC) for each fit in each league, along with the difference in DIC values and the associated standard error (SE). In each of the NHL and NBA, fits with a team-specific HA (Model IHA) yielded lower DIC's (lower is better) by a statistically meaningful margin, with the most noticeable difference in fit improvement in the NBA. DIC's were also lower in MLB and the NFL, although differences were not significant. 
+Table~\ref{tab:DIC} shows the deviance information criterion (DIC) for each fit in each league, along with the difference in DIC values and the associated standard error (SE). In each of the NHL, NBA, and NFL, fits with a team-specific HA (Model IHA) yielded lower DIC's (lower is better) by a statistically meaningful margin, with the most noticeable difference in fit improvement in the NBA. DIC's were also lower in MLB using Model IHA, although differences were not significant. 
 
 \begin{table}[!ht]
 \makebox[\linewidth]{
 \begin{tabular}{l r r r}
 \hline
  & Model IHA & Model CHA & Difference (SE) \\ \hline
-MLB &  -8587 & -8481  & -106.6 (37.5) \\
-NBA & 6822  & 7188 & -366.2 (40.1) \\
-NFL & 1100  & 1288 & -187.8 (24.4) \\
-NHL & -18374  & -18128 & -244.7 (37.2)\\
+MLB &  -8538 & -8481  & -56.8 (37.9) \\
+NBA & 6864  & 7188 & -323.9 (40.5) \\
+NFL & 1135  & 1288 & -153.2 (24.3) \\
+NHL & -18294  & -18128 & -165.8 (37.7)\\
 \hline
 \end{tabular}
 }
 \caption{Deviance information criterion (DIC) by sport and model, along with the difference in DIC and the associated standard errors (SE, in parentheses). IHA: individual home advantage, CHA: constant home advantage \label{tab:DIC}}
 \end{table}
 
-These results suggest that chance alone likely does not account for observed differences in the home advantage among teams in the NBA and NHL. For consistency, results that follow use model estimates from Model IHA. 
+These results suggest that chance alone likely does not account for observed differences in the home advantage among teams in the NBA, NHL, and NFL. \hl{For the NFL, this implication matches the findings of} \cite{glickman1998state}, \hl{who identified meaningful between-franchise differences in terms of playing at home.} For consistency, results that follow use model estimates from Model IHA. 
 
 \subsection{Posterior predictive checks}
 
@@ -391,7 +391,7 @@ We purposefully use a lower bandwith for the density curves in Figure~\ref{fig:p
 
 Next, we compare the appropriateness of Models IHA and CHA for each team, as well as use posterior predictive distributions to contrast the two models. To do this, we calculate the average discrepancy between the mean posterior predictive distribution of each game and the observed game probability, averaged over home team for each model. These team level results are shown in} Figure~\ref{fig:ppd-model}. \hl{Discrepencies from Model CHA are shown in via circles, with arrows pointing towards the average discrepency for Model IHA. The color of the arrow (blue for yes, red for no) identifies whether or not, on average, Model IHA more closely matched the observed data than Model CHA. The dashed black line in each plot at 0 on the $x$-axis corresponds to home teams for whom, on average, the mean of the posterior predictive distribution matched that shown in our observed data. 
 
-For most teams in most leagues, the posterior predictive distribution using Model IHA more appropriately reflects the observed data. In MLB, the two models perform nearly the same with the exception of the Colorado Rockies, whose home field advantage is underestimated when using Model CHA} (see Section~\ref{sec:home}).  \hl{In the NFL, Model IHA does not appear to offer a noticeable benefit, as discrepencies in Model IHA do not offer a marked improvement over those from Model CHA. Model IHA appears to offer a vast improvement over Model CHA in the NBA. As examples, observed home probabilities for Denver, Utah, and Golden State are underestimated using Model CHA, while those for Brooklyn, Detroit, New York, and Philadelphia, are, on average, overestimated. In the NHL, the posterior predictive distribution using Model IHA more closely matches the observed data for 27 of the 30 teams.}
+For most teams in most leagues, the posterior predictive distribution using Model IHA more appropriately reflects the observed data. In MLB, the two models perform nearly the same with the exception of the Colorado Rockies, whose home field advantage is underestimated when using Model CHA} (see Section~\ref{sec:home}).  \hl{Discrepencies in Model IHA offer a slight improvement over those from Model CHA in both the NFL and NHL, with a marked improvement noticed in the NBA. As examples, observed home probabilities for Denver, Utah, and Golden State are underestimated using Model CHA, while those for Brooklyn, Detroit, New York, and Philadelphia, are, on average, overestimated. In the NHL, the posterior predictive distribution using Model IHA more closely matches the observed data for 25 of the 30 teams.}
 
 
 \begin{figure}[h]
@@ -687,7 +687,7 @@ league.low <- round(exp(teams$mean.post[1])/(1+exp(teams$mean.post[1])), 3)
 @
 
 
-Figure~\ref{fig:alphaAll} depicts substantial between-franchise differences within both the NBA and NHL. Conversely, HA estimates within the NFL and MLB are, with the exception of the Colorado Rockies, indistinguishable across franchises. \hl{For the NFL, this implication does not match the suggestion of} \cite{glickman1998state}, \hl{who found meaningful between-franchise differences in terms of playing at home. However, our sample of games takes place more than a decade after those used by} \cite{glickman1998state}, \hl{and changes across time are not unreasonable to suggest. Alternatively, our outcome is the probability of the home team winning, whereas} \cite{glickman1998state} \hl{use point differential. As a result, a second possible explanation for our findings is that certain teams playing at home are more apt to record victories with large point differentials, but that the relative chances of winning are not as impacted when comparing between home teams.}
+Figure~\ref{fig:alphaAll} depicts substantial between-franchise differences in the home advantage within both the NBA and NHL, with lesser between-franchise differences in MLB and the NFL.
 
 Interestingly, the draws of the home advantage parameters for of a few NFL franchises are skewed (see Denver and Seattle, relative to Detroit), potentially the result of a shorter regular season. Alternatively, the NFL's HA may vary by season, game time, or the day of the game. Anecdotally, night games (Thursday, Sunday, or Monday) conceivably offer a larger HA than those played during the day \citep{Seahawks}. Informally, NFL team-level HA estimates are similar in effect size to those depicted by \cite{koopmeiners2012comparison}.
 
