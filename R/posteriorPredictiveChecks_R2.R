@@ -266,7 +266,7 @@ p1 <- df.all %>% filter(!real) %>% ggplot(aes(y.tilde.team, group = sim.number))
   xlab("logit(p)") + ylab("Density") + 
   facet_wrap(~toupper(sport), scales = "free")
 
-#ggsave(plot = p1, width = 5, height = 4, filename = "~/Dropbox/Compete/figure/ppd.all.pdf")
+ggsave(plot = p1, width = 5, height = 4, filename = "~/Dropbox/Compete/figure/ppd.all.pdf")
 
 df.all %>% group_by(sport, y.obs) %>% count() %>% ungroup() %>% mutate(n = n/21) %>% group_by(sport) %>% arrange(-n) %>% slice(1:5)
 bigfour %>% group_by(sport, p_home) %>% count() %>% ungroup() %>% group_by(sport) %>% arrange(-n) %>% slice(1:5)

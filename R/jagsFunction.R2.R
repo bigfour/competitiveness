@@ -104,9 +104,9 @@ library(doParallel)
 library(foreach)
 
 ### Function inputs
-num_adapt <- 1000
-num_update <- 2000
-num_draws <- 20000
+num_adapt <- 2000
+num_update <- 4000
+num_draws <- 40000
 
 posteriorDraws = c('alpha','theta','tauGame','tauWeek',
                    'tauSeason','gammaWeek','gammaSeason', 'alphaInd', 'tauAlpha')
