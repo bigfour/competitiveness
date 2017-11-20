@@ -143,7 +143,7 @@ In place of paired comparison models, alternative measures for estimating team s
 
 \subsection{Betting market probabilities}
 
-In many instances, researchers derive estimates of team strength in order to predict game-level probabilities. Betting market information has long been recommended to judge the accuracy of these probabilities \citep{harville1980predictions, stern1991probability}. Before each contest, sports books---including those in Las Vegas and in overseas markets---provide a price for each team, more commonly known as the money line.  %\greg{Moneylines are often specified in relation to 100 units.  For example, a money line of +135 indicates that a bettor will win 135 unites for a bet of 100 units.  Alternatively, if the moneyline is listed as -135 a better must risk 135 units to win 100 units.  In this framework, postive and negative moneylines correspon to underdogs and favorites, respectively. (Note: If two teams are evenly matched the moneylines can be negative for both teams (e.g. -105 or -110) because of the vig.)}
+In many instances, researchers derive estimates of team strength in order to predict game-level probabilities. Betting market information has long been recommended to judge the accuracy of these probabilities \citep{harville1980predictions, stern1991probability}. Before each contest, sports books---including those in Las Vegas and in overseas markets---provide a price for each team, more commonly known as the money line.
 
 Mathematically, if team $i$'s money line is $\ell_i$ against team $j$ (with corresponding money line $\ell_j$), where $|\ell_i| \geq 100$, then the boundary win probability for that team, $p_i(\ell_i)$, is given by:
 $$
