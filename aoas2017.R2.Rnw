@@ -1154,7 +1154,6 @@ $$
 PostParity_z = 1 - \frac{(E[{\bf F}]-f_{z} 1_{z})'(E[{\bf F}]-f_{z} 1_{z})}{\sum_{d=1}^{z} (\lceil \log_2{d} + 1 \rceil - f_{z})^2}\,,
 $$
 
-
 %Let $F_i$ be a random variable indicating the tournament finish of the $i^{th}$ seed, where $F_i = 1$ for tournament champions, $F_i = 2$ for finalists, $F_i = 3$ for semi-finalists, and so on. In a $k$-team tournament in which the better team always wins, the seeds determine the finish, and thus $\Ex[F_i] = \lceil \log_2{i} + 1 \rceil = F_i^*$ for all $i$. On the other hand, if seeds are irrelevant then for all $i$, $\Ex[F_i] = \sum_{i=1}^k \frac{1}{k} \cdot F_i^* = f_k$, a constant that depends only on $k$. 
 
 
