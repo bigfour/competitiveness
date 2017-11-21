@@ -1378,7 +1378,7 @@ ggplot(res_grouped, aes(x = seed, y = mean_finish)) +
   scale_x_continuous(TeX("Tournament Seed ($d$)"), breaks = 2^(0:4), expand = c(0.01, 0.01)) +
   scale_y_continuous(TeX("Tournament Finish ($F_d$, round)"), expand = c(0.01, 0.01)) + 
   facet_wrap(~toupper(sport)) + 
-  ggtitle("Simulated 16-Team Tournaments, 2004-2016")
+  ggtitle("Simulated 16-Team Tournaments, 2006-2016")
 @
 
 
