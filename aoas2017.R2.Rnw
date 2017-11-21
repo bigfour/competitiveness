@@ -940,7 +940,7 @@ ggplot(all.sport.both, aes(x = day.season, y = corr.day, color = type)) +
 
 Across each sport, our estimates of team strength generally outperform past team win percentage and point differential in predicting future win percentage. This gap is most pronounced earlier in each season, which is not surprising given the instability of won-loss percentage and point differential in a small number of games. Differences remain throughout most of the regular season in MLB, the NHL, and the NFL. However, by the NBA's mid-season, won-loss ratio and point differential are similar to our estimates of team strength in assessing future performance. By and large, this confirms the findings of \cite{wolfson2015s}, who identified that most of the information needed to predict the remainder of the NBA season is contained within the first third of the year. 
 
-\hl{As a second check of predictive accuracy, we compare these predicted game-level probabilities to known game outcomes.} Table \ref{tab:ll} \hl{highlights the area under the receiver operating characteristic curve (AUC), which calculates the expectation that a randomly drawn probability from a winning home team is greater than a randomly drawn probability of a losing home team (higher is better). Also included is the Brier score, along with an accompanying p-value as implemented for calibration in} \cite{spiegelhalter1986probabilistic}.  \greg{What is the p-value testing here? Also, should we mention that lower Brier Scores are better?  }   
+\hl{As a second check of predictive accuracy, we compare these predicted game-level probabilities to known game outcomes.} Table \ref{tab:ll} \hl{highlights the area under the receiver operating characteristic curve (AUC), which calculates the expectation that a randomly drawn probability from a winning home team is greater than a randomly drawn probability of a losing home team (higher is better). Also included is the Brier score (lower is better), along with an accompanying p-value as implemented for calibration accuracy in} \cite{spiegelhalter1986probabilistic}. 
 
 <<validation2>>=
 load(file.path(root, "data", "tidy_thetas.R2.rda"))
@@ -1075,7 +1075,7 @@ Although results from these predictions do not suggest an existance of an arbitr
 
 \subsection{How often does the best team win?  A new measure of league parity}
 
-We conclude by addressing our initial question about the inherent randomness of game outcomes. \hl{Our approach here is not unlike that of} \cite{james1993answering}.  \greg{This sentence feels awkward here.  I think we need to move this earlier in the paper.  }
+We conclude by addressing our initial question about the inherent randomness of game outcomes.\footnote{Our approach here is not unlike that of \cite{james1993answering}.}  
 
 One simple way to compare league randomness would be to contrast the observed distribution of $p_{(q,s,k) ij}$'s between each $q$. However, while sportsbook odds can be used to infer the probability of each team winning, these odds are only provided for scheduled games. As a result, any between-league comparisons using sportsbook odds alone would be contingent upon each league's actual schedule, and they may not accurately reflect differences that would be observed if all teams were to play one another.
 
