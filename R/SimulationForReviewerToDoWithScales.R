@@ -231,10 +231,11 @@ df.all <- bind_rows(sim1, sim2, sim3, sim4) %>%
   mutate(max.week = ifelse(league.thetas == "nfl", 17, ifelse(league.thetas == "nba", 24, 28)), 
          time_val = 2004 + seas + week / max.week)
 
-ggplot(df.all, aes(time_val, sd.week, colour = sim.type)) + geom_line() + geom_point(size = 0.2)+ 
+p1 <- ggplot(df.all, aes(time_val, sd.week, colour = sim.type)) + geom_line() + geom_point(size = 0.2)+ 
   facet_wrap(~league.thetas)  + 
-  xlab("Season") + ylab("") + ggtitle("Week-level standard deviations")
-
+  xlab("Season") + ylab("") + ggtitle("Week-level standard deviations") + scale_color_discrete("")
+p1
+ggsave("~/Dropbox/Compete/figure/scales_simulated.png", p1)
 
 
 
