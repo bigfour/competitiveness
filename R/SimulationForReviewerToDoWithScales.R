@@ -26,21 +26,50 @@ logit <- function(p) {
 
 asinTransform <- function(p) { asin(sqrt(p)) }
 
-alphaList<-sdList<-list()
+alphaList<- sdList <- list()
 set.seed(1234)
-yList<-postPred<-list()
+yList <- postPred <- list()
 #leagueAlpha<-"mlb"
-for (leagueAlpha in c("mlb","nhl","nba","nfl")){
-league<-"nfl"
-  postPred[[league]]<-list()
-  load(paste0("/Users/gregorymatthews/Dropbox/Posterior_Draws/",leagueAlpha,"_paper_constantHFA.R1.RData"))
-  zAlpha<-z
+leagues <- c("mlb","nhl","nfl","nba")
+df.sim <- data.frame(league = leagues, 
+                     alpha.sim.1 = leagues, 
+                     alpha.sim.2 = rev(leagues), 
+                     alpha.sim.3 = "nba", 
+                     alpha.sim.4 = "mlb")
+
+### Read in data
+
+get_sport <- function(sport) {
+  message(paste("reading", sport, "data..."))
+  load(file.path(mcmc_dir, paste0(sport, "_paper_constantHFA.R1.RData")))
+  out <- data.frame(
+    sigma_g = 1/z$tauGame[,,1],
+    alpha = z$alpha[,,1]
+  ) %>%
+    mutate(sport = sport)
+  theta <- z$theta
   rm(z)
-  load(paste0("/Users/gregorymatthews/Dropbox/Posterior_Draws/",league,"_paper_constantHFA.R1.RData"))
-  
+  return(list(out = out, theta = theta))
+}
+
+# Extract the values we will need
+dat <- lapply(leagues[1:4], get_sport)
+
+params <- lapply(dat, function(x) { return(x[["out"]]) } ) %>% 
+  bind_rows()
+
+thetas <- lapply(dat,function(x){return(x[["theta"]])})  
+names(thetas) <-  leagues
+
+
+
+
+
+sim_scales <- function(league.thetas, league.hfa){
+  league <- league.thetas ## league where we'll draw games and thetas from
+  hfa <- league.hfa ## league that we'll draw hfa from
   
   test <- subset(bigfour, sport == league)
-  greg <- as.Date(gsub(" 0:00","",test$event_date),"%m/%d/%Y")
   min.day <- test %>%
     group_by(season) %>%
     summarise(min.day = min(gameDate))
@@ -73,7 +102,7 @@ league<-"nfl"
     x[i, which(as.character(test[i,"home_team"]) == Teams)] <- (1)
     x[i, which(as.character(test[i,"visitor_team"]) == Teams)] <- (-1)
   } 
-  
+  print("...finished design matrix...")
   
   #HFA index
   zzz <- apply(x, 1, function(x){ which(x == 1) })
@@ -96,66 +125,118 @@ league<-"nfl"
   ######################################################################
   #Create a vector of thetas for a season a and week
   
-    draw<-sample(1:400,1)
-    chain<-sample(1:3,1)
+    draw <- sample(1:4000,1)
+    chain <- sample(1:3,1)
     
-    thetaMat<-z$theta[,,,draw,chain]
-    alpha<-zAlpha$alpha[1,draw,chain]
-    # alphaInd<-z$alphaInd[,draw,chain]
-    # alphaInd<-rnorm(dim(thetaMat)[3],0,10)
-    tauGame<-z$tauGame[1,draw,chain]
+    thetaMat <- thetas[[league.thetas]][,,,draw,chain]
+    
+    alpha.league <- subset(params, sport == league)
+    alpha <- alpha.league$alpha[draw]
+    tauGame<- sqrt(alpha.league$sigma_g[draw])
     
     
     mu<-rep(NA,nrow(x))
     
     for (i in 1:nrow(x)){
       mu[i]<- alpha  + c(thetaMat[s[i],w[i],]%*%x[i,])
-      
     }
   
-    alphaList[[paste(leagueAlpha)]]<-alpha
-    yList[[paste(league,leagueAlpha)]]<-y<-rnorm(length(mu), mu, sqrt(1/tauGame))
+    #alphaList[[paste(leagueAlpha)]] <- alpha
+    yList[[paste(league.thetas, league.hfa)]] <- y <-rnorm(length(mu), mu, tauGame)
 
+    
+    ### Run the model on the simulated data
+          bugFile <- file.path("R/jags_model_constantHFA_R1.bug")
+          n.adapt = 100
+          n.update = 200
+          n.draws = 100
+          thin = 5
+          n.chains = 3
+          fit.type = "team"
+          posteriorDraws = c('alpha','theta','tauGame','tauWeek',
+                             'tauSeason','gammaWeek','gammaSeason')
+                               
+          
+          jags <- jags.model(bugFile,
+                             data = list('y' = y,'x' = x, 's' = s, 'w' = w, 'n' = n, 
+                                         'z' = zzz, 'nTeams' = nTeams, 
+                                         'nWeeks' = nWeeks, 'nHFAs' = nHFAs, 'nSeas' = nSeas), 
+                             n.chains = n.chains, n.adapt = n.adapt)
+          
+          update(jags, n.update)
+          out <- jags.samples(jags, posteriorDraws, n.draws, thin = thin)
 
-
-
-bugFile <- file.path("R/jags_model_constantHFA_R1.bug")
-n.adapt = 100
-n.update = 200
-n.draws = 100
-thin = 5
-n.chains = 3
-fit.type = "team"
-posteriorDraws = c('alpha','theta','tauGame','tauWeek',
-                   'tauSeason','gammaWeek','gammaSeason')
-                     
-
-jags <- jags.model(bugFile,
-                   data = list('y' = y,'x' = x, 's' = s, 'w' = w, 'n' = n, 
-                               'z' = zzz, 'nTeams' = nTeams, 
-                               'nWeeks' = nWeeks, 'nHFAs' = nHFAs, 'nSeas' = nSeas), 
-                   n.chains = n.chains, n.adapt = n.adapt)
-
-update(jags, n.update)
-out <- jags.samples(jags, posteriorDraws, n.draws, thin = thin)
-
-temp<-list()
-for (i in 1:dim(out$theta)[1]){
-temp[[i]]<-apply(out$theta,c(1,2,3),mean)[i,,]
+ ## Extract standard deviation of theta's at each week
+ temp<-list()
+ 
+ for (i in 1:dim(out$theta)[1]){
+    temp[[i]] <- apply(out$theta, c(1,2,3), mean)[i,,]
+ }
+ sd.week <- apply(do.call(rbind,temp), 1, sd)
+ time <- expand.grid(week = 1:nWeeks, seas = 1:nSeas)
+ df.out <- data.frame(sd.week, league.thetas, league.hfa)
+ df.out <- bind_cols(df.out, time)
+ return(df.out)
 }
 
-sdList[[paste(league,leagueAlpha)]]<-apply(do.call(rbind,temp),1,sd)
-}
 
-lapply(yList,sd)
+## Simulation 1 (observed)
 
-plot(sdList[[1]],type="l")
-points(sdList[[2]],type="l",col="red")
-points(sdList[[3]],type="l",col="blue")
-points(sdList[[4]],type="l",col="green")
+load(file.path(root, "data", "tidy_thetas.R2.rda"))
+sim1 <- tidy_thetas %>% 
+  group_by(sport, season, week) %>% 
+  summarise(sd.week = sd(theta)) %>% 
+  rename(league.thetas = sport, seas = season) %>% 
+  mutate(league.hfa = league.thetas) %>% 
+  select(sd.week, league.thetas, league.hfa, week, seas) %>%
+   mutate(sim.type = "Observed")
 
-tosave<-list(sdList,yList,alphaList)
-save(tosave,file="~/Dropbox/competitivenessGit/simulationForReviewers.RData")
+## Simulation 2 (reversed)
+
+mlb.nba <- sim_scales("mlb", "nba")
+nhl.nfl <- sim_scales("nhl", "nfl")
+nfl.nhl <- sim_scales("nfl", "nhl")
+nba.mlb <- sim_scales("nba", "mlb")
+
+sim2 <- bind_rows(mlb.nba, nhl.nfl, nfl.nhl, nba.mlb) %>%
+  mutate(sim.type = "Reversed")
+
+
+
+## Simulation 3 (all NBA)
+
+mlb.nba <- sim_scales("mlb", "nba")
+nhl.nba <- sim_scales("nhl", "nba")
+nfl.nba <- sim_scales("nfl", "nba")
+nba.nba <- sim_scales("nba", "nba")
+
+sim3 <- bind_rows(mlb.nba, nhl.nba, nfl.nba, nba.nba) %>%
+  mutate(sim.type = "All NBA")
+
+
+
+## Simulation 3 (all MLB)
+
+mlb.mlb <- sim_scales("mlb", "mlb")
+nhl.mlb <- sim_scales("nhl", "mlb")
+nfl.mlb <- sim_scales("nfl", "mlb")
+nba.mlb <- sim_scales("nba", "mlb")
+
+sim4 <- bind_rows(mlb.mlb, nhl.mlb, nfl.mlb, nba.mlb) %>%
+  mutate(sim.type = "All MLB")
+
+
+
+df.all <- bind_rows(sim1, sim2, sim3, sim4) %>% 
+  mutate(max.week = ifelse(league.thetas == "nfl", 17, ifelse(league.thetas == "nba", 24, 28)), 
+         time_val = 2004 + seas + week / max.week)
+
+ggplot(df.all, aes(time_val, sd.week, colour = sim.type)) + geom_line() + geom_point(size = 0.2)+ 
+  facet_wrap(~league.thetas)  + 
+  xlab("Season") + ylab("") + ggtitle("Week-level standard deviations")
+
+
+
 
 #save(postPred,file="/Users/gregorymatthews/Dropbox/competitivenessGit/postPred.RData")
 #save(yList,file="/Users/gregorymatthews/Dropbox/competitivenessGit/yList.RData")
