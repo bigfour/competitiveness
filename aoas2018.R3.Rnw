@@ -1413,11 +1413,33 @@ ggplot(res_grouped, aes(x = seed, y = mean_finish)) +
 
 \section{Simulation study of team strength and home advantage parameters} \label{SimStudy}
 
+Given model estimates, one possible explanation for observed differences in team strength estimates is that they are driven by differences in the magnitudes of each league's home advantage. To consider this, we replicated our model-fitting process to identify if changing the size of each league’s home advantage would have any impact on the scales of the ability parameters. 
 
-Description goes here.
+For each $q$:
 
-We greatly appreciate the deep thought you have given to our paper. We also agree that it would be disconcerting if, as you 
+1. We randomly drew team strength estimates from the posterior distributions of $\theta_q$. These $\theta_q$’s were matched to the observed data for each week $k$ of each season $s$. Additionally, we took one draw from the posterior distribution of $\tau_{q,game}$.
 
+2. We proposed three possible home advantages: (i) No home advantage in any sport, (ii) Each sport given $\alpha_{MLB}$ as its home advantage, and (iii) Each sport given $\alpha_{NBA}$ as its home advantage. 
+
+3. Using posterior draws of $\theta_q$, $\tau_{q,game}$, and each proposed home advantage scenario, we imputed logit($p_{qsk}$)’s using Model CHA for each observed game. This created three new distributions of logit probabilities, each reflecting what leagues would look like with different home advantage scales. 
+
+4. We fit Model CHA on each of the three distributions of logit probabilities. This totalled 12 iterations -- one apiece for each of 3 home advantages x 4 leagues. 
+
+5. We extracted the posterior distributions of the simulated $\theta$'s for each of the 12 fits. 
+
+Our specific interest in these distributions is whether or not the scales of team strength in the simulations match those from our original analysis 
+
+Figure \ref{fig:simscales} shows the standard deviations of simulated $\theta$'s over time (by $s$ and $k$), presented separately for each $q$. There are four lines -- one apiece for each of the three proposed home advantages, and a fourth that shows the standard deviation of $\theta$ from the observed posterior distribution in our original analysis. The dotted line in each facet of the graph reflects the average standard deviation of $\theta$ in the observed posterior distribution.
+
+\begin{figure}[h]
+\includegraphics[angle=90]{figure/scales_simulated.png}
+\caption{Standard deviations of team strength estimates over time, for each sport $q$. Each line corresponds to standard deviations from different home advantage scenarios: no home advantage (`None`), MLBs home advantage (`MLB`), NBAs home advantage (`NBA`), and the observed standard deviations from the initial model fits (`Observed`).  \label{fig:simscales}}
+\end{figure}
+
+
+Altogether, between sport differences in the scales of our ability parameters appear to hold no matter the home advantage scale. In most leagues, there is near perfect overlap in the variability in team strength over time at each proposed home advantage. 
+
+As one feasible finding, the standard deviation of team strength does appear slightly lower in the NFL under the no home advantage simulation (`None`), although this finding only holds in a few of the years shown. One possibility is that, with the relatively smaller number of games in an NFL schedule, the home advantage scale drives a small fraction of the variability in team strengths. However, relative to the differences between the leagues, this impact appears negligible. 
 
 \newpage
 
