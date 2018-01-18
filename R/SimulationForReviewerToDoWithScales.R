@@ -130,9 +130,19 @@ sim_scales <- function(league.thetas, league.hfa){
     
     thetaMat <- thetas[[league.thetas]][,,,draw,chain]
     
-    alpha.league <- subset(params, sport == league)
-    alpha <- alpha.league$alpha[draw]
-    tauGame<- sqrt(alpha.league$sigma_g[draw])
+    
+    
+    if (hfa == "none"){
+      alpha <- 0
+    }
+    
+    if (hfa != "none"){
+      alpha.league <- subset(params, sport == hfa)
+      alpha <- alpha.league$alpha[draw]
+    }
+    
+    tau.league <- subset(params, sport == league)
+    tauGame<- sqrt(tau.league$sigma_g[draw])
     
     
     mu<-rep(NA,nrow(x))
@@ -193,13 +203,13 @@ sim1 <- tidy_thetas %>%
 
 ## Simulation 2 (reversed)
 
-mlb.nba <- sim_scales("mlb", "nba")
-nhl.nfl <- sim_scales("nhl", "nfl")
-nfl.nhl <- sim_scales("nfl", "nhl")
-nba.mlb <- sim_scales("nba", "mlb")
+mlb.nba <- sim_scales("mlb", "none")
+nhl.nfl <- sim_scales("nhl", "none")
+nfl.nhl <- sim_scales("nfl", "none")
+nba.mlb <- sim_scales("nba", "none")
 
 sim2 <- bind_rows(mlb.nba, nhl.nfl, nfl.nhl, nba.mlb) %>%
-  mutate(sim.type = "Reversed")
+  mutate(sim.type = "None")
 
 
 
@@ -215,7 +225,7 @@ sim3 <- bind_rows(mlb.nba, nhl.nba, nfl.nba, nba.nba) %>%
 
 
 
-## Simulation 3 (all MLB)
+## Simulation 4 (all MLB)
 
 mlb.mlb <- sim_scales("mlb", "mlb")
 nhl.mlb <- sim_scales("nhl", "mlb")
@@ -225,16 +235,26 @@ nba.mlb <- sim_scales("nba", "mlb")
 sim4 <- bind_rows(mlb.mlb, nhl.mlb, nfl.mlb, nba.mlb) %>%
   mutate(sim.type = "All MLB")
 
-
+ave.sport <- sim1 %>% 
+  group_by(league.thetas) %>% 
+  summarise(ave.sd = mean(sd.week))
+  
 
 df.all <- bind_rows(sim1, sim2, sim3, sim4) %>% 
   mutate(max.week = ifelse(league.thetas == "nfl", 17, ifelse(league.thetas == "nba", 24, 28)), 
          time_val = 2004 + seas + week / max.week)
 
-p1 <- ggplot(df.all, aes(time_val, sd.week, colour = sim.type)) + geom_line() + geom_point(size = 0.2)+ 
-  facet_wrap(~league.thetas)  + 
-  xlab("Season") + ylab("") + ggtitle("Week-level standard deviations") + scale_color_discrete("")
-p1
+p1 <- ggplot(df.all, aes(time_val, sd.week, colour = sim.type)) + 
+  geom_line() + 
+  geom_point(size = 0.3) + 
+  scale_y_continuous(breaks = c(0, round(ave.sport$ave.sd, 2)), lim = c(0, .95)) + 
+  geom_hline(data = ave.sport, aes(yintercept = ave.sd), lty = 2) + 
+  facet_wrap(~ toupper(league.thetas))  + 
+  xlab("Season") + 
+  ylab("") + 
+  scale_color_brewer(palette = "Set2", "") + 
+  ggtitle("Week-level standard deviations") 
+p1 + theme_bw(14)
 ggsave("~/Dropbox/Compete/figure/scales_simulated.png", p1)
 
 
