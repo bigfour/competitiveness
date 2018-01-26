@@ -1247,12 +1247,12 @@ To maintain consistency with the NFL's calendar, we considered time on a weekly 
 \newcommand{\beginsupplement}
          {
 %        \renewcommand{\thepage}{S\arabic{page}}
-%        \renewcommand{\thesection}{S\arabic{section}}
-%         \setcounter{table}{0}
-%         \renewcommand{\thetable}{S\arabic{table}}
-%         \setcounter{figure}{0}
-%         \renewcommand{\thefigure}{S\arabic{figure}}
-%         \renewcommand{\theequation}{S\arabic{equation}}
+        \renewcommand{\thesection}{S\arabic{section}}
+         \setcounter{table}{0}
+         \renewcommand{\thetable}{S\arabic{table}}
+         \setcounter{figure}{0}
+         \renewcommand{\thefigure}{S\arabic{figure}}
+         \renewcommand{\theequation}{S\arabic{equation}}
          }
 \beginsupplement
 
@@ -1447,9 +1447,9 @@ ggplot(res_grouped, aes(x = seed, y = mean_finish)) +
 @
 
 <<best-win, fig.cap="Relationship between seed and winning in simulated 16-team, 7-game series playoff tournaments. One thousand tournaments were simulated for each sport in each year. Top seeds in the NBA and NFL are nearly twice as likely to win these postseason tournaments as they are in the NHL and MLB.", out.extra="angle=90", out.width="7.5in">>=
-res_grouped %>%
-  filter(seed == 1) %>%
-  select(sport, win_prob)
+# res_grouped %>%
+#   filter(seed == 1) %>%
+#   select(sport, win_prob)
 ggplot(res_grouped, aes(x = seed, y = win_prob)) + 
   geom_point() + 
   geom_line() +
