@@ -1246,6 +1246,7 @@ To maintain consistency with the NFL's calendar, we considered time on a weekly 
 \newcommand{\beginsupplement}
          {
 %        \renewcommand{\thepage}{S\arabic{page}}
+         \setcounter{section}{0}
         \renewcommand{\thesection}{S\arabic{section}}
          \setcounter{table}{0}
          \renewcommand{\thetable}{S\arabic{table}}

@@ -6,6 +6,8 @@ aoas2018.pdf: aoas2018.R3.tex refs.bib
 	pdflatex aoas2018.R3
 	bibtex aoas2018.R3
 	pdflatex aoas2018.R3
+	pdftk aoas2018.R3.pdf cat 1-34 output aoas2018.R3_paper.pdf
+	pdftk aoas2018.R3.pdf cat 35-50 output aoas2018.R3_supplement.pdf
 
 jasa2016.pdf: jasa2016.tex refs.bib
 	pdflatex jasa2016
