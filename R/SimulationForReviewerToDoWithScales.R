@@ -255,7 +255,7 @@ p1 <- ggplot(df.all, aes(time_val, sd.week, colour = sim.type)) +
   scale_color_brewer(palette = "Set2", "") + 
   ggtitle("Week-level standard deviations") 
 p1 + theme_bw(14)
-ggsave("~/Dropbox/Compete/figure/scales_simulated.png", p1)
+ggsave("~/Dropbox/Compete/figure/scales_simulated.pdf", p1)
 
 
 
