@@ -298,7 +298,7 @@ Let ${\bf p}_{(q,s,k)}$ represent the vector of length $g_{(q,s,k)}$, the number
 
 In addition, we propose a simplified version of Model IHA, labelled as Model CHA (constant home advantage), which assumes that the HA within each sport is identical for each franchise, such that
 \begin{eqnarray}
-\text{logit}({\bf p}_{(q,s,k)}) &\sim& N(\mathbf{\theta}_{(q,s,k)}\mathbf{X}_{(q,s,k)} + \alpha_{q_0}\mathbf{J}_{g_{(q,s,k)}}, \sigma^{2}_{q,game}\mathbf{I}_{g_{(q,s,k)}}). \nonumber
+\text{logit}({\bf p}_{(q,s,k)}) | \mathbf{\theta}_{(q,s,k)}, \alpha_{q_0}, \sigma^{2}_{q,game} &\sim& N(\mathbf{\theta}_{(q,s,k)}\mathbf{X}_{(q,s,k)} + \alpha_{q_0}\mathbf{J}_{g_{(q,s,k)}}, \sigma^{2}_{q,game}\mathbf{I}_{g_{(q,s,k)}}). \nonumber
 \end{eqnarray}
 
 \noindent In Model CHA, matrices ${\bf p}_{(q,s,k)}$, $\mathbf{X}_{(q,s,k)}$, $\mathbf{J}_{g_{(q,s,k)}}$, and $\mathbf{I}_{g_{(q,s,k)}}$ are specified identically to Model IHA. As a result, for a game between home team $i$ and away team $j$ during week $k$ of season $s$, $E[\text{logit}(p_{(q,s,k) ij})] = \theta_{(q,s,k) i} - \theta_{(q, s, k) j} + \alpha_{q_0}$ under Model CHA. 
@@ -316,12 +316,12 @@ In this specification, $\gamma_{q,\text{week}}$ is the autoregressive parameter 
 
 Given the time-varying nature of our specification, all specifications use a Bayesian approach to obtain model estimates. For sport $q$, the team strength parameters for week $k=1$ and season $s=1$ have a prior distribution of
 $$
-\theta_{(q,1,1)i} \sim N(0, \sigma^{2}_{q,\text{season}}) \,, \qquad \text{for all } i \in 1, \ldots, t_{q}.
+\theta_{(q,1,1)i}|\sigma^{2}_{q,\text{season}} \sim N(0, \sigma^{2}_{q,\text{season}}) \,, \qquad \text{for all } i \in 1, \ldots, t_{q}.
 $$
 
 Team specific home advantage parameters have a similar prior, namely, 
 $$
-\alpha_{(q)i^\star}\sim N(0, \sigma^{2}_{q,\alpha}) \,, \qquad \text{for } i \in 1, \ldots, t^{\star}_{q}.
+\alpha_{(q)i^\star}|\sigma^{2}_{q,\alpha}\sim N(0, \sigma^{2}_{q,\alpha}) \,, \qquad \text{for } i \in 1, \ldots, t^{\star}_{q}.
 $$
 
 Finally, letting $\tau^{2}_{q,\text{game}} = 1 / \sigma^{2}_{q,\text{game}}$, $\tau^{2}_{q,\text{season}} = 1/\sigma^{2}_{q,\text{season}}$, $\tau^{2}_{q,\text{week}} = 1/\sigma^{2}_{q,\text{week}}$, and $\tau^{2}_{q,\alpha} = 1/\sigma^{2}_{q,\alpha}$, we assume the following prior distributions \citep{gelman2006prior}: 
@@ -379,17 +379,18 @@ These results suggest that chance alone likely does not account for observed dif
 
 \hl{Our specific interest lies in the posterior predictive distribution of the logit of implied probabilities, $p(\text{logit}({\bf \widetilde{p}}_{(q,s,k)})|\text{logit}({\bf p}_{(q,s,k)}))$.  To draw values, we randomly sample from the joint posterior distribution of the parameters (i.e. team strength, home field advantage, and variance parameters).  Then, conditional on the drawn parameters, we randomly draw from the distribution of $\text{logit}({\bf \widetilde{p}}_{(q,s,k)})$.  Recall that in the IHA model, this distribution is assumed to be normal with the following form:}
 
+%This runs over the margin.  
 \begin{eqnarray}
-\text{logit}({\bf p}_{(q,s,k)}) \sim N(\mathbf{\theta}_{(q,s,k)}\mathbf{X}_{(q,s,k)} + \alpha_{q_0}\mathbf{J}_{g_{(q,s,k)}} + \balpha_{q}\mathbf{Z}_{(q,s,k)}, \sigma^{2}_{q,game}\mathbf{I}_{g_{(q,s,k)}}).   \nonumber
+\text{logit}({\bf p}_{(q,s,k)})|\mathbf{\theta}_{(q,s,k)},\alpha_{q_0},\balpha_{q},\sigma^{2}_{q,game} \sim N(\mathbf{\theta}_{(q,s,k)}\mathbf{X}_{(q,s,k)} + \alpha_{q_0}\mathbf{J}_{g_{(q,s,k)}} + \balpha_{q}\mathbf{Z}_{(q,s,k)}, \sigma^{2}_{q,game}\mathbf{I}_{g_{(q,s,k)}}).   \nonumber
 \end{eqnarray}
 
-\noindent \hl{We used 20 simulated sets of logit probabilities from this posterior distribution, as well as 20 more from the posterior distribution of Model CHA.}
+\noindent \hl{We used 20 simulated sets of logit probabilities from this posterior predictive distribution, as well as 20 more from the posterior distribution of Model CHA.}
 
 Figure~\ref{fig:ppd-all} \hl{overlays each of Model IHA's 20 posterior predictive distributions of logit probabilities (shown in gray density curves) along with the observed distribution of logit probabilities (shown in red).  By and large, the observed distributions of logit probabilities are similar to the simulated distributions in each sport. In particular, the density in the tails of the posterior predictive distributions (reflecting probabilities near 0 or 1) does not show any meaningful departure from the observed distributions.}
 
 \hl{We purposefully use a lower bandwith for the density curves in} Figure~\ref{fig:ppd-all} \hl{to highlight interesting discrepancies between the observed and predictive distributions. In the NBA and NFL, for example, the observed distribution is slightly lower than the simulated distributions with logit probabilities near 0 (i.e., both teams have a win probability of 0.5). This is likely occurring due to preference of sportsbooks to set prices that are rounded to the nearest 5 (e.g. -105, -110, -155, etc.). As an example, there are 33 NFL games where the home team's boundary price is -185 (1.3\% of games), and there are 22 other prices that are observed for the home team in 15 or more unique games. Given that Models CHA and IHA do not extract back to rounded prices for each team, it is not surprising that our posterior predictive distributions are smoother than the observed data. Similarly,} \cite{glickman1998state} \hl{found discrepancies between the observed distribution of point differential in the NFL and the posterior predictive distributions of point differential, on account of the increased likelihood of games ending with margins of victory of 3 or 7 in the NFL.  We believe that we are observing a similar phenomenon, but based on the increased likelihood of a sportsbook to assign rounded odds.    
 
-Next, we use posterior predictive distributions to compare the appropriateness of Models IHA and CHA for each team, as well as to contrast each of the two models to one another. To do this, we calculate the average discrepancy between the mean posterior predictive distribution of each game and the observed game probability, averaged over home team for each model. These team level results are shown in} Figure~\ref{fig:ppd-model}. \hl{Discrepencies from Model CHA are shown in via circles, with arrows pointing towards the average discrepency for Model IHA. The color of the arrow (blue for yes, red for no) identifies whether, on average, Model IHA more closely matched the observed data than Model CHA. The dashed black line in each plot at 0 on the $x$-axis corresponds to home teams for whom, on average, the mean of the posterior predictive distribution matched that shown in our observed data. 
+Next, we use posterior predictive distributions to compare the appropriateness of Models IHA and CHA for each team, as well as to contrast each of the two models to one another. To do this, we calculate the average discrepancy between the mean posterior predictive distribution of each game and the observed game probability, averaged over home team for each model. These team level results are shown in} Figure~\ref{fig:ppd-model}. \hl{Discrepencies from Model CHA are shown via circles, with arrows pointing towards the average discrepency for Model IHA. The color of the arrow (blue for yes, red for no) identifies whether, on average, Model IHA more closely matched the observed data than Model CHA. The dashed black line in each plot at 0 on the $x$-axis corresponds to home teams for whom, on average, the mean of the posterior predictive distribution matched that shown in our observed data. 
 
 <<ppd-model-setup, include=FALSE>>=
 load(file.path(root, "data", "postPred.teamplot.RData"))
