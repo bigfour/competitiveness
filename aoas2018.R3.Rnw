@@ -1275,7 +1275,7 @@ To maintain consistency with the NFL's calendar, we considered time on a weekly 
 
 \section{Simulation study of team strength and home advantage parameters} \label{SimStudy}
 
-Given our posterior draws, one possible explanation for observed differences in team strength estimates is that they are driven by differences in the magnitudes of each league's home advantage. To consider this, we replicated our model-fitting process to identify if changing the size of each league's home advantage would have any impact on the scales of the ability parameters. 
+\hl{Given our posterior draws, one possible explanation for observed differences in team strength estimates is that they are driven by differences in the magnitudes of each league's home advantage. To consider this, we replicated our model-fitting process to identify if changing the size of each league's home advantage would have any impact on the scales of the ability parameters. 
 
 For each $q$:
 
@@ -1289,9 +1289,9 @@ For each $q$:
 
 5. We extracted the posterior distributions of the simulated $\theta$'s for each of the 12 fits. 
 
-Our specific interest in these distributions is whether or not the scales of team strength in the simulations match those from our original analysis. 
+Our specific interest in these distributions is whether or not the scales of team strength in the simulations match those from our original analysis.} 
 
-Figure \ref{fig:simscales} shows the standard deviations of simulated $\theta$'s over time (by $s$ and $k$), presented separately for each $q$. There are four lines: one apiece for each of the three proposed home advantages, and a fourth that shows the standard deviation of $\theta$ from the observed posterior distribution in our original analysis. The dotted line in each facet of the graph reflects the average standard deviation of $\theta$ in the observed posterior distribution.
+Figure \ref{fig:simscales} \hl{shows the standard deviations of simulated $\theta$'s over time (by $s$ and $k$), presented separately for each $q$. There are four lines: one apiece for each of the three proposed home advantages, and a fourth that shows the standard deviation of $\theta$ from the observed posterior distribution in our original analysis. The dotted line in each facet of the graph reflects the average standard deviation of $\theta$ in the observed posterior distribution.}
 
 \begin{figure}[h]
 \includegraphics[angle=90, scale=0.5]{figure/scales_simulated}
@@ -1299,9 +1299,9 @@ Figure \ref{fig:simscales} shows the standard deviations of simulated $\theta$'s
 \end{figure}
 
 
-Altogether, between sport differences in the scales of our ability parameters appear to hold regardless of the home advantage scale. In most leagues, there is near perfect overlap in the variability in team strength over time at each proposed home advantage. 
+\hl{Altogether, between sport differences in the scales of our ability parameters appear to hold regardless of the home advantage scale. In most leagues, there is near perfect overlap in the variability in team strength over time at each proposed home advantage. 
 
-As one possible finding, the standard deviation of team strength does appear slightly lower in the NFL under the no home advantage simulation (`None'), although this finding only holds in a few of the years shown. One possibility is that, with the relatively smaller number of games in an NFL schedule, the home advantage scale drives a small fraction of the variability in team strengths. However, relative to the differences between the leagues, this impact appears negligible. 
+As one possible finding, the standard deviation of team strength does appear slightly lower in the NFL under the no home advantage simulation (`None'), although this finding only holds in a few of the years shown. One possibility is that, with the relatively smaller number of games in an NFL schedule, the home advantage scale drives a small fraction of the variability in team strengths. However, relative to the differences between the leagues, this impact appears negligible. }
 
 
 
