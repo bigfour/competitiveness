@@ -3,7 +3,16 @@ A unified approach to understanding randomness in sport
 
 A paper analyzing competitiveness across the four major sports.
 
+Slides
+------
+
+-   [NESSIS 2017](http://bigfour.github.io/competitiveness/NESSIS_2017.html)
+-   [UMass 2017](http://bigfour.github.io/competitiveness/umass2017.html)
+-   [CMU 2017](http://bigfour.github.io/competitiveness/cmu2017.html)
+-   [Fields Institute 2018](http://bigfour.github.io/competitiveness/fields2018.html)
+
 To knit the paper:
+------------------
 
 1.  Use the **Compile PDF** button in RStudio, or
 2.  Select **Tools -&gt; Shell...** from the menu and execute:
@@ -11,7 +20,7 @@ To knit the paper:
 ``` bash
 make
 ```
- 
+
 Data wrangling
 --------------
 

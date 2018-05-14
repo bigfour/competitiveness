@@ -7,7 +7,15 @@ output:
  
 A paper analyzing competitiveness across the four major sports.
 
-To knit the paper:
+## Slides
+
+- [NESSIS 2017](http://bigfour.github.io/competitiveness/NESSIS_2017.html)
+- [UMass 2017](http://bigfour.github.io/competitiveness/umass2017.html)
+- [CMU 2017](http://bigfour.github.io/competitiveness/cmu2017.html)
+- [Fields Institute 2018](http://bigfour.github.io/competitiveness/fields2018.html)
+
+
+## To knit the paper:
 
 #. Use the **Compile PDF** button in RStudio, or
 #. Select **Tools -> Shell...** from the menu and execute:
