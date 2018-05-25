@@ -19,7 +19,7 @@ knitr::opts_chunk$set(fig.path = 'figures/')
 
 <img src="http://www.zontikgames.com/media/catalog/product/cache/1/image/9df78eab33525d08d6e5fb8d27136e95/p/r/primary_4.jpg" width="500px" class="cover">
 
-</br></br></br></br></br>
+</br></br></br></br></br></br></br>
 
 <p class="black">
 Michael J. Lopez, Gregory J. Matthews, **Benjamin S. Baumer**</br>
