@@ -5,7 +5,7 @@ output:
   rmdshower::shower_presentation:
     self_contained: false
     katex: true
-    ratio: 16x10
+    ratio: 4x3
     lib_dir: rmdshower
 ---
 
@@ -27,11 +27,25 @@ http://bit.ly/2gHCI0C</br>
 Fields Institute, May 25, 2018
 </p>
 
+# 2015 ALDS
+
+## You might remember this...
+
+![](https://media.giphy.com/media/l2SpUepuM4qgdzbeU/giphy.gif){.cover}
+
+## You might not remember this...
+
+(https://www.mlb.com/news/elvis-andrus-has-two-key-errors-in-alds-game-5/c-154487546)
+
+## You probably remember this...
+
+![](https://media.giphy.com/media/VcFDVKz3nKfi8/giphy.gif){.cover}
+
 # Luck and parity</br>in sports
 
 ## Using statistics to assess luck in sports
 
-> * The best team does not always win. (Sorry, Houston?)
+> * The best team does not always win.
 
 > * How often does the best team win in each sport?  
 
@@ -156,15 +170,28 @@ Assumptions:
 ## &nbsp; {.fullpage}
 
 ```{r sox-tigers}
-load(file.path(root, "data", "sox.tigers.rda"))
-#teamcolors %>%
-#  filter(name %in% c("St. Louis Cardinals", "Pittsburgh Pirates"))
-sox.tigers %>% ggplot(aes(x = theta, fill = team)) + 
-  geom_density(alpha = 0.5) + ylab("") + xlab("Team Strength (log odds scale)") + 
-  scale_fill_manual("", values = c("#fdb827", "#c41e3a"), labels = c("Cardinals", "Pirates"), breaks = c("Tigers", "Red Sox")) + 
-  labs(title = "Posterior distribution of team strengths", 
-       subtitle = "End of 2013 regular season")+  
-  theme_grey(base_size = 15)
+load(file.path(root, "data", "lateseason2015.RData"))
+
+thetas_end <- thetas.end[2:5, 28:29,,] %>%
+  as.vector() %>%
+  as_data_frame() %>%
+  mutate(team = rep(rep(c("Texas Rangers", "Toronto Blue Jays"), each = 4), 6000)) %>%
+  rename(theta = value)
+  
+
+
+library(teamcolors)
+these_colors <- teamcolors %>%
+  filter(name %in% c("Texas Rangers", "Toronto Blue Jays"))
+
+thetas_end %>% 
+  ggplot(aes(x = theta, fill = team)) + 
+    geom_density(alpha = 0.5) + ylab("") + 
+    xlab("Team Strength (log odds scale)") + 
+    scale_fill_manual("", values = these_colors$primary) + 
+    labs(title = "Posterior distribution of team strengths", 
+         subtitle = "End of 2015 regular season")+  
+    theme_grey(base_size = 15)
 ```
 
 
@@ -189,7 +216,6 @@ secondary <- colors$secondary
 names(primary) <- colors$name
 names(secondary) <- colors$name
 library(teamcolors); library(ggthemes); library(stringi); library(forcats)
-library(teamcolors)
 
 tm_colors <- teamcolors %>%
   mutate(name = case_when(
@@ -208,23 +234,24 @@ max.theta <- round(max(tidy_thetas_division$theta), 2)
 min.theta <- round(min(tidy_thetas_division$theta), 2)
 
 
-df.2013 <- filter(tidy_thetas_division, sport == "MLB", season == 8)
-highlight <- df.2013 %>%
-  filter(name %in% c("Pittsburgh Pirates", "St Louis Cardinals"))
+theta_year <- tidy_thetas_division %>%
+  filter(sport == "MLB", season == 10)
+highlight <- theta_year %>%
+  filter(name %in% c("Texas Rangers", "Toronto Blue Jays"))
 highlight_names <- highlight %>%
   group_by(name) %>%
   summarize(end_theta = max(theta))
-ggplot(data = df.2013, 
-       aes(x = cumweek - 196, y = theta, 
+ggplot(data = theta_year, 
+       aes(x = week, y = theta, 
            group = name)) +
   geom_line(alpha = 0.5, colour = "dark grey") + 
   geom_point(size = 0.5, colour = "dark grey") + 
   geom_text(aes(label = annotation), color = "black", hjust = "left", nudge_x = 0.25) + 
   scale_color_manual(name = NULL, values = primary) + 
   scale_fill_manual(name = NULL, values = secondary) + 
-  scale_x_continuous(name = "Week of season", lim = c(0, 32)) +
+  scale_x_continuous(name = "Week of season", lim = c(0, 33)) +
   scale_y_continuous(name = "Team strength (log odds)") + 
-  ggtitle("Team Strengths, 2013 MLB ") + 
+  ggtitle(paste("Team Strengths,", max(theta_year$season) + 2005, "MLB ")) + 
   guides(color = FALSE, fill = FALSE) +
   geom_line(data = highlight, aes(color = name)) + 
   geom_point(data = highlight, aes(fill = name)) +
@@ -364,7 +391,7 @@ ggplot(res_grouped, aes(x = seed, y = mean_finish, color = toupper(sport))) +
 
 ## &nbsp; { .fullpage }
 
-```{r}
+```{r playoff-series}
 load(file.path(root, "data", "how_long.rda"))
 how_long_16 <- how_long %>%
   filter(num_teams == 16)
@@ -477,10 +504,13 @@ gg4
 
 ## Acknowledgements: Greg & Mike
 
-<p class="double">
-<img src="greg.png" class="one-col-image">
-<img src="http://ww4.hdnux.com/photos/34/33/15/7451459/11/1024x1024.jpg" class="one-col-image">
-</p>
+<div class="double">
+![](greg.png){.one-col-image}
+
+</br></br>
+
+![](http://ww4.hdnux.com/photos/34/33/15/7451459/11/1024x1024.jpg){.one-col-image}
+</div>
 
  
 ## Parity in sports
@@ -489,9 +519,10 @@ gg4
 More info: 
 
 - Paper (https://arxiv.org/abs/1701.05976) 
+    - *Annals of Applied Statistics*
 - Code (https://github.com/bigfour/competitiveness)
 - Slides (http://bit.ly/2gHCI0C)
-</br></br>
+</br></br></br></br>
 
 
 Summary:
